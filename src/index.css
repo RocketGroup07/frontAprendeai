@@ -1,1 +1,6 @@
+@import url("https://use.typekit.net/arp2woi.css");
 @import "tailwindcss";
+
+@theme {
+  --font-neuli: "neulis-sans", sans-serif; 
+}
