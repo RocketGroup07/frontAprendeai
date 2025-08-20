@@ -1,4 +1,4 @@
-import Header from './components/Header';
+import Turmas from "./pages/turmas";
 import { useState } from 'react';
 
 function App() {
@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Turmas />
       
     </>
   );
