@@ -7,10 +7,10 @@ function Input({
   type
 }) {
   return (
-    <div className='w-80 mx-auto mt-10'>
+    <div className='mx-auto'>
       <input
       style={{ backgroundColor: '#4a4a4a' }}
-        className='p-4 items-left text-white rounded-md w-full uppercase placeholder:text-white outline-0 border-1 border-white'
+        className='w-80 p-4 items-left text-white rounded-md uppercase  outline-0 border-1 border-white'
         id={id}
         value={value}
         onChange={onChange}
