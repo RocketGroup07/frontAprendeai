@@ -13,8 +13,7 @@ function App() {
         <Route path='/turmas' element={<Turmas/>} />
         <Route path='/geral' element={<Geral/>} />
       </Routes>
-    </Router>
-      
+    </Router>    
     </>
   );
 }
