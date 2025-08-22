@@ -1,13 +1,19 @@
-import Turmas from "./pages/Turmas";
-import { useState } from 'react';
+import Geral from "./pages/Geral.jsx";
+import Turmas from "./pages/Turmas.jsx";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <>
-      <Turmas />
-      
+     <Router>
+      <Routes>
+        {/*<Route path="/" element={<Home />} />*/}
+        {/*<Route path="/login" element={<Login />} />*/}
+        <Route path='/turmas' element={<Turmas/>} />
+        <Route path='/geral' element={<Geral/>} />
+      </Routes>
+    </Router>    
     </>
   );
 }
