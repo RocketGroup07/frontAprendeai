@@ -1,4 +1,4 @@
-import Turmas from "./pages/turmas";
+import Turmas from "./pages/Turmas";
 import { useState } from 'react';
 
 function App() {
