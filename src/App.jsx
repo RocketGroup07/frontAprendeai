@@ -1,5 +1,5 @@
 import Geral from "./pages/Geral.jsx";
-import Turmas from "./pages/turmas.jsx";
+import Turmas from "./pages/Turmas.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
