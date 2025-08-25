@@ -1,11 +1,10 @@
 import React from 'react'
 import Input from '../components/Input'
+import Form from '../components/Form'
 
 function Login() {
   return (
-    <Input 
-    placeholder={"Email"}
-    type={"text"}/>
+    <Form/>
   )
 }
 
