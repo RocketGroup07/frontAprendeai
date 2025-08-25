@@ -1,4 +1,4 @@
-import Turmas from "./pages/turmas";
+import Cadastro from "./pages/Cadastro"; /* VOLTAR PRARA TURMAS */
 import { useState } from 'react';
 
 function App() {
@@ -6,8 +6,7 @@ function App() {
 
   return (
     <>
-      <Turmas />
-      
+      <Cadastro /> {/* VOLTAR PRARA TURMAS */}
     </>
   );
 }
