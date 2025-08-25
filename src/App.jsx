@@ -1,12 +1,21 @@
-import Cadastro from "./pages/Cadastro"; /* VOLTAR PRARA TURMAS */
-import { useState } from 'react';
+import Geral from "./pages/Geral.jsx";
+import Turmas from "./pages/Turmas.jsx";
+import Turmas from "./pages/Cadastro.jsx";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <>
-      <Cadastro /> {/* VOLTAR PRARA TURMAS */}
+     <Router>
+      <Routes>
+        {/*<Route path="/" element={<Home />} />*/}
+        {/*<Route path="/login" element={<Login />} />*/}
+        <Route path='/turmas' element={<Turmas/>} />
+        <Route path='/geral' element={<Geral/>} />
+        <Route path='/cadastro' element={<Cadastro/>} />
+      </Routes>
+    </Router>    
     </>
   );
 }
