@@ -7,7 +7,7 @@ function FormButton({
   value
 }) {
   return (
-    <button className='w-full p-2 items-left text-white rounded-md uppercase bg-[#D00909] outline-0 border-1 border-white font-semibold text-[20px]' type={type} onClick={onClick}>
+    <button className='w-full p-2 cursor-pointer text-white rounded-md uppercase bg-[#D00909] border-1 border-white font-semibold text-[20px] hover:bg-[#A10707] duration-300 ease-in' type={type} onClick={onClick}>
       {value}
     </button>
   )

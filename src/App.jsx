@@ -10,8 +10,7 @@ function App() {
     <>
      <Router>
       <Routes>
-        {/*<Route path="/" element={<Home />} />*/}
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login/>} />
         <Route path='/turmas' element={<Turmas/>} />
         <Route path='/geral' element={<Geral/>} />
         <Route path='/cadastro' element={<Cadastro/>} />
