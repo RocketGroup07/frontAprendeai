@@ -1,6 +1,6 @@
 import Geral from "./pages/Geral.jsx";
 import Turmas from "./pages/Turmas.jsx";
-import Turmas from "./pages/Cadastro.jsx";
+import Cadastro from "./pages/Cadastro.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
