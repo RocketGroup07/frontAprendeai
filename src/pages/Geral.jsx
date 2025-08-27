@@ -8,8 +8,11 @@ import posts from '../db.json'; // Ajuste o caminho conforme a estrutura
 function Geral() {
   const userName = userDb[0].nome;
 
-  // Agrupar posts por data, evitando duplicados
-  const postsPorData = posts.reduce((acc, post) => {
+  // Primeiro, removemos os posts duplicados baseados no 'id' para garantir que cada post apareça apenas uma vez.
+  const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
+
+  // Agora, agrupamos os posts únicos por data
+  const postsPorData = uniquePosts.reduce((acc, post) => {
     const data = post.ano;
     if (!acc[data]) {
       acc[data] = [];
@@ -28,7 +31,7 @@ function Geral() {
   });
 
   return (
-    <div className='bg-[#212121] min-h-screen font-neuli'>
+    <div className='min-h-screen font-neuli'>
       <Header />
 
       <div className='flex flex-col items-center justify-center gap-10 pt-10'>
