@@ -1,26 +1,22 @@
 import Input from './Input'
+import Button from './FormButton'
 
 
 
 function Form({ onSubmit, children, title }) {
   return (
-    <div className='bg-[url(../src/assets/images/background_pb.png)] bg-cover bg-center h-screen flex items-center justify-center'>
-        <form onSubmit={onSubmit} className='w-100 mx-auto bg-transparent p-4  mt-10 flex flex-col gap-5 '>
-            <div className='flex justify-center items-center uppercase text-white font-bold'>
-                <h1>{title} Login</h1>
-            </div>
-            <div className='flex flex-col gap-[10px]'>
-                <Input
-                placeholder={"Email"}
-                type={"text"}
-                />
-                <Input
-                placeholder={"senha"}
-                type={'password'}/>
-            </div>
-        </form>
-    </div>
+    <form onSubmit={onSubmit} className='w-xl mx-auto bg-transparent p-4 mt-10 flex flex-col gap-5'>
+      <div className='flex justify-center items-center uppercase text-white font-semibold my-[12px] mx-auto'>
+        <h1 className='text-4xl text-center'>{title}</h1>
+      </div>
+      <div className='flex flex-col gap-[16px]'>
+        {children}
+      </div>
+    </form>
+
   )
 }
+
+
 
 export default Form
