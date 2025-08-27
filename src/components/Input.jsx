@@ -7,10 +7,9 @@ function Input({
   type
 }) {
   return (
-    <div className='mx-auto'>
+    <div>
       <input
-      style={{ backgroundColor: '#4a4a4a' }}
-        className='w-80 p-4 items-left text-white rounded-md uppercase  outline-0 border-1 border-white'
+        className='w-full bg-[#4a4a4a] p-4 items-left text-white rounded-md uppercase font-neuli outline-0 border-1 border-white'
         id={id}
         value={value}
         onChange={onChange}
