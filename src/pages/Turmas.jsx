@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import Card from "../components/CardTurmas";
+import CardTurmas from "../components/CardTurmas";
 
 function Turmas() {
   return (
@@ -10,7 +10,7 @@ function Turmas() {
             <h1 style={{fontWeight:'700', fontSize:'28px', fontStyle:'bold'}}>Suas Turmas</h1></div>
           <div className="geral" style={{backgroundColor:'#D00909',borderRadius:'4.3px' , marginLeft:'75px', marginTop:'36px' ,color: '#fff', width:'85px', display:'flex', justifyContent:'center'}}>
             <h2 style={{fontWeight:'500', fontSize:'22'}}>Geral</h2></div>
-          <Card nomeCurso='AI-900 Microsoft Fundamentals AI' />
+          <CardTurmas/>
      </div>
   );
 }
