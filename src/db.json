@@ -1,38 +1,9 @@
 [
   {
+    "id": 1,
     "titulo": "O Futuro da IA",
     "descricao": "Uma análise aprofundada sobre as últimas inovações em IA e como elas moldarão o nosso futuro. Descubra os avanços em aprendizado de máquina e visão computacional.",
     "autor": "Carlos Silva",
     "ano": "28/05/2025"
-  },
-  {
-    "titulo": "Explorando a Patagônia",
-    "descricao": "Viaje conosco para o fim do mundo. Dicas de trilhas, equipamentos essenciais e as paisagens de tirar o fôlego da Patagônia argentina e chilena.",
-    "autor": "Fernanda Costa",
-    "ano": "29/05/2025"
-  },
-  {
-    "titulo": "Cozinha Minimalista",
-    "descricao": "Descubra como criar pratos incríveis e saborosos com poucos ingredientes. Menos é mais na arte da culinária simplificada. Receitas rápidas e deliciosas.",
-    "autor": "Lucas Mendes",
-    "ano": "20/08/2025"
-  },
-  {
-    "titulo": "O Futuro da IA",
-    "descricao": "Uma análise aprofundada sobre as últimas inovações em IA e como elas moldarão o nosso futuro. Descubra os avanços em aprendizado de máquina e visão computacional.",
-    "autor": "Carlos Silva",
-    "ano": "28/05/2025"
-  },
-  {
-    "titulo": "Explorando a Patagônia",
-    "descricao": "Viaje conosco para o fim do mundo. Dicas de trilhas, equipamentos essenciais e as paisagens de tirar o fôlego da Patagônia argentina e chilena.",
-    "autor": "Fernanda Costa",
-    "ano": "29/05/2025"
-  },
-  {
-    "titulo": "Cozinha Minimalista",
-    "descricao": "Descubra como criar pratos incríveis e saborosos com poucos ingredientes. Menos é mais na arte da culinária simplificada. Receitas rápidas e deliciosas.",
-    "autor": "Lucas Mendes",
-    "ano": "20/08/2025"
   }
 ]
