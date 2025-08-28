@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/Header.css';
 import { FaUserCircle } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 
@@ -7,20 +6,20 @@ import { GiHamburgerMenu } from "react-icons/gi";
 
 function Header() {
   return (
-    <header className="header">
+    <header className="flex bg-[#D00909] justify-between p-6 items-center">
 
-      <div className="logoHeader">
-        <img src="../images/logoAP.png" alt="" className='logoSenai' />
+      <div className="object-contain w-54 ml-12"> 
+        <img src="../images/logoAP.png" />
       </div>
 
-      <div className="right">
-        <p>Ciclano</p>
+      <div className="flex items-center justify-between gap-6">
+        <p className='text-white text-[25px] font-[400]'>Ciclano</p>
 
-        <div className="user">
+        <div className="cursor-pointer text-white">
             <FaUserCircle size={35}/>
             </div>
 
-        <div className="hamburguer">
+        <div className="cursor-pointer text-white">
           <GiHamburgerMenu size={35}/>
         </div>
 
