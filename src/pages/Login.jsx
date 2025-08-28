@@ -17,7 +17,7 @@ function Login() {
   }
 
   const onError = (errors) => {
-    Object.values(errors).forEach((err) => {
+    Object.values(errors).forEach(err => {
       toast.error(err.message);
     });
   };
@@ -34,8 +34,10 @@ function Login() {
           name="email"
           register={registerLogin}
           rules={{
-            required: "O email é obrigatório", pattern: {
-              value: /^\S+@\S+$/i, message: "Formato de email inválido"
+            required: "O e-mail é obrigatório",
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Digite um e-mail válido"
             }
           }}
         />
