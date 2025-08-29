@@ -56,7 +56,7 @@ function Geral() {
         {grupos.map(([data, listaPosts]) => (
           <div key={data} className="mb-8">
             {/* Cabeçalho com a data */}
-            <h2 className="text-xl font-bold mb-4">{data}</h2>
+            <h2 className="text-xl font-medium mb-4">{data}</h2>
 
             {/* Posts daquele dia */}
             <div className="flex flex-row flex-wrap gap-4">
