@@ -6,13 +6,13 @@ import { GiHamburgerMenu } from "react-icons/gi";
 
 function Header() {
   return (
-    <header className="flex bg-[#D00909] justify-between p-[25px]">
+    <header className="flex bg-[#D00909] justify-between p-6 items-center">
 
-      <div className="object-contain w-[180px]">
-        <img src="../images/logoAP.png" alt="" className='logoSenai' />
+      <div className="object-contain w-54 ml-12"> 
+        <img src="../images/logoAP.png" />
       </div>
 
-      <div className="flex items-center justify-between gap-[25px]">
+      <div className="flex items-center justify-between gap-6">
         <p className='text-white text-[25px] font-[400]'>Ciclano</p>
 
         <div className="cursor-pointer text-white">

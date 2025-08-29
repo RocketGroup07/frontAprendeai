@@ -8,15 +8,10 @@ function CardTurmas() {
                 <div key={index} className='cursor-pointer hover:scale-103 transition-transform'>
                     {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
                     <div
-                        className="w-80 h-32 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between"
+                        className="w-80 h-40 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center"
                     >
-                        <div>
-                            <h2 className='text-3xl line-clamp-1'>{item.nomeCurso}</h2>
-                            <div className='mt-5 font-extralight text-[16px]'>
-                               {/*  <p className="overflow-hidden line-clamp-3">
-                                    {item.descricao}
-                                </p> */}
-                            </div>
+                        <div className='w-full flex justify-center items-center'>
+                            <h2 className='mt-5 text-3xl w-full truncate overflow-hidden whitespace-nowrap text-center'>{item.nomeCurso}</h2>
                         </div>
 
                     </div>
@@ -30,8 +25,8 @@ function CardTurmas() {
                             </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                </div>              
+            ))}       
         </div>
         
     );
