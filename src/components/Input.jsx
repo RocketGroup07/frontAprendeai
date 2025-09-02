@@ -1,22 +1,11 @@
-function Input({
-  id,
-  value,
-  onChange,
-  placeholder,
-  register,
-  type
-}) {
+function Input({ name, register, rules, placeholder, type = "text" }) {
   return (
-    <div className='mx-auto'>
+    <div>
       <input
-      style={{ backgroundColor: '#4a4a4a' }}
-        className='w-80 p-4 items-left text-white rounded-md uppercase  outline-0 border-1 border-white'
-        id={id}
-        value={value}
-        onChange={onChange}
+        className="w-full bg-[#4a4a4a] p-4 items-left text-white rounded-md placeholder:uppercase font-neuli outline-0 border border-white"
         placeholder={placeholder}
-        {...register}
         type={type}
+        {...register(name, rules)}
       />
     </div>
   )

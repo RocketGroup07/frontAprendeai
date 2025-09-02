@@ -1,0 +1,17 @@
+[
+    {
+        "nomeCurso": "AI-900 Microsoft Fundamentals AI",
+        "professor": "Matheus",
+        "descricao": "Curso introdutório sobre fundamentos de IA na Microsoft."
+    },
+    {
+        "nomeCurso": "FIC Desenvolvimento Web",
+        "professor": "Arthur",
+        "descricao": "Curso sobre desenvolvimento web com HTML, CSS e JavaScript."
+    },
+    {
+        "nomeCurso": "Programação em Pythoh",
+        "professor": "Alisson",
+        "descricao": "Curso básico de programação em Python."
+    }
+]
