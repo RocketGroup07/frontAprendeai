@@ -2,11 +2,11 @@ import Geral from "./pages/Geral.jsx";
 import Login from "./pages/Login.jsx";
 import Turmas from "./pages/Turmas.jsx";
 import Cadastro from "./pages/Cadastro.jsx";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AtividadePage from "./pages/AtividadePage.jsx";
 import FavoritosPage from "./pages/FavoritosPage.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 

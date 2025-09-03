@@ -1,75 +1,86 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import Form from './Form';
+import Input from './Input';
+import LinkRedirecionavel from './LinkRedirecionavel';
+import FormButton from './FormButton';
+import { toast } from 'react-toastify'
 
 function FormCadastro() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const navigate = useNavigate(); 
+
+  const onSubmit = (data) => {
+    console.log(data);
+    navigate('/Geral'); 
+  };
+
+const onError = (errors) => {
+    Object.values(errors).forEach((err) => {
+      toast.error(err.message);
+    });
   };
 
-  return (
-    <div className='flex flex-col items-center justify-center w-full min-h-screen font-neuli'>
-      <div className="flex justify-center w-1/2 p-5">
-        <img src="../images/logoAprendeAi.png" alt="Logo AprendeAi" className='w-[300px] object-contain' />
-      </div>
+  return (
+    <div > {/* FUNDO GERAL */}
+    <Form
+        title={"Cadastro"}
+        onSubmit={handleSubmit(onSubmit, onError)}
+      >
 
-      <div className='my-20 flex flex-col items-center justify-center w-1/2 p-5 rounded-lg'>
-        <h1 className='my-3 text-4xl font-medium text-white uppercase'>Cadastro</h1>
 
-        <form className='flex flex-col w-1/2 p-5 space-y-3' onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          placeholder="Nome"
+          type="text"
+          name="name"
+          register={register}
+          rules={{
+            required: "O nome é obrigatório"
+          }}
+        />
 
-          {/* ##### 1 -Input de nome ##### */}
-          <input
-            type="text"
-            placeholder="NOME"
-            className='w-full p-3 text-base text-white border border-white rounded-md bg-[#434343] placeholder-zinc-500 focus:outline-none'
-            style={{ WebkitTextFillColor: 'inherit', WebkitBoxShadow: '0 0 0px 1000pxrgb(255, 255, 255) inset' }}
-            {...register("username", { required: true })}
+        <Input
+          placeholder="Email"
+          type="email"
+          name="email"
+          register={register}
+          rules={{
+            required: "O email é obrigatório", pattern: {
+              value: /^\S+@\S+$/i, message: "Formato de email inválido"
+            }
+          }}
+        />
+
+        <Input
+          placeholder="Senha"
+          type="password"
+          name="password"
+          register={register}
+          rules={{ required: "A senha é obrigatória",
+             minLength:{
+              value: 6, message: "A senha deve ter no mínimo 6 caracteres"
+            }
+          }}
+        />
+
+        <div className='flex justify-end gap-[48px] p-1 text-white'>
+          <LinkRedirecionavel
+            nome={"Já tem cadastro? Faça Login"}
+            link={"/"}
+            className="cursor-pointer hover:text-[#d3d3d3] underline duration-200"
           />
-          {errors.username && <p className="text-sm text-red-600">Nome de usuário é obrigatório</p>}
+        </div>
 
-          {/* ##### 2 - Input de email ##### */}
-          <input
-            type="email"
-            placeholder="E-MAIL"
-            className='w-full p-3 text-base text-white border border-white rounded-md bg-[#434343] placeholder-zinc-500 focus:outline-none'
-            style={{ WebkitTextFillColor: 'inherit', WebkitBoxShadow: '0 0 0px 1000pxrgb(255, 255, 255) inset' }}
-            {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          />
-          {errors.email && <p className="text-sm text-red-600">E-mail inválido</p>}
-
-          {/* ##### 3 - Input de senha ##### */}
-          <input
-            type="password"
-            placeholder="SENHA"
-            className='w-full p-3 text-base text-white border border-white rounded-md bg-[#434343] placeholder-zinc-500 focus:outline-none'
-            style={{ WebkitTextFillColor: 'inherit', WebkitBoxShadow: '0 0 0px 1000pxrgb(255, 255, 255) inset' }}
-            {...register("password", { required: true, minLength: 6 })}
-          />
-          {errors.password && <p className="text-sm text-red-600">Senha é obrigatória e precisa ter no mínimo 6 caracteres</p>}
-
-          <div className='flex justify-end w-full text-sm text-zinc-500'>
-            <p>Já tem cadastro?
-              <a href="#" className="ml-1 text-zinc-500 hover:underline">Faça Login</a> {/* ##### Levar para a página de log-in ##### */}
-            </p>
-          </div>
-
-          {/* ##### 4 - botao cadastro ##### */}
-          <button
-            type="submit"
-            className='w-full p-3 mt-3 text-2xl font-medium tracking-wide text-white uppercase transition-all duration-500 rounded-md cursor-pointer bg-red-700 hover:bg-red-800'
-          >
-            Cadastrar
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+        <FormButton>Entrar</FormButton>
+      </Form>
+    </div>
+  );
 }
 
 export default FormCadastro;
