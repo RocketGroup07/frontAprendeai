@@ -28,7 +28,7 @@ const onError = (errors) => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center w-full min-h-screen font-neuli'> {/* FUNDO GERAL */}
+    <div > {/* FUNDO GERAL */}
     <Form
         title={"Cadastro"}
         onSubmit={handleSubmit(onSubmit, onError)}

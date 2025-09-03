@@ -1,17 +1,22 @@
 import Form from "../components/Form";
 import FormCadastro from "../components/FormCadastro";
+import bg from '../assets/images/background.png'
 
 
 function Cadastro() {
   return (
-    <div className="background overflow-hidden" style={{backgroundImage: "url('../images/background_pb 1.png')", height: '100vh', width: '100%', backgroundSize: 'cover'}}>
-       <div className="width-full h-full flex flex-col items-center ">
-        <div className="image-content">
-          <img src="./images/logoAP.png" alt="" />
+    <div className=' overflow-hidden bg-cover bg-center h-screen' style={{ backgroundImage: `url(${bg})` }}>
+
+    <div className="main-container min-h-[80vh] flex flex-col justify-center">
+
+      <div className='m-auto'>
+          <img src="../images/logoAP.png" alt="" />
         </div>
+
         <FormCadastro/>
 
-       </div>
+
+    </div>
     </div>
   );
 }
