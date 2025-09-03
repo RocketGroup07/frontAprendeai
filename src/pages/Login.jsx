@@ -45,7 +45,11 @@ function Login() {
           type="password"
           name="password"
           register={registerLogin}
-          rules={{ required: "A senha é obrigatória" }}
+          rules={{ required: "A senha é obrigatória",
+            minLength:{
+              value: 6, message: "A senha deve ter no mínimo 6 caracteres"
+            }
+           }}
         />
 
         <div className='flex justify-end gap-[48px] p-1 text-white'>
