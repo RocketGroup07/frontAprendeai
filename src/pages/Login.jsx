@@ -8,13 +8,12 @@ import { toast } from 'react-toastify'
 
 function Login() {
   const { register: registerLogin, handleSubmit: handleSubmitLogin, formState: { errors: errorsLogin } } = useForm();
-
-  const { register: registerCodigo, handleSubmit: handleSubmitCodigo, formState: { errors: errorsCodigo } } = useForm()
+  const { register: registerCodigo, handleSubmit: handleSubmitCodigo, formState: { errors: errorsCodigo } } = useForm();
 
   const onSubmit = (data) => {
     console.log(data);
     toast.success("Formulário enviado com sucesso!");
-  }
+  };
 
   const onError = (errors) => {
     Object.values(errors).forEach(err => {
@@ -29,7 +28,8 @@ function Login() {
         <div className='m-auto'>
           <img src="../images/logoAP.png" alt="" />
         </div>
-        <div className='flex items-center h-[100%]'>
+
+        <div className="flex justify-center gap-8 mt-8">
           <Form
             title={"Login"}
             onSubmit={handleSubmitLogin(onSubmit, onError)}
@@ -52,7 +52,10 @@ function Login() {
               type="password"
               name="password"
               register={registerLogin}
-              rules={{ required: "A senha é obrigatória", minLength: { value: 6, message: "A senha deve ter no mínimo 6 caracteres" } }}
+              rules={{
+                required: "A senha é obrigatória",
+                minLength: { value: 6, message: "A senha deve ter no mínimo 6 caracteres" }
+              }}
             />
             <div className='flex justify-end p-1 text-white '>
               <LinkRedirecionavel
@@ -64,9 +67,13 @@ function Login() {
             <Button>Entrar</Button>
           </Form>
 
-          <div className="w-2 bg-[#3f3e40] rounded"></div>
+          
+          <div className="w-2 bg-[#3f3e40] rounded -my-14"></div>
 
-          <Form title={"Digite o código de acesso da turma"} onSubmit={handleSubmitCodigo(onSubmit, onError)}>
+          <Form
+            title={"Digite o código de acesso da turma"}
+            onSubmit={handleSubmitCodigo(onSubmit, onError)}
+          >
             <Input
               className="text-center "
               placeholder="Digite o código da turma"
