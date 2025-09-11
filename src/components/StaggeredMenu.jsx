@@ -15,7 +15,8 @@ export const StaggeredMenu = ({
   changeMenuColorOnOpen = true,
   accentColor = '#5227FF',
   onMenuOpen,
-  onMenuClose
+  onMenuClose,
+  children
 }) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -455,6 +456,7 @@ export const StaggeredMenu = ({
                 </ul>
               </div>
             )}
+            {children}
           </div>
         </aside>
       </div>
