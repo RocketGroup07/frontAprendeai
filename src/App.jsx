@@ -7,6 +7,7 @@ import AtividadePage from "./pages/AtividadePage.jsx";
 import FavoritosPage from "./pages/FavoritosPage.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DashProf from "./pages/DashProf.jsx";
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
           <Route path='/cadastro' element={<Cadastro />} />
           <Route path='/atividades' element={<AtividadePage />} />
           <Route path='/favoritos' element={<FavoritosPage />} />
+          <Route path='/professor' element={<DashProf />} />
         </Routes>
       </Router>
 
