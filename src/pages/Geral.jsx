@@ -2,11 +2,14 @@ import Header from '../components/Header';
 import CardPosts from '../components/CardPosts';
 import LinkRedirecionavel from '../components/LinkRedirecionavel';
 import TextType from '../components/TextType.jsx';
-import userDb from '../userDb.json';
 import posts from '../db.json'; // Ajuste o caminho conforme a estrutura
 
 function Geral() {
-  const userName = userDb[0].nome;
+  // Recupera os dados do usuário
+  const storedUser = localStorage.getItem("userData");
+  const userData = storedUser ? JSON.parse(storedUser) : {};
+  const userName = userData.nome || "Usuário";
+
 
   // Primeiro, removemos os posts duplicados baseados no 'id' para garantir que cada post apareça apenas uma vez.
   const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
