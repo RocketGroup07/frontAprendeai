@@ -27,6 +27,7 @@ function App() {
       
 
       <ToastContainer
+        toastClassName="neulis-sans"
         position="bottom-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -34,7 +35,8 @@ function App() {
         closeOnClick rtl={false}
         draggable
         pauseOnHover={false}
-        theme="dark" />
+        theme="dark" 
+        />
       </AuthProvider>
     </>
   );

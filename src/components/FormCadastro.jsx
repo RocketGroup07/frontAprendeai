@@ -12,6 +12,7 @@ function FormCadastro() {
   const {
     register,
     handleSubmit,
+    formState: { errors: errors }
   } = useForm();
 
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ function FormCadastro() {
           rules={{
             required: "O nome é obrigatório"
           }}
+          error={!!errors.nome}
         />
 
         <Input
@@ -75,6 +77,7 @@ function FormCadastro() {
               message: "Formato de email inválido"
             }
           }}
+          error={!!errors.email}
         />
 
         <Input
@@ -90,6 +93,7 @@ function FormCadastro() {
               message: "A senha deve ter no mínimo 6 caracteres"
             }
           }}
+          error={!!errors.senha}
         />
 
         <div className='flex justify-end gap-[48px] p-1 text-white'>

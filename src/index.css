@@ -9,7 +9,7 @@ body {
     background-color: #212121;
   }
 
-body {
+body, .Toastify__toast {
   font-family: "neulis-sans", sans-serif;
 }
 
