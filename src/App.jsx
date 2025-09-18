@@ -8,11 +8,13 @@ import FavoritosPage from "./pages/FavoritosPage.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DashProf from "./pages/DashProf.jsx";
+import { AuthProvider } from "./components/UserAuth.jsx";
 
 function App() {
 
   return (
     <>
+    <AuthProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -23,9 +25,10 @@ function App() {
           <Route path='/favoritos' element={<FavoritosPage />} />
           <Route path='/professor' element={<DashProf />} />
         </Routes>
-      </Router>
+      </Router>      
 
       <ToastContainer
+        toastClassName="neulis-sans"
         position="bottom-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -33,7 +36,9 @@ function App() {
         closeOnClick rtl={false}
         draggable
         pauseOnHover={false}
-        theme="dark" />
+        theme="dark" 
+        />
+      </AuthProvider>
     </>
   );
 }
