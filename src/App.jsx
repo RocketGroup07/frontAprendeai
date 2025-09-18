@@ -7,21 +7,24 @@ import AtividadePage from "./pages/AtividadePage.jsx";
 import FavoritosPage from "./pages/FavoritosPage.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from "./components/UserAuth.jsx";
 
 function App() {
 
   return (
     <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path='/turmas' element={<Turmas />} />
-          <Route path='/geral' element={<Geral />} />
-          <Route path='/cadastro' element={<Cadastro />} />
-          <Route path='/atividades' element={<AtividadePage />} />
-          <Route path='/favoritos' element={<FavoritosPage />} />
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path='/turmas' element={<Turmas />} />
+            <Route path='/geral' element={<Geral />} />
+            <Route path='/cadastro' element={<Cadastro />} />
+            <Route path='/atividades' element={<AtividadePage />} />
+            <Route path='/favoritos' element={<FavoritosPage />} />
+          </Routes>
+        </Router>
+      
 
       <ToastContainer
         position="bottom-right"
@@ -32,6 +35,7 @@ function App() {
         draggable
         pauseOnHover={false}
         theme="dark" />
+      </AuthProvider>
     </>
   );
 }

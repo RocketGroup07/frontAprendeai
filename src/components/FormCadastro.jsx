@@ -6,6 +6,7 @@ import FormButton from './FormButton';
 import { toast } from 'react-toastify';
 import { api } from "../lib/axios";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './UserAuth';
 
 function FormCadastro() {
   const {
@@ -14,6 +15,8 @@ function FormCadastro() {
   } = useForm();
 
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const onSubmit = async (data) => {
     try {
@@ -24,9 +27,10 @@ function FormCadastro() {
         senha: data.senha,
       });
 
+      login(null, { nome: data.nome, login: data.login });
       toast.success('Cadastro realizado com sucesso!');
       setTimeout(() => {
-        navigate("/geral");
+        navigate("/geral/");
       }, 1500);
 
     } catch (error) {

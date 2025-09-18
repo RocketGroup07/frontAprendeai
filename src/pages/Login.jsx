@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { api } from "../lib/axios";
 import { useNavigate } from 'react-router'
+import { useAuth } from '../components/UserAuth';
 
 function decodeToken(token) {
   try {
@@ -16,48 +17,68 @@ function decodeToken(token) {
   }
 }
 
-
 function Login() {
   const { register: registerLogin, handleSubmit: handleSubmitLogin, formState: { errors: errorsLogin } } = useForm();
   const { register: registerCodigo, handleSubmit: handleSubmitCodigo, formState: { errors: errorsCodigo } } = useForm();
+  const { login: loginContext } = useAuth();
 
   const navigate = useNavigate();
 
   const onSubmitLogin = async (data) => {
     try {
       const response = await api.post("login/", {
-        email: data.email,
+        login: data.login,
         senha: data.senha,
       });
 
-      const token = response.data;
-      if (token) {
-        localStorage.setItem('token', token);
-        console.log(token);
+      // logs detalhados
+      console.log(">>> response (completo):", response);
+      console.log(">>> response.data:", response.data);
+      console.log(">>> response.status:", response.status);
+      console.log(">>> response.headers['content-type']:", response.headers["content-type"]);
 
-        const decoded = decodeToken(token);
-        const userId = decoded.id || decoded.user_id || decoded.sub;
+      let token = null;
+      let userData = {};
 
-        let userData = {};
-        if (userId) {
-          const userResponse = await api.get(`/usuarios/${userId}`);
-          console.log("userResponse.data:", userResponse.data);
-          userData = userResponse.data;
-
-          // Salvar no localStorage
-          localStorage.setItem("userData", JSON.stringify(userData));
+      if (response.data && typeof response.data === "object") {
+        // Pega token e usuário direto do backend
+        token = response.data.token;
+        userData = response.data.usuario;
+        console.log("Usuário do backend:", userData);
+      } else if (response.data && typeof response.data === "string") {
+        // pode ser token puro ou mensagem de erro como "Ocorreu..."
+        const maybe = response.data.trim();
+        if (maybe.startsWith("eyJ")) { // JWT típico começa com eyJ
+          token = maybe;
         } else {
-          userData = { email: data.email };
+          // é mensagem de erro do backend
+          console.warn("Backend retornou string (possível erro):", maybe);
         }
-
-        toast.success("Login realizado com sucesso!");
-        setTimeout(() => navigate("/geral"), 1500);
-      } else {
-        toast.error("Erro no login. Tente novamente.");
       }
+
+      if (!token) {
+        toast.error(response.data?.mensagem || "Erro no login. Verifique suas credenciais.");
+        return;
+      }
+
+      localStorage.setItem("token", token);
+      if (userData && userData.nome) {
+        localStorage.setItem("userData", JSON.stringify(userData));
+      }
+      loginContext(token, userData);
+
+      toast.success("Login realizado com sucesso!");
+      setTimeout(() => navigate("/geral"), 1500);
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      toast.error("Erro no login. Verifique suas credenciais.");
+      // axios coloca a resposta de erro em error.response
+      console.error("Erro ao fazer login (catch):", error);
+      if (error.response) {
+        console.error("error.response.data:", error.response.data);
+        console.error("error.response.status:", error.response.status);
+        toast.error(`Erro no login: ${error.response.data?.mensagem || error.response.status}`);
+      } else {
+        toast.error("Erro no login. Verifique sua conexão.");
+      }
     }
   };
 
@@ -80,10 +101,8 @@ function Login() {
     });
   };
 
-
   return (
     <div className='bg-cover bg-center h-screen' style={{ backgroundImage: `url(${bg})` }}>
-
       <div className='min-h-[70vh] flex flex-col justify-center'>
         <div className='m-auto'>
           <img src="../images/logoAP.png" alt="Logo" />
@@ -98,7 +117,7 @@ function Login() {
             <Input
               placeholder="Email"
               type="email"
-              name="email"
+              name="login"
               register={registerLogin}
               rules={{
                 required: "O e-mail é obrigatório",
