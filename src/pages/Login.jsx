@@ -49,12 +49,14 @@ function Login() {
 
   const onSubmitCodigo = async (data) => {
     try {
-      const response = await api.post("validar-codigo/", {
+      const response = await api.post("cadastro-com-turma", {
         codigoTurma: data.codigoTurma,
       });
       toast.success("Código validado com sucesso!");
+       setTimeout(() => navigate("/cadastro"), 1500);
     } catch (error) {
       toast.error("Código inválido.");
+      toast.error(`Erro: ${error.response.data?.mensagem || error.response.status}`);
     }
   };
 
@@ -120,7 +122,7 @@ function Login() {
             <Input
               className="text-center"
               placeholder="Digite o código da turma"
-              type="number"
+              type=""
               name="codigoTurma"
               register={registerCodigo}
               rules={{
