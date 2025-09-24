@@ -2,11 +2,16 @@ import Header from '../components/Header';
 import CardPosts from '../components/CardPosts';
 import LinkRedirecionavel from '../components/LinkRedirecionavel';
 import TextType from '../components/TextType.jsx';
-import userDb from '../userDb.json';
 import posts from '../db.json'; // Ajuste o caminho conforme a estrutura
+import { useAuth } from '../components/UserAuth.jsx';
 
 function Geral() {
-  const userName = userDb[0].nome;
+  // Recupera os dados do usuário
+  const storedUser = localStorage.getItem("userData");
+  const auth = useAuth();
+  const usuario = auth?.usuario;
+  const userName = usuario?.nome || "Usuário";
+
 
   // Primeiro, removemos os posts duplicados baseados no 'id' para garantir que cada post apareça apenas uma vez.
   const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
@@ -37,7 +42,7 @@ function Geral() {
       <div className='flex flex-col items-center justify-center gap-10 pt-10'>
         <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
           <TextType
-            text={[`Olá ${userName}`, 'Abaixo estão as atividades', 'Bons estudos!']}
+            text={[`Olá ${userName}!`, 'Abaixo estão as atividades', 'Bons estudos!']}
             typingSpeed={75}
             pauseDuration={1500}
             showCursor={true}

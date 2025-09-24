@@ -5,39 +5,81 @@ import LinkRedirecionavel from '../components/LinkRedirecionavel'
 import bg from '../assets/images/background.png'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import { api } from "../lib/axios";
+import { useNavigate } from 'react-router'
+import { useAuth } from '../components/UserAuth';
 
 function Login() {
   const { register: registerLogin, handleSubmit: handleSubmitLogin, formState: { errors: errorsLogin } } = useForm();
   const { register: registerCodigo, handleSubmit: handleSubmitCodigo, formState: { errors: errorsCodigo } } = useForm();
+  const { login: loginContext } = useAuth();
+  const navigate = useNavigate();
 
-  const onSubmit = (data) => {
-    console.log(data);
-    toast.success("Formulário enviado com sucesso!");
+  const onSubmitLogin = async (data) => {
+    try {
+      const response = await api.post("login/", {
+        login: data.login,
+        senha: data.senha,
+      });
+
+      let token = response.data.token;
+      let userData = response.data.usuario;
+
+      if (!token) {
+        toast.error(response.data?.mensagem || "Erro no login. Verifique suas credenciais.");
+        return;
+      }
+
+      localStorage.setItem("token", token);
+      if (userData && userData.nome) {
+        localStorage.setItem("userData", JSON.stringify(userData));
+      }
+      loginContext(token, userData);
+
+      toast.success("Login realizado com sucesso!");
+      setTimeout(() => navigate("/geral"), 1500);
+    } catch (error) {
+      if (error.response) {
+        toast.error(`Erro no login: ${error.response.data?.mensagem || error.response.status}`);
+      } else {
+        toast.error("Erro no login. Verifique sua conexão.");
+      }
+    }
+  };
+
+  const onSubmitCodigo = async (data) => {
+    try {
+      const response = await api.post("validar-codigo/", {
+        codigoTurma: data.codigoTurma,
+      });
+      toast.success("Código validado com sucesso!");
+    } catch (error) {
+      toast.error("Código inválido.");
+    }
   };
 
   const onError = (errors) => {
-    Object.values(errors).forEach(err => {
+    Object.values(errors).forEach((err) => {
       toast.error(err.message);
     });
   };
 
   return (
     <div className='bg-cover bg-center h-screen' style={{ backgroundImage: `url(${bg})` }}>
-
       <div className='min-h-[70vh] flex flex-col justify-center'>
         <div className='m-auto'>
-          <img src="../images/logoAP.png" alt="" />
+          <img src="../images/logoAP.png" alt="Logo" />
         </div>
 
         <div className="flex justify-center gap-8 mt-8">
           <Form
             title={"Login"}
-            onSubmit={handleSubmitLogin(onSubmit, onError)}
+            onSubmit={handleSubmitLogin(onSubmitLogin, onError)}
           >
             <Input
               placeholder="Email"
               type="email"
-              name="email"
+              name="login"
               register={registerLogin}
               rules={{
                 required: "O e-mail é obrigatório",
@@ -46,18 +88,20 @@ function Login() {
                   message: "Digite um e-mail válido"
                 }
               }}
+              error={!!errorsLogin.login} // <-- ESSA LINHA!
             />
             <Input
               placeholder="Senha"
               type="password"
-              name="password"
+              name="senha"
               register={registerLogin}
               rules={{
                 required: "A senha é obrigatória",
                 minLength: { value: 6, message: "A senha deve ter no mínimo 6 caracteres" }
               }}
+              error={!!errorsLogin.senha}
             />
-            <div className='flex justify-end p-1 text-white '>
+            <div className='flex justify-end p-1 text-white'>
               <LinkRedirecionavel
                 nome={"Esqueci a senha"}
                 link={"/#"}
@@ -67,15 +111,14 @@ function Login() {
             <Button>Entrar</Button>
           </Form>
 
-          
           <div className="w-2 bg-[#3f3e40] rounded -my-14"></div>
 
           <Form
             title={"Digite o código de acesso da turma"}
-            onSubmit={handleSubmitCodigo(onSubmit, onError)}
+            onSubmit={handleSubmitCodigo(onSubmitCodigo, onError)}
           >
             <Input
-              className="text-center "
+              className="text-center"
               placeholder="Digite o código da turma"
               type="number"
               name="codigoTurma"
