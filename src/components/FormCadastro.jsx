@@ -5,10 +5,11 @@ import LinkRedirecionavel from './LinkRedirecionavel';
 import FormButton from './FormButton';
 import { toast } from 'react-toastify';
 import { api } from "../lib/axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './UserAuth';
 
 function FormCadastro() {
+    const location = useLocation();
   const {
     register,
     handleSubmit,
@@ -19,10 +20,20 @@ function FormCadastro() {
 
   const { login } = useAuth();
 
+   function getCodigoTurma() {
+    const params = new URLSearchParams(location.search);
+     return params.get('codigoTurma') || localStorage.getItem("codigoTurma");
+  }
+
   const onSubmit = async (data) => {
     try {
+      const codigoTurma = getCodigoTurma();
+      if (!codigoTurma) {
+        toast.error('Código da turma não fornecido na URL.');
+        return;
+      }
       // envia para o backend
-      await api.post("alunos/cadastrar", {
+      await api.post(`alunos/cadastro-com-turma?codigoTurma=${codigoTurma}`, {
         nome: data.nome,
         login: data.login,
         senha: data.senha,
@@ -31,7 +42,7 @@ function FormCadastro() {
       login(null, { nome: data.nome, login: data.login });
       toast.success('Cadastro realizado com sucesso!');
       setTimeout(() => {
-        navigate("/geral/");
+        navigate("/geral");
       }, 1500);
 
     } catch (error) {

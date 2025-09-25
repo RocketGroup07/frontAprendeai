@@ -49,9 +49,10 @@ function Login() {
 
   const onSubmitCodigo = async (data) => {
     try {
-      const response = await api.post("cadastro-com-turma", {
+      const response = await api.post("turmas/validar-codigo", {
         codigoTurma: data.codigoTurma,
       });
+      localStorage.setItem("codigoTurma", data.codigoTurma);
       toast.success("Código validado com sucesso!");
        setTimeout(() => navigate("/cadastro"), 1500);
     } catch (error) {
