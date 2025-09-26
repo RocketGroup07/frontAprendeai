@@ -42,7 +42,7 @@ function FormCadastro() {
       login(null, { nome: data.nome, login: data.login });
       toast.success('Cadastro realizado com sucesso!');
       setTimeout(() => {
-        navigate("/geral");
+        navigate("/turmas");
       }, 1500);
 
     } catch (error) {
