@@ -1,19 +1,43 @@
-import dados from '../dtbs.json';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { IoMdShareAlt } from "react-icons/io";
+import { api } from "../lib/axios"; // Certifique-se que api está configurado para o backend
 
 function CardTurmas() {
+    const [turmas, setTurmas] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function fetchTurmas() {
+            try {
+                const response = await api.get("alunos/minhas-turmas");
+                console.log("Resposta da API:", response.data);
+                setTurmas(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar turmas:", error);
+            }
+        }
+        fetchTurmas();
+    }, []);
+
+    const handleClick = (id) => {
+        navigate(`/geral/${id}`);
+    };
+
     return (
         <div className="flex flex-wrap gap-4 font-neuli ">
-            {dados.slice(0, 3).map((item, index) => (
-                <div key={index} className='cursor-pointer hover:scale-103 transition-transform'>
-                    {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
-                    <div
-                        className="w-80 h-40 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center"
-                    >
+            {turmas.map((item) => (
+                <div
+                    key={item.id}
+                    className='cursor-pointer hover:scale-103 transition-transform'
+                    onClick={() => handleClick(item.id)}
+                >
+                    <div className="w-80 h-40 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center">
                         <div className='w-full flex justify-center items-center'>
-                            <h2 className='mt-5 text-3xl w-full truncate overflow-hidden whitespace-nowrap text-center'>{item.nomeCurso}</h2>
+                            <h2 className='mt-5 text-3xl w-full truncate overflow-hidden whitespace-nowrap text-center'>
+                                {item.nome}
+                            </h2>
                         </div>
-
                     </div>
                     <div className='bg-[#D00909] w-full text-white rounded-b-lg p-1 flex items-center justify-end'>
                         <div className='flex flex-row text-[12px] items-center gap-2 pr-2'>
@@ -25,10 +49,9 @@ function CardTurmas() {
                             </div>
                         </div>
                     </div>
-                </div>              
-            ))}       
+                </div>
+            ))}
         </div>
-        
     );
 }
 

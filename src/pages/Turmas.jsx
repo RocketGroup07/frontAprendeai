@@ -9,7 +9,7 @@ function Turmas() {
   return (
     <div className="bg-[#212121] h-[100vh]">
       <Header />
-      <div className="flex mt-6 radius-1 rounded-[2vh] justify-center text-white bg-[#2A2A2A] h-34 w-432 text-center items-center ml-19">
+      <div className="flex mt-6 radius-1 rounded-[2vh] justify-center text-white bg-[#2A2A2A] h-34 w-[90%] text-center items-center ml-19">
         <h1 className="text-[28px] font-bold">Suas Turmas</h1>
       </div>
       <div className="flex bg-[#D00909] rounded-[4px] ml-19 mt-9 text-white w-21 justify-center">

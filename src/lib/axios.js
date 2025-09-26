@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-   baseURL: "http://10.92.199.26:8080/",
+   baseURL: "http://10.92.199.33:8080/",
 });
 
 const requestInterceptor = (config) => {
@@ -13,6 +13,8 @@ const requestInterceptor = (config) => {
   
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log(token);
+    
   }
 
   return config;
