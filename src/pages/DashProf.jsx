@@ -4,6 +4,9 @@ import { LuCalendarClock } from "react-icons/lu";
 import { FaUserCheck, FaSpellCheck } from "react-icons/fa";
 import ProfFeat from "../components/ProfFeat"
 import StaggeredMenu from '../components/StaggeredMenu';
+import logo from '../../public/images/logoAprendeAi.png'
+import CardPosts from '../components/CardPosts';
+
 
 const menuItems = [
     { label: 'Home', ariaLabel: 'Go to home page', link: '/geral' },
@@ -17,33 +20,22 @@ function DashProf() {
     return (
         <div>
             <Header />
-            <div style={{ height: '87vh', background: '#1a1a1a' }}>
-                <StaggeredMenu position="left"
+            <div style={{ height: '100vh', marginTop: '80px' }}>
+                <StaggeredMenu
+                    position="right"
                     items={menuItems}
-                    displaySocials={false}
-                    displayItemNumbering={false}
+                    displaySocials={true}
+                    displayItemNumbering={true}
                     menuButtonColor="#fff"
                     openMenuButtonColor="#fff"
                     changeMenuColorOnOpen={true}
-                    colors={['#B19EEF', '#fff']}
+                    colors={['#B19EEF', '#5227FF']}
+                    logoUrl={logo}
                     accentColor="#ff6b6b"
                     onMenuOpen={() => console.log('Menu opened')}
-                    onMenuClose={() => console.log('Menu closed')}>
-
-
-                    <ProfFeat
-                        tituloCard={"Programar Post"}
-                        iconName={<LuCalendarClock />}
-                    />
-                    <ProfFeat
-                        tituloCard={"Programar Atividade"}
-                        iconName={<FaSpellCheck />}
-                    />
-                    <ProfFeat
-                        tituloCard={"Registrar Falta"}
-                        iconName={<FaUserCheck />}
-                    />
-
+                    onMenuClose={() => console.log('Menu closed')}
+                >
+                    <CardPosts/>
                 </StaggeredMenu>
             </div>
 

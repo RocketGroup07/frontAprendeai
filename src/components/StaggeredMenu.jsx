@@ -1,21 +1,23 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { FaUserCircle } from 'react-icons/fa';
 
 export const StaggeredMenu = ({
-    position = 'left',
+    position = 'right',
     colors = ['#B19EEF', '#5227FF'],
     items = [],
     socialItems = [],
     displaySocials = true,
     displayItemNumbering = true,
     className,
+    logoUrl = '',
     menuButtonColor = '#fff',
     openMenuButtonColor = '#fff',
     changeMenuColorOnOpen = true,
     accentColor = '#5227FF',
     onMenuOpen,
-    onMenuClose,
-    children
+    onMenuClose
 }) => {
     const [open, setOpen] = useState(false);
     const openRef = useRef(false);
@@ -340,124 +342,141 @@ export const StaggeredMenu = ({
                 </div>
 
                 <header
-                    className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between p-[2em] bg-amber-700 pointer-events-none z-20 "
+                    className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between p-[2em] bg-[#D00909] pointer-events-none z-20"
                     aria-label="Main navigation header"
                 >
-                    
+                    <div className="sm-logo flex items-center select-none pointer-events-auto" aria-label="Logo">
+                        <img
+                            src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
+                            alt="Logo"
+                            className="sm-logo-img block h-8 w-auto object-contain"
+                            draggable={false}
+                            width={110}
+                            height={24}
+                        />
+                    </div>
 
-                    <button
-                        ref={toggleBtnRef}
-                        className="sm-toggle relative inline-flex w-[95%] m-auto items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto"
-                        aria-label={open ? 'Close menu' : 'Open menu'}
-                        aria-expanded={open}
-                        aria-controls="staggered-menu-panel"
-                        onClick={toggleMenu}
-                        type="button"
-                    >
-                        <span
-                            ref={textWrapRef}
-                            className="sm-toggle-textWrap relative inline-block h-[1em] overflow-hidden whitespace-nowrap w-[var(--sm-toggle-width,auto)] min-w-[var(--sm-toggle-width,auto)]"
-                            aria-hidden="true"
+                    <div className='flex items-center justify-between gap-6'>
+                        <p className='text-white text-[25px] font-[400]'>usuario</p>
+
+                        <div className="text-white">
+                            <FaUserCircle size={35} />
+                        </div>
+
+                        <div className="cursor-pointer text-white">
+                            <GiHamburgerMenu size={35} />
+                        </div>
+
+                        <button
+                            ref={toggleBtnRef}
+                            className="sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto"
+                            aria-label={open ? 'Close menu' : 'Open menu'}
+                            aria-expanded={open}
+                            aria-controls="staggered-menu-panel"
+                            onClick={toggleMenu}
+                            type="button"
                         >
-                            <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
-                                {textLines.map((l, i) => (
-                                    <span className="sm-toggle-line block h-[1em] leading-none" key={i}>
-                                        {l}
-                                    </span>
-                                ))}
+                            <span
+                                ref={textWrapRef}
+                                className="sm-toggle-textWrap relative inline-block h-[1em] overflow-hidden whitespace-nowrap w-[var(--sm-toggle-width,auto)] min-w-[var(--sm-toggle-width,auto)]"
+                                aria-hidden="true"
+                            >
+                                <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
+                                    {textLines.map((l, i) => (
+                                        <span className="sm-toggle-line block h-[1em] leading-none" key={i}>
+                                            {l}
+                                        </span>
+                                    ))}
+                                </span>
                             </span>
-                        </span>
-
-                        <span
-                            ref={iconRef}
-                            className="sm-icon relative w-[14px] h-[14px] shrink-0 inline-flex items-center justify-center [will-change:transform]"
-                            aria-hidden="true"
-                        >
                             <span
-                                ref={plusHRef}
-                                className="sm-icon-line absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
-                            />
-                            <span
-                                ref={plusVRef}
-                                className="sm-icon-line sm-icon-line-v absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
-                            />
-                        </span>
-                    </button>
+                                ref={iconRef}
+                                className="sm-icon relative w-[14px] h-[14px] shrink-0 inline-flex items-center justify-center [will-change:transform]"
+                                aria-hidden="true"
+                            >
+                                <span
+                                    ref={plusHRef}
+                                    className="sm-icon-line absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
+                                />
+                                <span
+                                    ref={plusVRef}
+                                    className="sm-icon-line sm-icon-line-v absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
+                                />
+                            </span>
+                        </button>
+                    </div>
                 </header>
 
-                <div>
-                    <aside
-                        id="staggered-menu-panel"
-                        ref={panelRef}
-                        className="staggered-menu-panel absolute top-0 right-0 h-full bg-amber-500 flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px]"
-                        style={{ WebkitBackdropFilter: 'blur(12px)' }}
-                        aria-hidden={!open}
-                    >
-                        <div className="sm-panel-inner flex-1 flex flex-col gap-5">
-                            <ul
-                                className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
-                                role="list"
-                                data-numbering={displayItemNumbering || undefined}
-                            >
-                                {items && items.length ? (
-                                    items.map((it, idx) => (
-                                        <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
+                <aside
+                    id="staggered-menu-panel"
+                    ref={panelRef}
+                    className="staggered-menu-panel absolute top-0 right-0 h-full bg-white flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px]"
+                    style={{ WebkitBackdropFilter: 'blur(12px)' }}
+                    aria-hidden={!open}
+                >
+                    <div className="sm-panel-inner flex-1 flex flex-col gap-5">
+                        <ul
+                            className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
+                            role="list"
+                            data-numbering={displayItemNumbering || undefined}
+                        >
+                            {items && items.length ? (
+                                items.map((it, idx) => (
+                                    <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
+                                        <a
+                                            className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
+                                            href={it.link}
+                                            aria-label={it.ariaLabel}
+                                            data-index={idx + 1}
+                                        >
+                                            <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
+                                                {it.label}
+                                            </span>
+                                        </a>
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="sm-panel-itemWrap relative overflow-hidden leading-none" aria-hidden="true">
+                                    <span className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
+                                        <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
+                                            No items
+                                        </span>
+                                    </span>
+                                </li>
+                            )}
+                        </ul>
+                        {displaySocials && socialItems && socialItems.length > 0 && (
+                            <div className="sm-socials mt-auto pt-8 flex flex-col gap-3" aria-label="Social links">
+                                <h3 className="sm-socials-title m-0 text-base font-medium [color:var(--sm-accent,#ff0000)]">Socials</h3>
+                                <ul
+                                    className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap"
+                                    role="list"
+                                >
+                                    {socialItems.map((s, i) => (
+                                        <li key={s.label + i} className="sm-socials-item">
                                             <a
-                                                className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
-                                                href={it.link}
-                                                aria-label={it.ariaLabel}
-                                                data-index={idx + 1}
+                                                href={s.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="sm-socials-link text-[1.2rem] font-medium text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
                                             >
-                                                <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                                                    {it.label}
-                                                </span>
+                                                {s.label}
                                             </a>
                                         </li>
-                                    ))
-                                ) : (
-                                    <li className="sm-panel-itemWrap relative overflow-hidden leading-none" aria-hidden="true">
-                                        <span className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
-                                            <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                                                No items
-                                            </span>
-                                        </span>
-                                    </li>
-                                )}
-                            </ul>
-                            {displaySocials && socialItems && socialItems.length > 0 && (
-                                <div className="sm-socials mt-auto pt-8 flex flex-col gap-3" aria-label="Social links">
-                                    <h3 className="sm-socials-title m-0 text-base font-medium [color:var(--sm-accent,#ff0000)]">Socials</h3>
-                                    <ul
-                                        className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap"
-                                        role="list"
-                                    >
-                                        {socialItems.map((s, i) => (
-                                            <li key={s.label + i} className="sm-socials-item">
-                                                <a
-                                                    href={s.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="sm-socials-link text-[1.2rem] font-medium text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
-                                                >
-                                                    {s.label}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-                    </aside>
-                    <div className='w-[60%] mx-auto flex gap-2 bg-amber-500 justify-center items-center p-6'>
-                        {children}
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
-                </div>
+                </aside>
             </div>
 
             <style>{`
 .sm-scope .staggered-menu-wrapper { position: relative; width: 100%; height: 100%; z-index: 40; }
-.sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 2em; background: transparent; pointer-events: none; z-index: 20; }
+.sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 2em; background: #D00909; pointer-events: none; z-index: 20; }
 .sm-scope .staggered-menu-header > * { pointer-events: auto; }
+.sm-scope .sm-logo { display: flex; align-items: center; user-select: none; }
+.sm-scope .sm-logo-img { display: block; height: 32px; width: auto; object-fit: contain; }
 .sm-scope .sm-toggle { position: relative; display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; color: #e9e9ef; font-weight: 500; line-height: 1; overflow: visible; }
 .sm-scope .sm-toggle:focus-visible { outline: 2px solid #ffffffaa; outline-offset: 4px; border-radius: 4px; }
 .sm-scope .sm-line:last-of-type { margin-top: 6px; }
@@ -493,12 +512,11 @@ sition: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 420px); height: 10
 .sm-scope .sm-panel-item:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }
 .sm-scope .sm-panel-list[data-numbering] .sm-panel-item::after { counter-increment: smItem; content: counter(smItem, decimal-leading-zero); position: absolute; top: 0.1em; right: 3.2em; font-size: 18px; font-weight: 400; color: var(--sm-accent, #ff0000); letter-spacing: 0; pointer-events: none; user-select: none; opacity: var(--sm-num-opacity, 0); }
-@media (max-width: 1024px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } .sm-scope .staggered-menu-wrapper[data-open] }
-@media (max-width: 640px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } .sm-scope .staggered-menu-wrapper[data-open] }
+@media (max-width: 1024px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } .sm-scope .staggered-menu-wrapper[data-open] .sm-logo-img { filter: invert(100%); } }
+@media (max-width: 640px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } .sm-scope .staggered-menu-wrapper[data-open] .sm-logo-img { filter: invert(100%); } }
       `}</style>
         </div>
     );
 };
 
 export default StaggeredMenu;
-            
