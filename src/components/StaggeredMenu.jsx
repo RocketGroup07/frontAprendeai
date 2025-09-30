@@ -26,13 +26,9 @@ export const StaggeredMenu = ({
     const preLayersRef = useRef(null);
     const preLayerElsRef = useRef([]);
 
-    const plusHRef = useRef(null);
-    const plusVRef = useRef(null);
-    const iconRef = useRef(null);
-
     const textInnerRef = useRef(null);
     const textWrapRef = useRef(null);
-    const [textLines, setTextLines] = useState(['Menu', 'Close']);
+
 
     const openTlRef = useRef(null);
     const closeTweenRef = useRef(null);
@@ -50,12 +46,8 @@ export const StaggeredMenu = ({
             const panel = panelRef.current;
             const preContainer = preLayersRef.current;
 
-            const plusH = plusHRef.current;
-            const plusV = plusVRef.current;
-            const icon = iconRef.current;
+            
             const textInner = textInnerRef.current;
-
-            if (!panel || !plusH || !plusV || !icon || !textInner) return;
 
             let preLayers = [];
             if (preContainer) {
@@ -66,9 +58,6 @@ export const StaggeredMenu = ({
             const offscreen = position === 'left' ? -100 : 100;
             gsap.set([panel, ...preLayers], { xPercent: offscreen });
 
-            gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
-            gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
-            gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
 
             gsap.set(textInner, { yPercent: 0 });
 
@@ -212,29 +201,6 @@ export const StaggeredMenu = ({
         });
     }, [position]);
 
-    const animateIcon = useCallback(opening => {
-        const icon = iconRef.current;
-        const h = plusHRef.current;
-        const v = plusVRef.current;
-        if (!icon || !h || !v) return;
-
-        spinTweenRef.current?.kill();
-
-        if (opening) {
-            gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
-            spinTweenRef.current = gsap
-                .timeline({ defaults: { ease: 'power4.out' } })
-                .to(h, { rotate: 45, duration: 0.5 }, 0)
-                .to(v, { rotate: -45, duration: 0.5 }, 0);
-        } else {
-            spinTweenRef.current = gsap
-                .timeline({ defaults: { ease: 'power3.inOut' } })
-                .to(h, { rotate: 0, duration: 0.35 }, 0)
-                .to(v, { rotate: 90, duration: 0.35 }, 0)
-                .to(icon, { rotate: 0, duration: 0.001 }, 0);
-        }
-    }, []);
-
     const animateColor = useCallback(
         opening => {
             const btn = toggleBtnRef.current;
@@ -280,9 +246,6 @@ export const StaggeredMenu = ({
         if (last !== targetLabel) seq.push(targetLabel);
         seq.push(targetLabel);
 
-        setTextLines(seq);
-        gsap.set(inner, { yPercent: 0 });
-
         const lineCount = seq.length;
         const finalShift = ((lineCount - 1) / lineCount) * 100;
 
@@ -300,16 +263,15 @@ export const StaggeredMenu = ({
 
         if (target) {
             onMenuOpen?.();
-            playOpen();
+            playOpen();   // 👈 ESSENCIAL: anima as camadas roxas + painel
         } else {
             onMenuClose?.();
-            playClose();
+            playClose();  // 👈 ESSENCIAL: recolhe tudo
         }
 
-        animateIcon(target);
-        animateColor(target);
-        animateText(target);
-    }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
+        animateColor(target);  // opcional
+        animateText(target);   // opcional
+    }, [playOpen, playClose, animateColor, animateText, onMenuOpen, onMenuClose]);
 
     return (
         <div className="sm-scope w-full h-full">
@@ -356,53 +318,24 @@ export const StaggeredMenu = ({
                         />
                     </div>
 
-                    <div className='flex items-center justify-between gap-6'>
+                    <div className='flex gap-x-4'>
                         <p className='text-white text-[25px] font-[400]'>usuario</p>
 
                         <div className="text-white">
                             <FaUserCircle size={35} />
                         </div>
 
-                        <div className="cursor-pointer text-white">
-                            <GiHamburgerMenu size={35} />
-                        </div>
-
                         <button
                             ref={toggleBtnRef}
-                            className="sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto"
+                            className="sm-toggle relative inline-flex items-center bg-transparent cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto"
                             aria-label={open ? 'Close menu' : 'Open menu'}
                             aria-expanded={open}
                             aria-controls="staggered-menu-panel"
                             onClick={toggleMenu}
                             type="button"
                         >
-                            <span
-                                ref={textWrapRef}
-                                className="sm-toggle-textWrap relative inline-block h-[1em] overflow-hidden whitespace-nowrap w-[var(--sm-toggle-width,auto)] min-w-[var(--sm-toggle-width,auto)]"
-                                aria-hidden="true"
-                            >
-                                <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
-                                    {textLines.map((l, i) => (
-                                        <span className="sm-toggle-line block h-[1em] leading-none" key={i}>
-                                            {l}
-                                        </span>
-                                    ))}
-                                </span>
-                            </span>
-                            <span
-                                ref={iconRef}
-                                className="sm-icon relative w-[14px] h-[14px] shrink-0 inline-flex items-center justify-center [will-change:transform]"
-                                aria-hidden="true"
-                            >
-                                <span
-                                    ref={plusHRef}
-                                    className="sm-icon-line absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
-                                />
-                                <span
-                                    ref={plusVRef}
-                                    className="sm-icon-line sm-icon-line-v absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
-                                />
-                            </span>
+                            
+                            <GiHamburgerMenu className='' size={35} />
                         </button>
                     </div>
                 </header>

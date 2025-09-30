@@ -32,10 +32,8 @@ function DashProf() {
                     colors={['#B19EEF', '#5227FF']}
                     logoUrl={logo}
                     accentColor="#ff6b6b"
-                    onMenuOpen={() => console.log('Menu opened')}
-                    onMenuClose={() => console.log('Menu closed')}
                 >
-                    <CardPosts/>
+                    
                 </StaggeredMenu>
             </div>
 
