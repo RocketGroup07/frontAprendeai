@@ -21,7 +21,7 @@ function Turmas() {
   const onSubmit = async (data) => {
     try {
       // envia para o backend
-      await api.post("turmas/validar-codigo", {
+      await api.post("alunos/entrar-turma", {
         codigoTurma: data.codigoTurma,
       });
       console.log(`Código da turma enviado: ${data.codigoTurma}`);
