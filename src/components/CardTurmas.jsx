@@ -21,7 +21,7 @@ function CardTurmas() {
     }, []);
 
     const handleClick = (id) => {
-        navigate(`/geral/${id}`);
+        navigate("/geral");
     };
 
     return (
@@ -33,10 +33,11 @@ function CardTurmas() {
                     onClick={() => handleClick(item.id)}
                 >
                     <div className="w-80 h-40 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center">
-                        <div className='w-full flex justify-center items-center'>
+                        <div className='w-full flex-col justify-center items-center'>
                             <h2 className='mt-5 text-3xl w-full truncate overflow-hidden whitespace-nowrap text-center'>
                                 {item.nome}
                             </h2>
+                            <p className="text-[0.7rem] mt-3" >Código da turma: {item.codigo}</p>
                         </div>
                     </div>
                     <div className='bg-[#D00909] w-full text-white rounded-b-lg p-1 flex items-center justify-end'>
