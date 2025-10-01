@@ -1,17 +1,37 @@
-import dados from '../dtbs.json';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { IoMdShareAlt } from "react-icons/io";
 
 function CardTurmas() {
+    const [turmas, setTurmas] = useState([]);
+
+    useEffect(() => {
+        async function fetchTurmas() {
+            try {
+                const response = await api.get("alunos/minhas-turmas");
+                console.log("Resposta da API:", response.data);
+                setTurmas(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar turmas:", error);
+            }
+        }
+        fetchTurmas();
+    }, []);
+
     return (
         <div className="flex flex-wrap gap-4 font-neuli ">
-            {dados.slice(0, 3).map((item, index) => (
-                <div key={index} className='cursor-pointer hover:scale-103 transition-transform'>
-                    {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
-                    <div
-                        className="w-80 h-40 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center"
-                    >
-                        <div className='w-full flex justify-center items-center'>
-                            <h2 className='mt-5 text-3xl w-full truncate overflow-hidden whitespace-nowrap text-center'>{item.nomeCurso}</h2>
+            {turmas.map((item) => (
+                <Link
+                    key={item.id}
+                    className='cursor-pointer hover:scale-103 transition-transform'
+                    to={`/geral/${item.id}`}
+                >
+                    <div className="w-80 h-40 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center">
+                        <div className='w-full flex-col justify-center items-center'>
+                            <h2 className='mt-5 text-3xl w-full truncate overflow-hidden whitespace-nowrap text-center'>
+                                {item.nome}
+                            </h2>
+                            <p className="text-[0.7rem] mt-3" >Código da turma: {item.codigo}</p>
                         </div>
 
                     </div>
@@ -25,8 +45,8 @@ function CardTurmas() {
                             </div>
                         </div>
                     </div>
-                </div>              
-            ))}       
+                </Link>
+            ))}
         </div>
         
     );

@@ -4,9 +4,12 @@ import posts from '../ativ.json';
 import CardTarefas from "../components/CardTarefas";
 import React, { useState, useRef, useEffect } from "react";
 import '../index.css'
+import { format } from "date-fns";
+import { useParams } from "react-router";
 
 
 function AtividadePage() {
+   const { turmaId } = useParams();
   // Primeiro, removemos os posts duplicados baseados no 'id' para garantir que cada post apareça apenas uma vez.
   const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
 
@@ -58,8 +61,7 @@ function AtividadePage() {
     e.preventDefault();
     if (!novoTitulo || !novaData || !novaDescricao) return;
     // Formata data para dd/mm/yyyy
-    const [ano, mes, dia] = novaData.split("-");
-    const dataFormatada = `${dia}/${mes}/${ano}`;
+    const dataFormatada = format(novaData, "dd/MM/yyyy");
     // Gera novo id
     const novoId = atividades.length > 0 ? Math.max(...atividades.map(a => a.id)) + 1 : 1;
     const novaAtividade = {
@@ -88,9 +90,9 @@ function AtividadePage() {
 
 
         <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-          <LinkRedirecionavel nome={"Geral"} link={"/geral"} className="p-2  cursor-pointer" />
-          <LinkRedirecionavel nome={"Atividades"} link={"/atividades"} className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
-          <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos"} className="p-2 cursor-pointer  " />
+          <LinkRedirecionavel nome={"Geral"} link={"/geral/" + turmaId} className="p-2  cursor-pointer" />
+          <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
+          <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId} className="p-2 cursor-pointer  " />
 
           {/* Botão para criar atividade aqui */}
           <div className='flex items-center ml-auto'>

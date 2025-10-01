@@ -1,9 +1,12 @@
+import { useParams } from 'react-router';
 import Header from '../components/Header'
 import LinkRedirecionavel from '../components/LinkRedirecionavel'
 
 function FavoritosPage
 () {
+   const { turmaId } = useParams();
   return (
+    
     <div>
       <Header />
       <div className='min-h-screen font-neuli'>
@@ -13,9 +16,9 @@ function FavoritosPage
           </div>
         </div>
         <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-          <LinkRedirecionavel nome={"Geral"} link={"/geral"} className="p-2  cursor-pointer" />
-          <LinkRedirecionavel nome={"Atividades"} link={"/atividades"} className="p-2 cursor-pointer" />
-          <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos"} className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
+          <LinkRedirecionavel nome={"Geral"} link={"/geral/" + turmaId } className="p-2  cursor-pointer" />
+          <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId } className="p-2 cursor-pointer" />
+          <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId } className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
         </div>
 
 

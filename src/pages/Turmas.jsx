@@ -2,9 +2,45 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import CardTurmas from "../components/CardTurmas";
 import { FaPlus } from "react-icons/fa";
+import Input from "../components/Input";
+import { Form, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { api } from "../lib/axios";
+import { useNavigate } from "react-router-dom";
 
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: errors }
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await api.post("alunos/entrar-turma", {
+        codigoTurma: data.codigoTurma,
+      });
+      toast.success('Turma adicionada com sucesso!');
+      setShowInputCard(false);
+
+      const turmaId = response.data.id || data.codigoTurma;
+      setTimeout(() => {
+        navigate(`/turma`, { state: {turmaId: turmaId}});
+      }, 1500);
+
+    } catch (error) {
+      toast.error(error.response?.data?.mensagem || 'Há algo de errado com o código!');
+    }
+  };
+
+  const onError = (errors) => {
+    Object.values(errors).forEach((err) => {
+      alert(err.message);
+    });
+  };
 
   return (
     <div className="bg-[#212121] h-[100vh]">
