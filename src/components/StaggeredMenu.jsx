@@ -2,6 +2,7 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaUserCircle } from 'react-icons/fa';
+import { useAuth } from '../components/UserAuth.jsx';
 
 export const StaggeredMenu = ({
     position = 'right',
@@ -46,7 +47,7 @@ export const StaggeredMenu = ({
             const panel = panelRef.current;
             const preContainer = preLayersRef.current;
 
-            
+
             const textInner = textInnerRef.current;
 
             let preLayers = [];
@@ -273,6 +274,10 @@ export const StaggeredMenu = ({
         animateText(target);   // opcional
     }, [playOpen, playClose, animateColor, animateText, onMenuOpen, onMenuClose]);
 
+    const auth = useAuth();
+    const usuario = auth?.usuario;
+    const userName = usuario?.nome || "Usuário";
+
     return (
         <div className="sm-scope w-full h-full">
             <div
@@ -283,7 +288,7 @@ export const StaggeredMenu = ({
             >
                 <div
                     ref={preLayersRef}
-                    className="sm-prelayers absolute top-0 right-0 bottom-0 pointer-events-none z-[5]"
+                    className="sm-prelayers fixed top-0 right-0 h-screen pointer-events-none z-[5]"
                     aria-hidden="true"
                 >
                     {(() => {
@@ -304,46 +309,45 @@ export const StaggeredMenu = ({
                 </div>
 
                 <header
-                    className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between p-[2em] bg-[#D00909] pointer-events-none z-20"
+                    className="staggered-menu-header absolute top-0 left-0 w-full p-[2em] bg-[#D00909] pointer-events-none z-20"
                     aria-label="Main navigation header"
                 >
-                    <div className="sm-logo flex items-center select-none pointer-events-auto" aria-label="Logo">
-                        <img
-                            src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
-                            alt="Logo"
-                            className="sm-logo-img block h-8 w-auto object-contain"
-                            draggable={false}
-                            width={110}
-                            height={24}
-                        />
-                    </div>
-
-                    <div className='flex gap-x-4'>
-                        <p className='text-white text-[25px] font-[400]'>usuario</p>
-
-                        <div className="text-white">
-                            <FaUserCircle size={35} />
+                    <div className='w-[93%] items-center flex justify-between mx-auto'>
+                        <div className="sm-logo flex items-center select-none pointer-events-auto" aria-label="Logo">
+                            <img
+                                src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
+                                alt="Logo"
+                                className="sm-logo-img block h-8 w-auto object-contain"
+                                draggable={false}
+                                width={110}
+                                height={24}
+                            />
                         </div>
+                        <div className='flex gap-x-4'>
+                            <p className='text-white text-[25px] font-[400]'>{userName}</p>
+                            <div className="text-white">
+                                <FaUserCircle size={32} />
+                            </div>
+                            <button
+                                ref={toggleBtnRef}
+                                className="sm-toggle relative inline-flex items-center bg-transparent cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto"
+                                aria-label={open ? 'Close menu' : 'Open menu'}
+                                aria-expanded={open}
+                                aria-controls="staggered-menu-panel"
+                                onClick={toggleMenu}
+                                type="button"
+                            >
 
-                        <button
-                            ref={toggleBtnRef}
-                            className="sm-toggle relative inline-flex items-center bg-transparent cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto"
-                            aria-label={open ? 'Close menu' : 'Open menu'}
-                            aria-expanded={open}
-                            aria-controls="staggered-menu-panel"
-                            onClick={toggleMenu}
-                            type="button"
-                        >
-                            
-                            <GiHamburgerMenu className='' size={35} />
-                        </button>
+                                <GiHamburgerMenu className='' size={32} />
+                            </button>
+                        </div>
                     </div>
                 </header>
 
                 <aside
                     id="staggered-menu-panel"
                     ref={panelRef}
-                    className="staggered-menu-panel absolute top-0 right-0 h-full bg-white flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px]"
+                    className="staggered-menu-panel fixed top-0 right-0 h-screen bg-white flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px]"
                     style={{ WebkitBackdropFilter: 'blur(12px)' }}
                     aria-hidden={!open}
                 >
@@ -406,10 +410,10 @@ export const StaggeredMenu = ({
 
             <style>{`
 .sm-scope .staggered-menu-wrapper { position: relative; width: 100%; height: 100%; z-index: 40; }
-.sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 2em; background: #D00909; pointer-events: none; z-index: 20; }
+.sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 1.9em 2em; background: #D00909; pointer-events: none; z-index: 20; }
 .sm-scope .staggered-menu-header > * { pointer-events: auto; }
 .sm-scope .sm-logo { display: flex; align-items: center; user-select: none; }
-.sm-scope .sm-logo-img { display: block; height: 32px; width: auto; object-fit: contain; }
+.sm-scope .sm-logo-img { display: block; height: 40px; width: auto; object-fit: contain; }
 .sm-scope .sm-toggle { position: relative; display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; color: #e9e9ef; font-weight: 500; line-height: 1; overflow: visible; }
 .sm-scope .sm-toggle:focus-visible { outline: 2px solid #ffffffaa; outline-offset: 4px; border-radius: 4px; }
 .sm-scope .sm-line:last-of-type { margin-top: 6px; }
@@ -421,9 +425,9 @@ export const StaggeredMenu = ({
 .sm-scope .sm-icon-line { position: absolute; left: 50%; top: 50%; width: 100%; height: 2px; background: currentColor; border-radius: 2px; transform: translate(-50%, -50%); will-change: transform; }
 .sm-scope .sm-line { display: none !important; }
 .sm-scope .staggered-menu-panel { poimport StaggeredMenu from '../../../ts-default/Components/StaggeredMenu/StaggeredMenu';
-sition: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 420px); height: 100%; background: #D00909; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 6em 2em 2em 2em; overflow-y: auto; z-index: 10; }
+sition: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 300px); height: 100%; background: #D00909; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 6em 2em 2em 2em; overflow-y: auto; z-index: 10; }
 .sm-scope [data-position='left'] .staggered-menu-panel { right: auto; left: 0; }
-.sm-scope .sm-prelayers { position: absolute; top: 0; right: 0; bottom: 0; width: clamp(260px, 38vw, 420px); pointer-events: none; z-index: 5; }
+.sm-scope .sm-prelayers { position: absolute; top: 0; right: 0; bottom: 0; width: clamp(260px, 38vw, 300px); pointer-events: none; z-index: 5; }
 .sm-scope [data-position='left'] .sm-prelayers { right: auto; left: 0; }
 .sm-scope .sm-prelayer { position: absolute; top: 0; right: 0; height: 100%; width: 100%; transform: translateX(0); }
 .sm-scope .sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
@@ -440,7 +444,7 @@ sition: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 420px); height: 10
 .sm-scope .sm-socials-link:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; text-transform: uppercase; }
 .sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.sm-scope .sm-panel-item { position: relative; color: #000; font-weight: 600; font-size: 4rem; cursor: pointer; line-height: 1; letter-spacing: -2px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
+.sm-scope .sm-panel-item { position: relative; color: #fff; font-weight: 600; font-size: 3rem; cursor: pointer; line-height: 1; letter-spacing: -2px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
 .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
 .sm-scope .sm-panel-item:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }

@@ -4,8 +4,10 @@ import { LuCalendarClock } from "react-icons/lu";
 import { FaUserCheck, FaSpellCheck } from "react-icons/fa";
 import ProfFeat from "../components/ProfFeat"
 import StaggeredMenu from '../components/StaggeredMenu';
-import logo from '../../public/images/logoAprendeAi.png'
+import logo from '../../public/images/logoAp.png'
 import CardPosts from '../components/CardPosts';
+import TextType from '../components/TextType';
+import { useAuth } from '../components/UserAuth.jsx';
 
 
 const menuItems = [
@@ -17,27 +19,31 @@ const menuItems = [
 
 
 function DashProf() {
+
+    const auth = useAuth();
+    const usuario = auth?.usuario;
+    const userName = usuario?.nome || "Usuário";
+
     return (
-        <div>
-            <Header />
-            <div style={{ height: '100vh', marginTop: '80px' }}>
+
+        <div className=''>
+            <div style={{ height: "15vh" }}>
                 <StaggeredMenu
                     position="right"
                     items={menuItems}
-                    displaySocials={true}
-                    displayItemNumbering={true}
+                    displaySocials={false}
+                    displayItemNumbering={false}
                     menuButtonColor="#fff"
                     openMenuButtonColor="#fff"
                     changeMenuColorOnOpen={true}
                     colors={['#B19EEF', '#5227FF']}
                     logoUrl={logo}
-                    accentColor="#ff6b6b"
-                >
-                    
-                </StaggeredMenu>
+                    accentColor="#d3d3d3"
+                />
             </div>
-
         </div>
+
+
     )
 }
 
