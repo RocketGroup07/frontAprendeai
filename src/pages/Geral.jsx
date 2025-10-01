@@ -90,7 +90,7 @@ function Geral() {
                   <CardPosts
                     key={post.id}
                     titulo={post.titulo}
-                    descricao={post.descricao}
+                    descricao={post.conteudo}
                     autor={post.autor}
                     ano={post.dataPostagem}
                   />
