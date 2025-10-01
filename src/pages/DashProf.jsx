@@ -36,7 +36,7 @@ function DashProf() {
                     menuButtonColor="#fff"
                     openMenuButtonColor="#fff"
                     changeMenuColorOnOpen={true}
-                    colors={['#B19EEF', '#5227FF']}
+                    colors={['#B19EEF', '#5227F1']}
                     logoUrl={logo}
                     accentColor="#d3d3d3"
                 />
