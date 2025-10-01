@@ -45,7 +45,7 @@ function Turmas() {
   return (
     <div className="bg-[#212121] h-[100vh]">
       <Header />
-      <div className="flex mt-6 radius-1 rounded-[2vh] justify-center text-white bg-[#2A2A2A] h-34 w-[90%] text-center items-center ml-19">
+      <div className="flex mt-6 radius-1 rounded-[2vh] justify-center text-white bg-[#2A2A2A] h-34 w-432 text-center items-center ml-19">
         <h1 className="text-[28px] font-bold">Suas Turmas</h1>
       </div>
       <div className="flex bg-[#D00909] rounded-[4px] ml-19 mt-9 text-white w-21 justify-center">
@@ -61,50 +61,8 @@ function Turmas() {
           <p className="text-gray-500 text-[18px]">Entre em uma nova turma</p>
         </div>
         {showInputCard && (
-          <div className="absolute top-1/2 left-1/2 transform shadow-[0_22px_70px_4px_rgba(0, 0, 0, 0.56)] -translate-x-1/2 -translate-y-1/2 w-120 h-90 bg-zinc-900 rounded-3xl items-center text-center">
-
-            <div className="w-40 h-40 flex justify-center items-center m-auto">
-              <div className="w-20 h-20 bg-black rounded-full flex justify-center items-center">
-                <img className="w-10 h-10 z-10" src="../images/student.svg" alt="logo" />
-              </div>
-            </div>
-
-            <h3 className="text-white text-[1.5rem] font-semibold mb-4">Insira o código da turma:</h3>
-
-            <form
-              title={"codigoTurma"}
-              onSubmit={handleSubmit(onSubmit, onError)}
-              className="w-full flex flex-col items-center"
-            >
-              <Input
-                placeholder="Digite o código da turma"
-                className="p-2 rounded border bg-neutral-950 mb-4  text-white text-[0.7rem]"
-                type=""
-                name="codigoTurma"
-                id="codigoTurma"
-                register={register}
-                rules={{
-                }}
-                error={!!errors.senha}
-              />
-              <div className="flex gap-4">
-                <button
-                  className="bg-[#D00909] text-white px-4 py-2 rounded cursor-pointer"
-                  onClick={() => setShowInputCard(false)}
-                >
-                  Fechar
-                </button>
-
-                <button
-                  className="bg-[#278d27] text-white px-4 py-2 rounded cursor-pointer">
-                  Entrar
-                </button>
-              </div>
-
-
-
-            </form>
-            {/*
+          <div className="absolute top-1/2 left-1/2 transform shadow-[0_22px_70px_4px_rgba(0, 0, 0, 0.56)] -translate-x-1/2 -translate-y-1/2 bg-[#2a2a2a] p-6 rounded-lg shadow-lg flex flex-col items-center z-50">
+            <h3 className="text-white text-lg mb-4">Insira o código da turma</h3>
             <input
               type="text"
               className="p-2 rounded border border-gray-500 mb-4 w-64 text-white"
@@ -122,7 +80,7 @@ function Turmas() {
                 className="bg-[#278d27] text-white px-4 py-2 rounded cursor-pointer">
                 Entrar
               </button>
-            </div> */}
+            </div>
           </div>
         )}
       </div>

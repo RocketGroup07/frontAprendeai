@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdShareAlt } from "react-icons/io";
-import { api } from "../lib/axios"; // Certifique-se que api está configurado para o backend
 
 function CardTurmas() {
     const [turmas, setTurmas] = useState([]);
@@ -34,6 +33,7 @@ function CardTurmas() {
                             </h2>
                             <p className="text-[0.7rem] mt-3" >Código da turma: {item.codigo}</p>
                         </div>
+
                     </div>
                     <div className='bg-[#D00909] w-full text-white rounded-b-lg p-1 flex items-center justify-end'>
                         <div className='flex flex-row text-[12px] items-center gap-2 pr-2'>
@@ -48,6 +48,7 @@ function CardTurmas() {
                 </Link>
             ))}
         </div>
+        
     );
 }
 
