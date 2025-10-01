@@ -6,10 +6,11 @@ import Input from "../components/Input";
 import { Form, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { api } from "../lib/axios";
-import { Navigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -17,37 +18,29 @@ function Turmas() {
     formState: { errors: errors }
   } = useForm();
 
-  // Defina as funções onSubmit e onError
   const onSubmit = async (data) => {
     try {
-      // envia para o backend
-      await api.post("alunos/entrar-turma", {
+      const response = await api.post("alunos/entrar-turma", {
         codigoTurma: data.codigoTurma,
       });
-      console.log(`Código da turma enviado: ${data.codigoTurma}`);
-      
-      
+      toast.success('Turma adicionada com sucesso!');
       setShowInputCard(false);
 
-      toast.success('Turma adicionada com sucesso!');
+      const turmaId = response.data.id || data.codigoTurma;
       setTimeout(() => {
-        Navigate("geral");
+        navigate(`/turma`, { state: {turmaId: turmaId}});
       }, 1500);
 
     } catch (error) {
-      console.error("Erro ao validar código:", error);
       toast.error(error.response?.data?.mensagem || 'Há algo de errado com o código!');
     }
   };
-
 
   const onError = (errors) => {
     Object.values(errors).forEach((err) => {
       alert(err.message);
     });
   };
-
-
 
   return (
     <div className="bg-[#212121] h-[100vh]">

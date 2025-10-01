@@ -18,10 +18,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path='/turmas' element={<Turmas />} />
-            <Route path='/geral' element={<Geral />} />
-            <Route path='/cadastro' element={<Cadastro />} />
-            <Route path='/atividades' element={<AtividadePage />} />
-            <Route path='/favoritos' element={<FavoritosPage />} />
+            <Route path='/geral/:turmaId' element={<Geral />} />
+            <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
+            <Route path='/atividades/:turmaId' element={<AtividadePage />} />
+            <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
           </Routes>
         </Router>
       

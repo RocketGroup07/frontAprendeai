@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { IoMdShareAlt } from "react-icons/io";
 
 function CardPosts({ titulo, descricao, autor, ano }) {
@@ -20,11 +22,11 @@ function CardPosts({ titulo, descricao, autor, ano }) {
                 <div className='flex flex-col gap-2 pt-4'>
                     <div className='flex items-center gap-2'>
                         <p className='font-normal text-sm'>Autor:</p>
-                        <p className='font-light text-sm'>{autor}</p>
+                        <p className='font-light text-sm'>{autor.nome}</p>
                     </div>
                     <div className='flex items-center gap-2'>
                         <p className='font-normal text-sm'>Data:</p>
-                        <p className='font-light text-sm'>{ano}</p>
+                        <p className='font-light text-sm'>{format(ano, "dd 'de' MMM yy", {locale:ptBR})}</p>
                     </div>
                 </div>
             </div>

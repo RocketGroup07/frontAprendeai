@@ -55,7 +55,7 @@ function Login() {
       });
       localStorage.setItem("codigoTurma", data.codigoTurma);
       toast.success("Código validado com sucesso!");
-       setTimeout(() => navigate("/cadastro"), 1500);
+       setTimeout(() => navigate("/cadastro/" + data.codigoTurma), 1500);
     } catch (error) {
       toast.error("Código inválido.");
       toast.error(`Erro: ${error.response.data?.mensagem || error.response.status}`);

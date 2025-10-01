@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IoMdShareAlt } from "react-icons/io";
 import { api } from "../lib/axios"; // Certifique-se que api está configurado para o backend
 
 function CardTurmas() {
     const [turmas, setTurmas] = useState([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchTurmas() {
@@ -20,17 +19,13 @@ function CardTurmas() {
         fetchTurmas();
     }, []);
 
-    const handleClick = (id) => {
-        navigate("/geral");
-    };
-
     return (
         <div className="flex flex-wrap gap-4 font-neuli ">
             {turmas.map((item) => (
-                <div
+                <Link
                     key={item.id}
                     className='cursor-pointer hover:scale-103 transition-transform'
-                    onClick={() => handleClick(item.id)}
+                    to={`/geral/${item.id}`}
                 >
                     <div className="w-80 h-40 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center">
                         <div className='w-full flex-col justify-center items-center'>
@@ -50,7 +45,7 @@ function CardTurmas() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </Link>
             ))}
         </div>
     );
