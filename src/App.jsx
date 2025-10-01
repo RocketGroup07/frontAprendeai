@@ -29,7 +29,7 @@ function App() {
       <ToastContainer
         toastClassName="neulis-sans"
         position="bottom-right"
-        autoClose={5000}
+        autoClose={4000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick rtl={false}
