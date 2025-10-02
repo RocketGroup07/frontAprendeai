@@ -37,7 +37,7 @@ function Login() {
       loginContext(token, userData);
 
       toast.success("Login realizado com sucesso!");
-      setTimeout(() => navigate("/turmas"), 1500);
+      setTimeout(() => navigate("turmas"), 1500);
     } catch (error) {
       if (error.response) {
         toast.error(`Erro no login: ${error.response.data?.mensagem || error.response.status}`);
