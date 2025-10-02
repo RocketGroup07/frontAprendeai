@@ -8,6 +8,14 @@ import { useAuth } from '../components/UserAuth.jsx';
 import { api } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import StaggeredMenu from "../components/StaggeredMenu.jsx";
+
+const menuItems = [
+    { label: 'Home', ariaLabel: 'Go to home page', link: '/geral' },
+    { label: 'About', ariaLabel: 'Learn about us', link: '/about' },
+    { label: 'Services', ariaLabel: 'View our services', link: '/services' },
+    { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' }
+];
 
 function Geral() {
   const { turmaId } = useParams();
@@ -16,7 +24,7 @@ function Geral() {
   const auth = useAuth();
   const usuario = auth?.usuario;
   const userName = usuario?.nome || "Usuário";
-  const {state} = useLocation();
+  const { state } = useLocation();
 
   useEffect(() => {
     async function fetchTurma() {
@@ -24,7 +32,7 @@ function Geral() {
         const response = await api.get(`posts/turma/${turmaId}`);
         console.log("Posts recebidos:", response.data);
         setPosts(response.data || []);
-       // setTurmaNome(response.data.turma.nome || "");
+        // setTurmaNome(response.data.turma.nome || "");
       } catch (error) {
         console.error("Erro ao buscar turma:", error);
       }
@@ -58,7 +66,19 @@ function Geral() {
 
   return (
     <div className='min-h-screen font-neuli'>
-      <Header />
+      <div style={{ height: "10vh" }}>
+        <StaggeredMenu
+          position="right"
+          items={menuItems}
+          displaySocials={false}
+          displayItemNumbering={false}
+          menuButtonColor="#fff"
+          openMenuButtonColor="#fff"
+          changeMenuColorOnOpen={true}
+          colors={['#B19EEF', '#5227FF']}
+          accentColor="#d3d3d3"
+        />
+      </div>
 
       <div className='flex flex-col items-center justify-center gap-10 pt-10'>
         <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
@@ -84,7 +104,7 @@ function Geral() {
         ) : (
           grupos.map(([data, listaPosts]) => (
             <div key={data} className="mb-8">
-              <h2 className="text-xl font-medium mb-4">{format(data, "dd 'de' MMMM", {locale:ptBR})}</h2>
+              <h2 className="text-xl font-medium mb-4">{format(data, "dd 'de' MMMM", { locale: ptBR })}</h2>
               <div className="flex flex-row flex-wrap gap-4">
                 {listaPosts.map((post) => (
                   <CardPosts
