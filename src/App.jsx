@@ -8,6 +8,7 @@ import FavoritosPage from "./pages/FavoritosPage.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./components/UserAuth.jsx";
+import DashProf from "./pages/DashProf.jsx";
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
             <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
             <Route path='/atividades/:turmaId' element={<AtividadePage />} />
             <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
+            <Route path='/professor' element={<DashProf />} />
           </Routes>
         </Router>
       
