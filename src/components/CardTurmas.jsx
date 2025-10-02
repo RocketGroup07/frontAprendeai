@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdShareAlt } from "react-icons/io";
+import { api } from "../lib/axios";
 
 function CardTurmas() {
     const [turmas, setTurmas] = useState([]);
