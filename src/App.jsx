@@ -7,25 +7,24 @@ import AtividadePage from "./pages/AtividadePage.jsx";
 import FavoritosPage from "./pages/FavoritosPage.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import DashProf from "./pages/DashProf.jsx";
 import { AuthProvider } from "./components/UserAuth.jsx";
 
 function App() {
 
   return (
     <>
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path='/turmas' element={<Turmas />} />
-          <Route path='/geral' element={<Geral />} />
-          <Route path='/cadastro' element={<Cadastro />} />
-          <Route path='/atividades' element={<AtividadePage />} />
-          <Route path='/favoritos' element={<FavoritosPage />} />
-          <Route path='/professor' element={<DashProf />} />
-        </Routes>
-      </Router>      
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path='/turmas' element={<Turmas />} />
+            <Route path='/geral/:turmaId' element={<Geral />} />
+            <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
+            <Route path='/atividades/:turmaId' element={<AtividadePage />} />
+            <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
+          </Routes>
+        </Router>
+      
 
       <ToastContainer
         toastClassName="neulis-sans"
