@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from "../components/Header"
 import { LuCalendarClock } from "react-icons/lu";
 import { FaUserCheck, FaSpellCheck } from "react-icons/fa";
 import ProfFeat from "../components/ProfFeat"
@@ -20,7 +19,7 @@ function DashProf() {
     return (
 
         <div className=''>
-            <div style={{ height: "15vh" }}>
+            <div style={{ height: "10vh" }}>
                 <StaggeredMenu
                     position="right"
                     items={menuItems}
@@ -33,6 +32,23 @@ function DashProf() {
                     accentColor="#d3d3d3"
                 />
             </div>
+
+        {/* container */}
+        <div className='flex flex-col pt-10 w-[100%]'>
+            {/* botões */}
+            <div className='flex justify-center items-center'>
+                <div className="h-auto flex gap-5 w-[60%]">
+                    <ProfFeat tituloCard={'Programar Post'} iconName={<LuCalendarClock/>}/>
+                    <ProfFeat tituloCard={'Programar Atividade'} iconName={<FaSpellCheck/>}/>
+                    <ProfFeat tituloCard={'Registrar Falta'} iconName={<FaUserCheck/>}/>
+                </div>
+            </div>
+            {/* tabela */}
+            <div>
+                
+            </div>
+        </div>
+          
         </div>
 
 

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
 import CardTurmas from "../components/CardTurmas";
 import { FaPlus } from "react-icons/fa";
 import Input from "../components/Input";
@@ -7,10 +6,19 @@ import { Form, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { api } from "../lib/axios";
 import { useNavigate } from "react-router-dom";
+import StaggeredMenu from "../components/StaggeredMenu.jsx";
 
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
   const navigate = useNavigate();
+
+  const menuItems = [
+    { label: 'Home', ariaLabel: 'Go to home page', link: '/geral' },
+    { label: 'About', ariaLabel: 'Learn about us', link: '/about' },
+    { label: 'Services', ariaLabel: 'View our services', link: '/services' },
+    { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' }
+];
+
 
   const {
     register,
@@ -44,7 +52,19 @@ function Turmas() {
 
   return (
     <div className="bg-[#212121] h-[100vh]">
-      <Header />
+      <div style={{ height: "10vh" }}>
+              <StaggeredMenu
+                position="right"
+                items={menuItems}
+                displaySocials={false}
+                displayItemNumbering={false}
+                menuButtonColor="#fff"
+                openMenuButtonColor="#fff"
+                changeMenuColorOnOpen={true}
+                colors={['#B19EEF', '#5227FF']}
+                accentColor="#d3d3d3"
+              />
+            </div>
       <div className="flex mt-6 radius-1 rounded-[2vh] justify-center text-white bg-[#2A2A2A] h-34 w-[90%] text-center items-center ml-19">
         <h1 className="text-[28px] font-bold">Suas Turmas</h1>
       </div>

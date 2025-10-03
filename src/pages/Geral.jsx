@@ -1,6 +1,5 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Header from '../components/Header';
 import CardPosts from '../components/CardPosts';
 import LinkRedirecionavel from '../components/LinkRedirecionavel';
 import TextType from '../components/TextType.jsx';
