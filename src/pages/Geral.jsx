@@ -93,7 +93,7 @@ function Geral() {
       </div>
 
       <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-        <LinkRedirecionavel nome={"Geral"} link={"/turmas" + turmaId} className="bg-[#D00909] text-white p-2 rounded cursor-pointer" />
+        <LinkRedirecionavel nome={"Geral"} link={"/turmas/" + turmaId} className="bg-[#D00909] text-white p-2 rounded cursor-pointer" />
         <LinkRedirecionavel nome={"Atividades"} link={"/Atividades/" + turmaId} className="p-2 cursor-pointer" />
         <LinkRedirecionavel nome={"Favoritos"} link={"/Favoritos/" + turmaId} className="p-2 cursor-pointer" />
       </div>
@@ -109,6 +109,8 @@ function Geral() {
                 {listaPosts.map((post) => (
                   <CardPosts
                     key={post.id}
+                    id={post.id}
+                    turmaId={turmaId}
                     titulo={post.titulo}
                     descricao={post.conteudo}
                     autor={post.autor}

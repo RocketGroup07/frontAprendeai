@@ -1,10 +1,11 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { IoMdShareAlt } from "react-icons/io";
+import { Link } from "react-router-dom";
 
-function CardPosts({ titulo, descricao, autor, ano }) {
+function CardPosts({ id, turmaId, titulo, descricao, autor, ano }) {
     return (
-        <div className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
+        <Link to={`/post/${turmaId}/${id}`} className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
             {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
             <div
                 className="h-80 bg-[#2A2A2A] text-white rounded-t-lg p-10 flex flex-col justify-between"
@@ -12,7 +13,7 @@ function CardPosts({ titulo, descricao, autor, ano }) {
                 <div>
                     <h2 className='text-3xl line-clamp-1'>{titulo}</h2>
                     <div className='mt-5 font-extralight text-[16px]'>
-                        <p className="overflow-hidden line-clamp-3">
+                        <p className="overflow-hidden line-clamp-2">
                             {descricao}
                         </p>
                     </div>
@@ -40,7 +41,7 @@ function CardPosts({ titulo, descricao, autor, ano }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
 
