@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./components/UserAuth.jsx";
 import DashProf from "./pages/DashProf.jsx";
+import TelaPost from "./pages/TelaPost.jsx";
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
             <Route path='/atividades/:turmaId' element={<AtividadePage />} />
             <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
             <Route path='/professor' element={<DashProf />} />
+            <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
           </Routes>
         </Router>
       
