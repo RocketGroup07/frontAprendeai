@@ -6,11 +6,12 @@ import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png'
 
 const menuItems = [
-    { label: 'Home', ariaLabel: 'Go to home page', link: '/geral/:turmaId' },
-    { label: 'Turmas', ariaLabel: 'Learn about us', link: '/turmas' },
-    { label: 'Atividade', ariaLabel: 'View our services', link: '/atividades/:turmaId' },
-    { label: 'Favoritos', ariaLabel: 'Get in touch', link: '/favoritos/:turmaId' },
-    { label: 'Logout', ariaLabel: '', link: '#' }
+    { label: 'Home', link: '/geral/:turmaId' },
+    { label: 'Turmas', link: '/turmas' },
+    { label: 'Atividades', link: '/atividades/:turmaId' },
+    { label: 'Favoritos', link: '/favoritos/:turmaId' },
+    { label: 'Posts', link: '/post/:turmaId/:postId' },
+    { label: 'Logout', link: '#' }
 ];
 
 export const StaggeredMenu = ({

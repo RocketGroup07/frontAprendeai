@@ -11,10 +11,10 @@ import { ptBR } from "date-fns/locale";
 import StaggeredMenu from "../components/StaggeredMenu.jsx";
 
 const menuItems = [
-    { label: 'Home', ariaLabel: 'Go to home page', link: '/geral' },
-    { label: 'About', ariaLabel: 'Learn about us', link: '/about' },
-    { label: 'Services', ariaLabel: 'View our services', link: '/services' },
-    { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' }
+  { label: 'Home', ariaLabel: 'Go to home page', link: '/geral' },
+  { label: 'About', ariaLabel: 'Learn about us', link: '/about' },
+  { label: 'Services', ariaLabel: 'View our services', link: '/services' },
+  { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' }
 ];
 
 function Geral() {
@@ -67,17 +67,7 @@ function Geral() {
   return (
     <div className='min-h-screen font-neuli'>
       <div style={{ height: "10vh" }}>
-        <StaggeredMenu
-          position="right"
-          items={menuItems}
-          displaySocials={false}
-          displayItemNumbering={false}
-          menuButtonColor="#fff"
-          openMenuButtonColor="#fff"
-          changeMenuColorOnOpen={true}
-          colors={['#B19EEF', '#5227FF']}
-          accentColor="#d3d3d3"
-        />
+        <StaggeredMenu />
       </div>
 
       <div className='flex flex-col items-center justify-center gap-10 pt-10'>

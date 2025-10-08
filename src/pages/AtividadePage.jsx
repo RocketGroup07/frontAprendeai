@@ -6,10 +6,11 @@ import React, { useState, useRef, useEffect } from "react";
 import '../index.css'
 import { format } from "date-fns";
 import { useParams } from "react-router";
+import StaggeredMenu from "../components/StaggeredMenu";
 
 
 function AtividadePage() {
-   const { turmaId } = useParams();
+  const { turmaId } = useParams();
   // Primeiro, removemos os posts duplicados baseados no 'id' para garantir que cada post apareça apenas uma vez.
   const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
 
@@ -80,7 +81,11 @@ function AtividadePage() {
 
   return (
     <div>
-      <Header />
+
+      <div style={{ height: "10vh" }}>
+        <StaggeredMenu />
+      </div>
+
       <div className='min-h-screen font-neuli'>
         <div className='flex flex-col items-center justify-center gap-10 pt-10'>
           <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>

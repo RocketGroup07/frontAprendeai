@@ -9,14 +9,11 @@ import CardPosts from '../components/CardPosts';
 function DashProf() {
 
     return (
-
-        <div className=''>
+        <div>
             <div style={{ height: "10vh" }}>
                 <StaggeredMenu/>
             </div>
         </div>
-
-
     )
 }
 

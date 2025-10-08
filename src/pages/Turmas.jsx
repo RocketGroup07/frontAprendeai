@@ -7,6 +7,7 @@ import { Form, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { api } from "../lib/axios";
 import { useNavigate } from "react-router-dom";
+import StaggeredMenu from "../components/StaggeredMenu";
 
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
@@ -44,14 +45,18 @@ function Turmas() {
 
   return (
     <div className="bg-[#212121] h-[100vh]">
-      <Header />
-      <div className="flex mt-6 radius-1 rounded-[2vh] justify-center text-white bg-[#2A2A2A] h-34 w-[90%] text-center items-center ml-19">
+
+      <div style={{ height: "10vh" }}>
+        <StaggeredMenu />
+      </div>
+
+      <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
         <h1 className="text-[28px] font-bold">Suas Turmas</h1>
       </div>
       <div className="flex bg-[#D00909] rounded-[4px] ml-19 mt-9 text-white w-21 justify-center">
         <h2 className="text-[22px] font-[500]">Geral</h2>
       </div>
-      <div className="flex ml-18 mt-5">
+      <div className="flex m-auto mt-5 w-[90%]">
         <CardTurmas />
         <div
           className="w-80 h-46 ml-4 bg-[#2A2A2A] text-white rounded-lg p-10 flex flex-col justify-between items-center text-center border-dotted border-gray-500 border-2 cursor-pointer"
