@@ -3,7 +3,8 @@ import { gsap } from 'gsap';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
-import logo from '../../public/images/logoAp.png'
+import logo from '../../public/images/logoAp.png';
+import { useNavigate } from 'react-router-dom';
 
 const menuItems = [
     { label: 'Home', link: '/geral/:turmaId' },
@@ -15,17 +16,15 @@ const menuItems = [
 
 export const StaggeredMenu = ({
     position = 'right',
-    colors = ['#B19EEF', '#5227FF'],
+    colors = ['#FFFFFF', '#2A2A2A'],
     items = menuItems,
-    socialItems = [],
-    displaySocials = false,
     displayItemNumbering = false,
     className,
     logoUrl = logo,
     menuButtonColor = '#fff',
     openMenuButtonColor = '#fff',
     changeMenuColorOnOpen = true,
-    accentColor = '#d3d3d3',
+    accentColor = '#2A2A2A',
     onMenuOpen,
     onMenuClose
 }) => {
@@ -283,9 +282,13 @@ export const StaggeredMenu = ({
         animateText(target);   // opcional
     }, [playOpen, playClose, animateColor, animateText, onMenuOpen, onMenuClose]);
 
-    const auth = useAuth();
-    const usuario = auth?.usuario;
+    const { usuario, logout } = useAuth();
     const userName = usuario?.nome || "Usuário";
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <div className="sm-scope w-full h-full">
@@ -392,9 +395,10 @@ export const StaggeredMenu = ({
                             )}
                         </ul>
                     </div>
-                    <div className='items-center text-center text-white'>
-                        <button 
-                        className='border-white border-2 w-full p-2 cursor-pointer rounded-md hover:bg-[#fff] hover:text-[#D00909] duration-200 ease-in'>
+                    <div className='items-center text-center text-white font-semibold'>
+                        <button
+                            className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[#fff] hover:text-[#D00909] duration-200 ease-in uppercase'
+                            onClick={handleLogout}>
                             Logout
                         </button>
                     </div>
