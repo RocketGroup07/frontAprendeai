@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { api } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import StaggeredMenu from "../components/StaggeredMenu";
 
 
 function TelaPost() {
@@ -29,7 +30,11 @@ function TelaPost() {
 
     return (
         <div>
-            <Header></Header>
+
+            <div style={{ height: "10vh" }}>
+                <StaggeredMenu />
+            </div>
+
             <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
                 <TextType
                     text={["Posts"]}
@@ -42,9 +47,9 @@ function TelaPost() {
 
             <div className="w-[90%] m-auto mt-3" >
                 <div>
-                    <Link to={"/geral/" + turmaId } >
-                    
-                    <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 "><FaLongArrowAltLeft />Voltar</button>
+                    <Link to={"/geral/" + turmaId} >
+
+                        <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 "><FaLongArrowAltLeft />Voltar</button>
                     </Link>
                 </div>
                 {post ? (
