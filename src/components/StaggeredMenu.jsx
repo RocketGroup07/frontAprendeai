@@ -11,7 +11,6 @@ const menuItems = [
     { label: 'Atividades', link: '/atividades/:turmaId' },
     { label: 'Favoritos', link: '/favoritos/:turmaId' },
     { label: 'Posts', link: '/post/:turmaId/:postId' },
-    { label: 'Logout', link: '#' }
 ];
 
 export const StaggeredMenu = ({
@@ -392,28 +391,12 @@ export const StaggeredMenu = ({
                                 </li>
                             )}
                         </ul>
-                        {displaySocials && socialItems && socialItems.length > 0 && (
-                            <div className="sm-socials mt-auto pt-8 flex flex-col gap-3" aria-label="Social links">
-                                <h3 className="sm-socials-title m-0 text-base font-medium [color:var(--sm-accent,#ff0000)]">Socials</h3>
-                                <ul
-                                    className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap"
-                                    role="list"
-                                >
-                                    {socialItems.map((s, i) => (
-                                        <li key={s.label + i} className="sm-socials-item">
-                                            <a
-                                                href={s.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="sm-socials-link text-[1.2rem] font-small text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
-                                            >
-                                                {s.label}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                    </div>
+                    <div className='items-center text-center text-white'>
+                        <button 
+                        className='border-white border-2 w-full p-2 cursor-pointer rounded-md hover:bg-[#fff] hover:text-[#D00909] duration-200 ease-in'>
+                            Logout
+                        </button>
                     </div>
                 </aside>
             </div>
