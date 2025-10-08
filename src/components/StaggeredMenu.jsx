@@ -5,19 +5,27 @@ import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png'
 
+const menuItems = [
+    { label: 'Home', ariaLabel: 'Go to home page', link: '/geral/:turmaId' },
+    { label: 'Turmas', ariaLabel: 'Learn about us', link: '/turmas' },
+    { label: 'Atividade', ariaLabel: 'View our services', link: '/atividades/:turmaId' },
+    { label: 'Favoritos', ariaLabel: 'Get in touch', link: '/favoritos/:turmaId' },
+    { label: 'Logout', ariaLabel: '', link: '#' }
+];
+
 export const StaggeredMenu = ({
     position = 'right',
     colors = ['#B19EEF', '#5227FF'],
-    items = [],
+    items = menuItems,
     socialItems = [],
-    displaySocials = true,
-    displayItemNumbering = true,
+    displaySocials = false,
+    displayItemNumbering = false,
     className,
     logoUrl = logo,
     menuButtonColor = '#fff',
     openMenuButtonColor = '#fff',
     changeMenuColorOnOpen = true,
-    accentColor = '#5227FF',
+    accentColor = '#d3d3d3',
     onMenuOpen,
     onMenuClose
 }) => {
@@ -396,7 +404,7 @@ export const StaggeredMenu = ({
                                                 href={s.link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="sm-socials-link text-[1.2rem] font-medium text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
+                                                className="sm-socials-link text-[1.2rem] font-small text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
                                             >
                                                 {s.label}
                                             </a>
@@ -426,9 +434,9 @@ export const StaggeredMenu = ({
 .sm-scope .sm-icon-line { position: absolute; left: 50%; top: 50%; width: 100%; height: 2px; background: currentColor; border-radius: 2px; transform: translate(-50%, -50%); will-change: transform; }
 .sm-scope .sm-line { display: none !important; }
 .sm-scope .staggered-menu-panel { poimport StaggeredMenu from '../../../ts-default/Components/StaggeredMenu/StaggeredMenu';
-sition: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 300px); height: 100%; background: #D00909; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 6em 2em 2em 2em; overflow-y: auto; z-index: 10; }
+sition: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 320px); height: 100%; background: #D00909; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 6em 2em 2em 2em; overflow-y: auto; z-index: 10; }
 .sm-scope [data-position='left'] .staggered-menu-panel { right: auto; left: 0; }
-.sm-scope .sm-prelayers { position: absolute; top: 0; right: 0; bottom: 0; width: clamp(260px, 38vw, 300px); pointer-events: none; z-index: 5; }
+.sm-scope .sm-prelayers { position: absolute; top: 0; right: 0; bottom: 0; width: clamp(260px, 38vw, 320px); pointer-events: none; z-index: 5; }
 .sm-scope [data-position='left'] .sm-prelayers { right: auto; left: 0; }
 .sm-scope .sm-prelayer { position: absolute; top: 0; right: 0; height: 100%; width: 100%; transform: translateX(0); }
 .sm-scope .sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
@@ -445,7 +453,7 @@ sition: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 300px); height: 10
 .sm-scope .sm-socials-link:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; text-transform: uppercase; }
 .sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.sm-scope .sm-panel-item { position: relative; color: #fff; font-weight: 600; font-size: 3rem; cursor: pointer; line-height: 1; letter-spacing: -2px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
+.sm-scope .sm-panel-item { position: relative; color: #fff; font-weight: 400; font-size: 2.5rem; cursor: pointer; line-height: 1; letter-spacing: -2px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
 .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
 .sm-scope .sm-panel-item:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }
