@@ -6,6 +6,7 @@ import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png';
 import { useNavigate } from 'react-router-dom';
 
+
 const menuItems = [
     { label: 'Home', link: '/geral/:turmaId' },
     { label: 'Turmas', link: '/turmas' },
