@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from "../components/Header"
 import { LuCalendarClock } from "react-icons/lu";
 import { FaUserCheck, FaSpellCheck } from "react-icons/fa";
 import ProfFeat from "../components/ProfFeat"

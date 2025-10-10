@@ -1,4 +1,3 @@
-import Header from "../components/Header"
 import LinkRedirecionavel from "../components/LinkRedirecionavel"
 import posts from '../ativ.json';
 import CardTarefas from "../components/CardTarefas";
@@ -88,7 +87,7 @@ function AtividadePage() {
 
       <div className='min-h-screen font-neuli'>
         <div className='flex flex-col items-center justify-center gap-10 pt-10'>
-          <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
+          <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
             <h2>Atividades</h2>
           </div>
         </div>
@@ -96,13 +95,13 @@ function AtividadePage() {
 
         <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
           <LinkRedirecionavel nome={"Geral"} link={"/geral/" + turmaId} className="p-2  cursor-pointer" />
-          <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
+          <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer bg-[var(--primary)] text-white rounded " />
           <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId} className="p-2 cursor-pointer  " />
 
           {/* Botão para criar atividade aqui */}
           <div className='flex items-center ml-auto'>
             <button
-              className='flex items-center gap-2 p-2 cursor-pointer bg-[#D00909] text-white rounded hover:bg-[#b30404] transition-colors'
+              className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors'
               onClick={() => setShowModal(true)}
             >
               <span>+</span>
@@ -154,7 +153,7 @@ function AtividadePage() {
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 cursor-pointer bg-[#D00909] text-white rounded hover:bg-[#b30404] transition-colors"
+                      className="px-4 py-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors"
                     >
                       Postar Atividade
                     </button>

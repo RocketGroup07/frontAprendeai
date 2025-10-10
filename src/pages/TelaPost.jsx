@@ -1,4 +1,3 @@
-import Header from "../components/Header"
 import TextType from "../components/TextType"
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import { SiGoogleclassroom } from "react-icons/si";
@@ -35,7 +34,7 @@ function TelaPost() {
                 <StaggeredMenu />
             </div>
 
-            <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
+            <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
                 <TextType
                     text={["Posts"]}
                     typingSpeed={75}

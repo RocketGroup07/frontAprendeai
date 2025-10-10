@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
 import CardTurmas from "../components/CardTurmas";
 import { FaPlus } from "react-icons/fa";
 import Input from "../components/Input";
@@ -50,16 +49,16 @@ function Turmas() {
         <StaggeredMenu />
       </div>
 
-      <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
+      <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
         <h1 className="text-[28px] font-bold">Suas Turmas</h1>
       </div>
-      <div className="flex bg-[#D00909] rounded-[4px] ml-19 mt-9 text-white w-21 justify-center">
+      <div className="flex bg-[var(--primary)] rounded-[4px] ml-19 mt-9 text-white w-21 justify-center">
         <h2 className="text-[22px] font-[500]">Geral</h2>
       </div>
       <div className="flex m-auto mt-5 w-[90%]">
         <CardTurmas />
         <div
-          className="w-80 h-46 ml-4 bg-[#2A2A2A] text-white rounded-lg p-10 flex flex-col justify-between items-center text-center border-dotted border-gray-500 border-2 cursor-pointer"
+          className="w-80 h-46 ml-4 bg-[var(--main)] text-white rounded-lg p-10 flex flex-col justify-between items-center text-center border-dotted border-gray-500 border-2 cursor-pointer"
           onClick={() => setShowInputCard(true)}
         >
           <FaPlus size={42} className="text-gray-500 mt-5" />
@@ -94,7 +93,7 @@ function Turmas() {
               />
               <div className="flex gap-4">
                 <button
-                  className="bg-[#D00909] text-white px-4 py-2 rounded cursor-pointer"
+                  className="bg-[var(--primary)] text-white px-4 py-2 rounded cursor-pointer"
                   onClick={() => setShowInputCard(false)}
                 >
                   Fechar
