@@ -5,6 +5,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png';
 import { useNavigate } from 'react-router-dom';
+import { CiLogout } from "react-icons/ci";
 
 export const StaggeredMenu = ({
     position = 'right',
@@ -397,8 +398,11 @@ export const StaggeredMenu = ({
                     </div>
                     <div className='items-center text-center text-white font-semibold'>
                         <button
-                            className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[#fff] hover:text-[#D00909] duration-200 ease-in uppercase'
+                            className='border-white border-3 w-full p-2 flex cursor-pointer justify-center gap-2 rounded-md hover:bg-[#fff] hover:text-[#D00909] duration-200 ease-in uppercase'
                             onClick={handleLogout}>
+
+                            <CiLogout size={24}/>
+
                             Logout
                         </button>
                     </div>
