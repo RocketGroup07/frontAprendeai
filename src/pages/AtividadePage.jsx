@@ -93,10 +93,9 @@ function AtividadePage() {
         </div>
 
 
-        <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-          <LinkRedirecionavel nome={"Geral"} link={"/geral/" + turmaId} className="p-2  cursor-pointer" />
-          <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer bg-[var(--primary)] text-white rounded " />
-          <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId} className="p-2 cursor-pointer  " />
+        <LinksContainer>
+          
+        </LinksContainer>
 
           {/* Botão para criar atividade aqui */}
           <div className='flex items-center ml-auto'>
@@ -188,9 +187,6 @@ function AtividadePage() {
 
 
       </div>
-
-
-    </div>
   )
 }
 

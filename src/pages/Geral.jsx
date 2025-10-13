@@ -8,6 +8,7 @@ import { api } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import StaggeredMenu from "../components/StaggeredMenu.jsx";
+import LinksContainer from "../components/LinksContainer.jsx";
 
 const menuItems = [
   { label: 'Home', ariaLabel: 'Go to home page', link: '/geral' },
@@ -81,11 +82,7 @@ function Geral() {
         </div>
       </div>
 
-      <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-[var(--text)]'>
-        <LinkRedirecionavel nome={"Geral"} link={"/turmas/" + turmaId} className="bg-[var(--primary)] text-[var(--text)] p-2 rounded cursor-pointer" />
-        <LinkRedirecionavel nome={"Atividades"} link={"/Atividades/" + turmaId} className="p-2 cursor-pointer" />
-        <LinkRedirecionavel nome={"Favoritos"} link={"/Favoritos/" + turmaId} className="p-2 cursor-pointer" />
-      </div>
+      <LinksContainer/>
 
       <div className='w-[90%] m-auto mt-5 text-[var(--text)]'>
         {grupos.length === 0 ? (
