@@ -43,7 +43,7 @@ function Turmas() {
   };
 
   return (
-    <div className="bg-[#212121] h-[100vh]">
+    <div className="bg-[var(--bg)] h-[100vh]">
 
       <div style={{ height: "10vh" }}>
         <StaggeredMenu />

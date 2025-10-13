@@ -81,13 +81,13 @@ function Geral() {
         </div>
       </div>
 
-      <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-        <LinkRedirecionavel nome={"Geral"} link={"/turmas/" + turmaId} className="bg-[var(--primary)] text-white p-2 rounded cursor-pointer" />
+      <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-[var(--text)]'>
+        <LinkRedirecionavel nome={"Geral"} link={"/turmas/" + turmaId} className="bg-[var(--primary)] text-[var(--text)] p-2 rounded cursor-pointer" />
         <LinkRedirecionavel nome={"Atividades"} link={"/Atividades/" + turmaId} className="p-2 cursor-pointer" />
         <LinkRedirecionavel nome={"Favoritos"} link={"/Favoritos/" + turmaId} className="p-2 cursor-pointer" />
       </div>
 
-      <div className='w-[90%] m-auto mt-5 text-white'>
+      <div className='w-[90%] m-auto mt-5 text-[var(--text)]'>
         {grupos.length === 0 ? (
           <div className="text-center text-lg mt-10">Nenhum post encontrado para esta turma.</div>
         ) : (

@@ -7,20 +7,36 @@
   --main: #2A2A2A;
 }
 
-@theme {
-  --font-neuli: "neulis-sans", sans-serif; 
-}
-body {
-    background-color: #212121;
-    overflow-x: hidden;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #212121;
+    --text: #f1f1f1;
   }
+}
 
-body, .Toastify__toast {
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f1f1f1;
+    --text: #212121;
+  }
+}
+
+@theme {
+  --font-neuli: "neulis-sans", sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  overflow-x: hidden;
+}
+
+body,
+.Toastify__toast {
   font-family: "neulis-sans", sans-serif;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
