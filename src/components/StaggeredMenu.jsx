@@ -5,19 +5,11 @@ import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png';
 import { useNavigate } from 'react-router-dom';
-
-const menuItems = [
-    { label: 'Home', link: '/geral/:turmaId' },
-    { label: 'Turmas', link: '/turmas' },
-    { label: 'Atividades', link: '/atividades/:turmaId' },
-    { label: 'Favoritos', link: '/favoritos/:turmaId' },
-    { label: 'Posts', link: '/post/:turmaId/:postId' },
-];
+import { CiLogout } from "react-icons/ci";
 
 export const StaggeredMenu = ({
     position = 'right',
-    colors = ['var(--secondary)FFF', 'var(--main)'],
-    items = menuItems,
+    colors = ['var(--secondary)', 'var(--main)'],
     displayItemNumbering = false,
     className,
     logoUrl = logo,
@@ -28,6 +20,16 @@ export const StaggeredMenu = ({
     onMenuOpen,
     onMenuClose
 }) => {
+    const { turmaId } = useAuth(); // 👈 pega direto do contexto
+
+    // menuItems agora sempre usa o turmaId do contexto
+    const menuItems = [
+        { label: 'Turmas', link: '/turmas' },
+        { label: 'Atividades', link: `/atividades/${turmaId || ''}` },
+        { label: 'Favoritos', link: `/favoritos/${turmaId || ''}` },
+        { label: 'Posts', link: `/post/${turmaId || ''}/:postId` },
+    ];
+
     const [open, setOpen] = useState(false);
     const openRef = useRef(false);
 
@@ -37,7 +39,6 @@ export const StaggeredMenu = ({
 
     const textInnerRef = useRef(null);
     const textWrapRef = useRef(null);
-
 
     const openTlRef = useRef(null);
     const closeTweenRef = useRef(null);
@@ -369,8 +370,8 @@ export const StaggeredMenu = ({
                             role="list"
                             data-numbering={displayItemNumbering || undefined}
                         >
-                            {items && items.length ? (
-                                items.map((it, idx) => (
+                            {menuItems && menuItems.length ? (
+                                menuItems.map((it, idx) => (
                                     <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
                                         <a
                                             className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
@@ -397,8 +398,11 @@ export const StaggeredMenu = ({
                     </div>
                     <div className='items-center text-center text-white font-semibold'>
                         <button
-                            className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[var(--secondary)] hover:text-[var(--primary)] duration-200 ease-in uppercase'
+                            className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[var(--secondary)] hover:text-[var(--primary)] duration-200 ease-in uppercase justify-center gap-2 flex'
                             onClick={handleLogout}>
+
+                            <CiLogout size={24}/>
+
                             Logout
                         </button>
                     </div>
