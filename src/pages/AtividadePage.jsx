@@ -1,23 +1,39 @@
-import Header from "../components/Header"
-import LinkRedirecionavel from "../components/LinkRedirecionavel"
-import posts from '../ativ.json';
+import Header from "../components/Header";
+import LinkRedirecionavel from "../components/LinkRedirecionavel";
+// import posts from '../ativ.json'; // MODIFICAÇÃO 1: Não precisamos mais do JSON local
 import CardTarefas from "../components/CardTarefas";
 import React, { useState, useRef, useEffect } from "react";
-import '../index.css'
-import { format } from "date-fns";
+import '../index.css';
+// import { format } from "date-fns"; // MODIFICAÇÃO 2: Não é mais necessário formatar a data aqui
 import { useParams } from "react-router";
+import semTarefas from '../assets/images/semTarefas.svg';
 import StaggeredMenu from "../components/StaggeredMenu";
-
+import { api } from "../lib/axios";
 
 function AtividadePage() {
   const { turmaId } = useParams();
-  // Primeiro, removemos os posts duplicados baseados no 'id' para garantir que cada post apareça apenas uma vez.
-  const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
 
-  // Estado para atividades (inicialmente com os posts do JSON)
-  const [atividades, setAtividades] = useState(uniquePosts);
+  // MODIFICAÇÃO 3: Inicializa o estado de atividades como um array vazio
+  const [atividades, setAtividades] = useState([]);
 
-  // Agrupa por data
+  // MODIFICAÇÃO 4: useEffect para buscar as atividades da API ao carregar a página
+  useEffect(() => {
+    async function fetchAtividades() {
+      try {
+
+        const response = await api.get(`/atividades/turma/${turmaId}`);
+        if (response.data && Array.isArray(response.data)) {
+          setAtividades(response.data);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar atividades:", error);
+        // Opcional: mostrar uma mensagem de erro para o usuário
+      }
+    }
+    fetchAtividades();
+  }, [turmaId]); // O useEffect será executado sempre que o turmaId mudar
+
+  // O restante da lógica de agrupamento e ordenação continua igual
   const postsPorData = atividades.reduce((acc, post) => {
     const data = post.ano;
     if (!acc[data]) {
@@ -27,7 +43,6 @@ function AtividadePage() {
     return acc;
   }, {});
 
-  // Ordenar as datas do mais recente para o mais antigo
   const grupos = Object.entries(postsPorData).sort((a, b) => {
     const [diaA, mesA, anoA] = a[0].split('/').map(Number);
     const [diaB, mesB, anoB] = b[0].split('/').map(Number);
@@ -39,12 +54,10 @@ function AtividadePage() {
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
 
-  // Estado para inputs do modal
   const [novoTitulo, setNovoTitulo] = useState("");
   const [novaData, setNovaData] = useState("");
   const [novaDescricao, setNovaDescricao] = useState("");
 
-  // Adiciona a funcionalidade de fechar ao clicar fora
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -57,31 +70,46 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
-  // Função para lidar com envio do formulário
-  function handleSubmit(e) {
+  // MODIFICAÇÃO 5: Função handleSubmit atualizada para enviar dados à API
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!novoTitulo || !novaData || !novaDescricao) return;
-    // Formata data para dd/mm/yyyy
-    const dataFormatada = format(novaData, "dd/MM/yyyy");
-    // Gera novo id
-    const novoId = atividades.length > 0 ? Math.max(...atividades.map(a => a.id)) + 1 : 1;
-    const novaAtividade = {
-      id: novoId,
+    if (!novoTitulo || !novaData || !novaDescricao) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    const novaAtividadePayload = {
       titulo: novoTitulo,
       descricao: novaDescricao,
-      ano: dataFormatada,
-      autor: "Você" // ou outro valor
+      // O input type="date" já fornece a data no formato 'YYYY-MM-DD', ideal para APIs
+      data_entrega: novaData,
+      turma_id: turmaId // Inclui o ID da turma na requisição
     };
-    setAtividades([novaAtividade, ...atividades]);
-    setShowModal(false);
-    setNovoTitulo("");
-    setNovaData("");
-    setNovaDescricao("");
+
+    try {
+      // Faz a requisição POST para o endpoint da sua API
+      // Certifique-se de que o endpoint '/atividades' está correto
+      const response = await api.post(`/atividades/criar/${turmaId}`, novaAtividadePayload);
+
+      // Adiciona a nova atividade (retornada pela API) ao estado local
+      // A resposta da API (response.data) deve conter a atividade recém-criada
+      setAtividades([response.data, ...atividades]);
+
+      // Limpa o formulário e fecha o modal
+      setShowModal(false);
+      setNovoTitulo("");
+      setNovaData("");
+      setNovaDescricao("");
+
+    } catch (error) {
+      console.error("Erro ao postar atividade:", error);
+      alert("Falha ao criar a atividade. Tente novamente.");
+    }
   }
 
   return (
     <div>
-
+      {/* O resto do seu JSX permanece o mesmo */}
       <div style={{ height: "10vh" }}>
         <StaggeredMenu />
       </div>
@@ -93,13 +121,11 @@ function AtividadePage() {
           </div>
         </div>
 
-
         <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
           <LinkRedirecionavel nome={"Geral"} link={"/geral/" + turmaId} className="p-2  cursor-pointer" />
           <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
           <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId} className="p-2 cursor-pointer  " />
 
-          {/* Botão para criar atividade aqui */}
           <div className='flex items-center ml-auto'>
             <button
               className='flex items-center gap-2 p-2 cursor-pointer bg-[#D00909] text-white rounded hover:bg-[#b30404] transition-colors'
@@ -110,17 +136,12 @@ function AtividadePage() {
             </button>
           </div>
         </div>
-        {/* Modal */}
+
         {showModal && (
-          // Container principal do modal, cobre toda a tela
           <div className="fixed inset-0 z-50">
-            {/* Overlay escuro para escurecer o fundo da página */}
             <div className="absolute inset-0 bg-black opacity-80" onClick={() => setShowModal(false)}></div>
-            {/* Centraliza o modal na tela */}
             <div className="flex items-center justify-center min-h-screen">
-              {/* Modal propriamente dito */}
               <div ref={modalRef} className="bg-[#1a1a1a] rounded-lg shadow-lg p-6 w-150 h-140 flex flex-col items-center relative">
-                {/* "X" para fechar o modal */}
                 <button
                   onClick={() => setShowModal(false)}
                   className="absolute top-2 right-2 text-white font-light text-5xl p-2 cursor-pointer"
@@ -130,8 +151,6 @@ function AtividadePage() {
                 <h2 className="text-2xl font-bold mb-4 text-white">Nova Atividade</h2>
 
                 <form className="flex flex-col gap-4 mt-4 w-full items-start" onSubmit={handleSubmit}>
-
-
                   <label className="text-left text-white">Nome da Atividade</label>
                   <input type="text" value={novoTitulo} onChange={e => setNovoTitulo(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0" />
 
@@ -140,9 +159,6 @@ function AtividadePage() {
 
                   <label className="text-left text-white">Descrição</label>
                   <textarea value={novaDescricao} onChange={e => setNovaDescricao(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0 resize-none" />
-
-
-
 
                   <div className="flex gap-2 w-full justify-end  mt-8">
                     <button
@@ -166,33 +182,39 @@ function AtividadePage() {
         )}
 
         <div className='w-[90%] m-auto mt-5 text-white'>
-          {grupos.map(([data, listaPosts]) => (
-            <div key={data} className="mb-8">
-              {/* Cabeçalho com a data */}
-              <h2 className="text-xl font-medium mb-4">{data}</h2>
-
-              {/* Posts daquele dia */}
-              <div className="flex flex-row flex-wrap gap-4">
-                {listaPosts.map((post) => (
-                  <CardTarefas
-                    key={post.id}
-                    titulo={post.titulo}
-                    descricao={post.descricao}
-                    autor={post.autor}
-                    ano={post.ano}
-                  />
-                ))}
-              </div>
+          {grupos.length === 0 ? (
+            <div className="text-center flex flex-col items-center text-lg mt-10">Nenhuma atividade encontrado para esta turma.
+              <img
+                src={semTarefas}
+                alt="Nenhuma tarefa encontrada"
+                className="w-64 h-64 mt-4" // Adicione classes para controlar o tamanho
+              />
             </div>
-          ))}
+
+          ) : (
+            grupos.map(([data, listaPosts]) => (
+              <div key={data} className="mb-8">
+                <h2 className="text-xl font-medium mb-4">{data}</h2>
+                <div className="flex flex-row flex-wrap gap-4">
+                  {listaPosts.map((post) => (
+                    <CardTarefas
+                      key={post.id}
+                      titulo={post.titulo}
+                      descricao={post.descricao}
+                      autor={post.autor}
+                      ano={post.ano}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))
+
+          )}
+
         </div>
-
-
       </div>
-
-
     </div>
   )
 }
 
-export default AtividadePage
+export default AtividadePage;
