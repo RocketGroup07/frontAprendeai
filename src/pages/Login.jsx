@@ -135,7 +135,7 @@ function Login() {
         </div>
       </div>
 
-      <div className='fixed bottom-0 left-0 w-full p-6 bg-[#D00909]'></div>
+      <div className='fixed bottom-0 left-0 w-full p-6 bg-[var(--primary)]'></div>
     </div>
   )
 }

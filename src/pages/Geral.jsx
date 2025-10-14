@@ -1,6 +1,5 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Header from '../components/Header';
 import CardPosts from '../components/CardPosts';
 import LinkRedirecionavel from '../components/LinkRedirecionavel';
 import TextType from '../components/TextType.jsx';
@@ -71,7 +70,7 @@ function Geral() {
       </div>
 
       <div className='flex flex-col items-center justify-center gap-10 pt-10'>
-        <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
+        <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
           <TextType
             text={[`Olá ${userName}!`, `Turma: ${turmaNome}`, 'Abaixo estão as atividades', 'Bons estudos!']}
             typingSpeed={75}
@@ -83,7 +82,7 @@ function Geral() {
       </div>
 
       <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-        <LinkRedirecionavel nome={"Geral"} link={"/turmas/" + turmaId} className="bg-[#D00909] text-white p-2 rounded cursor-pointer" />
+        <LinkRedirecionavel nome={"Geral"} link={"/turmas/" + turmaId} className="bg-[var(--primary)] text-white p-2 rounded cursor-pointer" />
         <LinkRedirecionavel nome={"Atividades"} link={"/Atividades/" + turmaId} className="p-2 cursor-pointer" />
         <LinkRedirecionavel nome={"Favoritos"} link={"/Favoritos/" + turmaId} className="p-2 cursor-pointer" />
       </div>
