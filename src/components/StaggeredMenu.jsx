@@ -9,7 +9,7 @@ import { CiLogout } from "react-icons/ci";
 
 export const StaggeredMenu = ({
     position = 'right',
-    colors = ['#FFFFFF', '#2A2A2A'],
+    colors = ['var(--secondary)', 'var(--main)'],
     displayItemNumbering = false,
     className,
     logoUrl = logo,
@@ -398,7 +398,7 @@ export const StaggeredMenu = ({
                     </div>
                     <div className='items-center text-center text-white font-semibold'>
                         <button
-                            className='border-white border-3 w-full p-2 flex cursor-pointer justify-center gap-2 rounded-md hover:bg-[#fff] hover:text-[#D00909] duration-200 ease-in uppercase'
+                            className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[var(--secondary)] hover:text-[var(--primary)] duration-200 ease-in uppercase justify-center gap-2 flex'
                             onClick={handleLogout}>
 
                             <CiLogout size={24}/>
