@@ -8,11 +8,13 @@ import { useParams } from "react-router";
 import StaggeredMenu from "../components/StaggeredMenu";
 import LinksContainer from "../components/LinksContainer"; // Adicione este import
 import { log } from "three/tsl";
+import { useAuth } from "../components/UserAuth";
 
 function AtividadePage() {
-  const { turmaId } = useParams();
-  console.log(turmaId);
-  
+  const { turmaId: turmaIdParam } = useParams();
+  const { turmaId: turmaIdContext } = useAuth();
+  const turmaId = turmaIdParam || turmaIdContext;
+
   const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
   const [atividades, setAtividades] = useState(uniquePosts);
 
@@ -108,7 +110,7 @@ function AtividadePage() {
                 >
                   &times;
                 </button>
-                <h2 className="text-2xl font-bold mb-4 text-white">Nova Atividade</h2>
+                <h2 className="text-2xl font-bold mb-4 text-[var(--text)]">Nova Atividade</h2>
                 <form className="flex flex-col gap-4 mt-4 w-full items-start" onSubmit={handleSubmit}>
                   <label className="text-left text-white">Nome da Atividade</label>
                   <input type="text" value={novoTitulo} onChange={e => setNovoTitulo(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0" />
@@ -140,7 +142,7 @@ function AtividadePage() {
         <div className='w-[90%] m-auto mt-5 text-white'>
           {grupos.map(([data, listaPosts]) => (
             <div key={data} className="mb-8">
-              <h2 className="text-xl font-medium mb-4">{data}</h2>
+              <h2 className="text-xl font-medium mb-4 text-[var(--text)]">{data}</h2>
               <div className="flex flex-row flex-wrap gap-4">
                 {listaPosts.map((post) => (
                   <CardTarefas

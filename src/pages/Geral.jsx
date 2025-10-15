@@ -82,7 +82,7 @@ function Geral() {
         </div>
       </div>
 
-      <LinksContainer/>
+      <LinksContainer turmaId={turmaId}/>
 
       <div className='w-[90%] m-auto mt-5 text-[var(--text)]'>
         {grupos.length === 0 ? (
