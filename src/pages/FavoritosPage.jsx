@@ -1,6 +1,7 @@
 import { useParams } from 'react-router';
 import LinkRedirecionavel from '../components/LinkRedirecionavel'
 import StaggeredMenu from '../components/StaggeredMenu';
+import LinksContainer from '../components/LinksContainer';
 
 function FavoritosPage
   () {
@@ -19,11 +20,9 @@ function FavoritosPage
             <h2>Favoritos</h2>
           </div>
         </div>
-        <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-          <LinkRedirecionavel nome={"Geral"} link={"/geral/" + turmaId} className="p-2  cursor-pointer" />
-          <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer" />
-          <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId} className="p-2 cursor-pointer bg-[var(--primary)] text-white rounded " />
-        </div>
+        <LinksContainer
+          turmaId={turmaId}
+        />
 
 
 
