@@ -91,7 +91,7 @@ function Geral() {
 
       <div className='w-[90%] m-auto mt-5 text-white'>
         {grupos.length === 0 ? (
-          <div className="text-center flex flex-col items-center text-lg mt-10">Nenhum post encontrado para esta turma.
+          <div className="text-center flex flex-col-reverse items-center text-lg mt-10">Nenhum post encontrado para esta turma.
             <img
               src={semTarefas}
               alt="Nenhuma tarefa encontrada"

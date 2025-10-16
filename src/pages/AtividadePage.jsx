@@ -126,6 +126,7 @@ function AtividadePage() {
           <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
           <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId} className="p-2 cursor-pointer  " />
 
+          {}
           <div className='flex items-center ml-auto'>
             <button
               className='flex items-center gap-2 p-2 cursor-pointer bg-[#D00909] text-white rounded hover:bg-[#b30404] transition-colors'
@@ -183,7 +184,7 @@ function AtividadePage() {
 
         <div className='w-[90%] m-auto mt-5 text-white'>
           {grupos.length === 0 ? (
-            <div className="text-center flex flex-col items-center text-lg mt-10">Nenhuma atividade encontrado para esta turma.
+            <div className="text-center flex flex-col-reverse items-center text-lg mt-10">Nenhuma atividade encontrado para esta turma.
               <img
                 src={semTarefas}
                 alt="Nenhuma tarefa encontrada"
