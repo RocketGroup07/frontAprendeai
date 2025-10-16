@@ -7,6 +7,7 @@ import { useAuth } from '../components/UserAuth.jsx';
 import { api } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import semTarefas from '../assets/images/semTarefas.svg';
 import StaggeredMenu from "../components/StaggeredMenu.jsx";
 import LinksContainer from "../components/LinksContainer.jsx";
 
@@ -45,7 +46,7 @@ function Geral() {
 
   // Agrupar por data (ano)
   const postsPorData = uniquePosts.reduce((acc, post) => {
-    const data = post.dataAgendada;
+    const data = post.dataPostagem;
     if (!acc[data]) acc[data] = [];
     acc[data].push(post);
     return acc;
@@ -86,7 +87,13 @@ function Geral() {
 
       <div className='w-[90%] m-auto mt-5 text-[var(--text)]'>
         {grupos.length === 0 ? (
-          <div className="text-center text-lg mt-10">Nenhum post encontrado para esta turma.</div>
+          <div className="text-center flex flex-col-reverse items-center text-lg mt-10">Nenhum post encontrado para esta turma.
+            <img
+              src={semTarefas}
+              alt="Nenhuma tarefa encontrada"
+              className="w-64 h-64 mt-4" // Adicione classes para controlar o tamanho
+            />
+          </div>
         ) : (
           grupos.map(([data, listaPosts]) => (
             <div key={data} className="mb-8">

@@ -2,9 +2,10 @@ import LinkRedirecionavel from "../components/LinkRedirecionavel"
 import posts from '../ativ.json';
 import CardTarefas from "../components/CardTarefas";
 import React, { useState, useRef, useEffect } from "react";
-import '../index.css'
-import { format } from "date-fns";
+import '../index.css';
+// import { format } from "date-fns"; // MODIFICAÇÃO 2: Não é mais necessário formatar a data aqui
 import { useParams } from "react-router";
+import semTarefas from '../assets/images/semTarefas.svg';
 import StaggeredMenu from "../components/StaggeredMenu";
 import LinksContainer from "../components/LinksContainer"; // Adicione este import
 import { log } from "three/tsl";
@@ -66,11 +67,26 @@ function AtividadePage() {
       ano: dataFormatada,
       autor: "Você"
     };
-    setAtividades([novaAtividade, ...atividades]);
-    setShowModal(false);
-    setNovoTitulo("");
-    setNovaData("");
-    setNovaDescricao("");
+
+    try {
+      // Faz a requisição POST para o endpoint da sua API
+      // Certifique-se de que o endpoint '/atividades' está correto
+      const response = await api.post(`/atividades/criar/${turmaId}`, novaAtividadePayload);
+
+      // Adiciona a nova atividade (retornada pela API) ao estado local
+      // A resposta da API (response.data) deve conter a atividade recém-criada
+      setAtividades([response.data, ...atividades]);
+
+      // Limpa o formulário e fecha o modal
+      setShowModal(false);
+      setNovoTitulo("");
+      setNovaData("");
+      setNovaDescricao("");
+
+    } catch (error) {
+      console.error("Erro ao postar atividade:", error);
+      alert("Falha ao criar a atividade. Tente novamente.");
+    }
   }
 
   return (
@@ -162,4 +178,4 @@ function AtividadePage() {
   )
 }
 
-export default AtividadePage
+export default AtividadePage;
