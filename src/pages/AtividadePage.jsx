@@ -1,6 +1,5 @@
-import Header from "../components/Header";
-import LinkRedirecionavel from "../components/LinkRedirecionavel";
-// import posts from '../ativ.json'; // MODIFICAÇÃO 1: Não precisamos mais do JSON local
+import LinkRedirecionavel from "../components/LinkRedirecionavel"
+import posts from '../ativ.json';
 import CardTarefas from "../components/CardTarefas";
 import React, { useState, useRef, useEffect } from "react";
 import '../index.css';
@@ -8,32 +7,18 @@ import '../index.css';
 import { useParams } from "react-router";
 import semTarefas from '../assets/images/semTarefas.svg';
 import StaggeredMenu from "../components/StaggeredMenu";
-import { api } from "../lib/axios";
+import LinksContainer from "../components/LinksContainer"; // Adicione este import
+import { log } from "three/tsl";
+import { useAuth } from "../components/UserAuth";
 
 function AtividadePage() {
-  const { turmaId } = useParams();
+  const { turmaId: turmaIdParam } = useParams();
+  const { turmaId: turmaIdContext } = useAuth();
+  const turmaId = turmaIdParam || turmaIdContext;
 
-  // MODIFICAÇÃO 3: Inicializa o estado de atividades como um array vazio
-  const [atividades, setAtividades] = useState([]);
+  const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
+  const [atividades, setAtividades] = useState(uniquePosts);
 
-  // MODIFICAÇÃO 4: useEffect para buscar as atividades da API ao carregar a página
-  useEffect(() => {
-    async function fetchAtividades() {
-      try {
-
-        const response = await api.get(`/atividades/turma/${turmaId}`);
-        if (response.data && Array.isArray(response.data)) {
-          setAtividades(response.data);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar atividades:", error);
-        // Opcional: mostrar uma mensagem de erro para o usuário
-      }
-    }
-    fetchAtividades();
-  }, [turmaId]); // O useEffect será executado sempre que o turmaId mudar
-
-  // O restante da lógica de agrupamento e ordenação continua igual
   const postsPorData = atividades.reduce((acc, post) => {
     const data = post.ano;
     if (!acc[data]) {
@@ -70,20 +55,17 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
-  // MODIFICAÇÃO 5: Função handleSubmit atualizada para enviar dados à API
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    if (!novoTitulo || !novaData || !novaDescricao) {
-      alert("Por favor, preencha todos os campos.");
-      return;
-    }
-
-    const novaAtividadePayload = {
+    if (!novoTitulo || !novaData || !novaDescricao) return;
+    const dataFormatada = format(novaData, "dd/MM/yyyy");
+    const novoId = atividades.length > 0 ? Math.max(...atividades.map(a => a.id)) + 1 : 1;
+    const novaAtividade = {
+      id: novoId,
       titulo: novoTitulo,
       descricao: novaDescricao,
-      // O input type="date" já fornece a data no formato 'YYYY-MM-DD', ideal para APIs
-      data_entrega: novaData,
-      turma_id: turmaId // Inclui o ID da turma na requisição
+      ano: dataFormatada,
+      autor: "Você"
     };
 
     try {
@@ -109,34 +91,29 @@ function AtividadePage() {
 
   return (
     <div>
-      {/* O resto do seu JSX permanece o mesmo */}
       <div style={{ height: "10vh" }}>
         <StaggeredMenu />
       </div>
 
       <div className='min-h-screen font-neuli'>
         <div className='flex flex-col items-center justify-center gap-10 pt-10'>
-          <div className='w-[90%] h-[137px] p-7 bg-[#2A2A2A] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
+          <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
             <h2>Atividades</h2>
           </div>
         </div>
 
-        <div className='w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-white'>
-          <LinkRedirecionavel nome={"Geral"} link={"/geral/" + turmaId} className="p-2  cursor-pointer" />
-          <LinkRedirecionavel nome={"Atividades"} link={"/atividades/" + turmaId} className="p-2 cursor-pointer bg-[#D00909] text-white rounded " />
-          <LinkRedirecionavel nome={"Favoritos"} link={"/favoritos/" + turmaId} className="p-2 cursor-pointer  " />
-
-          {}
+        <LinksContainer turmaId={turmaId}>
+          {/* Botão para criar atividade */}
           <div className='flex items-center ml-auto'>
             <button
-              className='flex items-center gap-2 p-2 cursor-pointer bg-[#D00909] text-white rounded hover:bg-[#b30404] transition-colors'
+              className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors'
               onClick={() => setShowModal(true)}
             >
               <span>+</span>
               Nova atividade
             </button>
           </div>
-        </div>
+        </LinksContainer>
 
         {showModal && (
           <div className="fixed inset-0 z-50">
@@ -149,18 +126,14 @@ function AtividadePage() {
                 >
                   &times;
                 </button>
-                <h2 className="text-2xl font-bold mb-4 text-white">Nova Atividade</h2>
-
+                <h2 className="text-2xl font-bold mb-4 text-[var(--text)]">Nova Atividade</h2>
                 <form className="flex flex-col gap-4 mt-4 w-full items-start" onSubmit={handleSubmit}>
                   <label className="text-left text-white">Nome da Atividade</label>
                   <input type="text" value={novoTitulo} onChange={e => setNovoTitulo(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0" />
-
                   <label className="text-left text-white">Data de Entrega</label>
                   <input type="date" value={novaData} onChange={e => setNovaData(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  outline-0" />
-
                   <label className="text-left text-white">Descrição</label>
                   <textarea value={novaDescricao} onChange={e => setNovaDescricao(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0 resize-none" />
-
                   <div className="flex gap-2 w-full justify-end  mt-8">
                     <button
                       type="button"
@@ -171,7 +144,7 @@ function AtividadePage() {
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 cursor-pointer bg-[#D00909] text-white rounded hover:bg-[#b30404] transition-colors"
+                      className="px-4 py-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors"
                     >
                       Postar Atividade
                     </button>
@@ -183,35 +156,22 @@ function AtividadePage() {
         )}
 
         <div className='w-[90%] m-auto mt-5 text-white'>
-          {grupos.length === 0 ? (
-            <div className="text-center flex flex-col-reverse items-center text-lg mt-10">Nenhuma atividade encontrado para esta turma.
-              <img
-                src={semTarefas}
-                alt="Nenhuma tarefa encontrada"
-                className="w-64 h-64 mt-4" // Adicione classes para controlar o tamanho
-              />
-            </div>
-
-          ) : (
-            grupos.map(([data, listaPosts]) => (
-              <div key={data} className="mb-8">
-                <h2 className="text-xl font-medium mb-4">{data}</h2>
-                <div className="flex flex-row flex-wrap gap-4">
-                  {listaPosts.map((post) => (
-                    <CardTarefas
-                      key={post.id}
-                      titulo={post.titulo}
-                      descricao={post.descricao}
-                      autor={post.autor}
-                      ano={post.ano}
-                    />
-                  ))}
-                </div>
+          {grupos.map(([data, listaPosts]) => (
+            <div key={data} className="mb-8">
+              <h2 className="text-xl font-medium mb-4 text-[var(--text)]">{data}</h2>
+              <div className="flex flex-row flex-wrap gap-4">
+                {listaPosts.map((post) => (
+                  <CardTarefas
+                    key={post.id}
+                    titulo={post.titulo}
+                    descricao={post.descricao}
+                    autor={post.autor}
+                    ano={post.ano}
+                  />
+                ))}
               </div>
-            ))
-
-          )}
-
+            </div>
+          ))}
         </div>
       </div>
     </div>

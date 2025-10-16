@@ -1,21 +1,42 @@
 @import url("https://use.typekit.net/arp2woi.css");
 @import "tailwindcss";
 
+:root {
+  --primary: #D00909;
+  --secondary: #fff;
+  --main: #2A2A2A;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #212121;
+    --text: #f1f1f1;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f1f1f1;
+    --text: #212121;
+  }
+}
 
 @theme {
-  --font-neuli: "neulis-sans", sans-serif; 
+  --font-neuli: "neulis-sans", sans-serif;
 }
-body {
-    background-color: #212121;
-    overflow-x: hidden;
-  }
 
-body, .Toastify__toast {
+body {
+  background-color: var(--bg);
+  overflow-x: hidden;
+}
+
+body,
+.Toastify__toast {
   font-family: "neulis-sans", sans-serif;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }

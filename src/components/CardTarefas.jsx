@@ -6,7 +6,7 @@ function CardTarefas({ titulo, descricao, ano }) {
         <div className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
             {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
             <div
-                className="h-40 bg-[#2A2A2A] text-white rounded-t-lg p-5 flex flex-col justify-between"
+                className="h-40 bg-[var(--main)] text-white rounded-t-lg p-5 flex flex-col justify-between"
             >
                 <div>
                     <div className="flex items-center gap-3">
@@ -28,7 +28,7 @@ function CardTarefas({ titulo, descricao, ano }) {
 
 
             </div>
-            <div className='bg-[#D00909] w-full text-white rounded-b-lg p-1 flex items-center justify-end'>
+            <div className='bg-[var(--primary)] w-full text-white rounded-b-lg p-1 flex items-center justify-end'>
                 <div className='flex flex-row text-[12px] items-center gap-2 pr-2'>
                     <div>
                         <h6>Clique aqui para saber mais</h6>

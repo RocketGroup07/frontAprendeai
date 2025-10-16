@@ -1,9 +1,18 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
 
-function LinkRedirecionavel({nome, link, className}) {
+function LinkRedirecionavel({ nome, link, className }) {
   return (
-    <div className={className} ><Link to={link} >{nome}</Link></div>
-  )
+    <NavLink
+      to={link}
+      className={({ isActive }) =>
+        `${className} ${
+          isActive ? "bg-[var(--primary)] text-white" : ""
+        }`
+      }
+    >
+      {nome}
+    </NavLink>
+  );
 }
 
-export default LinkRedirecionavel
+export default LinkRedirecionavel;

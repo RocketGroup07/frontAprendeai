@@ -3,33 +3,33 @@ import { gsap } from 'gsap';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
-import logo from '../../public/images/logoAp.png'
-
-const menuItems = [
-    { label: 'Home', link: '/geral/:turmaId' },
-    { label: 'Turmas', link: '/turmas' },
-    { label: 'Atividades', link: '/atividades/:turmaId' },
-    { label: 'Favoritos', link: '/favoritos/:turmaId' },
-    { label: 'Posts', link: '/post/:turmaId/:postId' },
-    { label: 'Logout', link: '#' }
-];
+import logo from '../../public/images/logoAp.png';
+import { useNavigate } from 'react-router-dom';
+import { CiLogout } from "react-icons/ci";
 
 export const StaggeredMenu = ({
     position = 'right',
-    colors = ['#B19EEF', '#5227FF'],
-    items = menuItems,
-    socialItems = [],
-    displaySocials = false,
+    colors = ['var(--secondary)', 'var(--main)'],
     displayItemNumbering = false,
     className,
     logoUrl = logo,
     menuButtonColor = '#fff',
     openMenuButtonColor = '#fff',
     changeMenuColorOnOpen = true,
-    accentColor = '#d3d3d3',
+    accentColor = '#2A2A2A',
     onMenuOpen,
     onMenuClose
 }) => {
+    const { turmaId } = useAuth(); // 👈 pega direto do contexto
+
+    // menuItems agora sempre usa o turmaId do contexto
+    const menuItems = [
+        { label: 'Turmas', link: '/turmas' },
+        { label: 'Atividades', link: `/atividades/${turmaId || ''}` },
+        { label: 'Favoritos', link: `/favoritos/${turmaId || ''}` },
+        { label: 'Posts', link: `/post/${turmaId || ''}/:postId` },
+    ];
+
     const [open, setOpen] = useState(false);
     const openRef = useRef(false);
 
@@ -39,7 +39,6 @@ export const StaggeredMenu = ({
 
     const textInnerRef = useRef(null);
     const textWrapRef = useRef(null);
-
 
     const openTlRef = useRef(null);
     const closeTweenRef = useRef(null);
@@ -284,9 +283,13 @@ export const StaggeredMenu = ({
         animateText(target);   // opcional
     }, [playOpen, playClose, animateColor, animateText, onMenuOpen, onMenuClose]);
 
-    const auth = useAuth();
-    const usuario = auth?.usuario;
+    const { usuario, logout } = useAuth();
     const userName = usuario?.nome || "Usuário";
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <div className="sm-scope w-full h-full">
@@ -367,8 +370,8 @@ export const StaggeredMenu = ({
                             role="list"
                             data-numbering={displayItemNumbering || undefined}
                         >
-                            {items && items.length ? (
-                                items.map((it, idx) => (
+                            {menuItems && menuItems.length ? (
+                                menuItems.map((it, idx) => (
                                     <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
                                         <a
                                             className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
@@ -392,28 +395,16 @@ export const StaggeredMenu = ({
                                 </li>
                             )}
                         </ul>
-                        {displaySocials && socialItems && socialItems.length > 0 && (
-                            <div className="sm-socials mt-auto pt-8 flex flex-col gap-3" aria-label="Social links">
-                                <h3 className="sm-socials-title m-0 text-base font-medium [color:var(--sm-accent,#ff0000)]">Socials</h3>
-                                <ul
-                                    className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap"
-                                    role="list"
-                                >
-                                    {socialItems.map((s, i) => (
-                                        <li key={s.label + i} className="sm-socials-item">
-                                            <a
-                                                href={s.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="sm-socials-link text-[1.2rem] font-small text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
-                                            >
-                                                {s.label}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                    </div>
+                    <div className='items-center text-center text-white font-semibold'>
+                        <button
+                            className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[var(--secondary)] hover:text-[var(--primary)] duration-200 ease-in uppercase justify-center gap-2 flex'
+                            onClick={handleLogout}>
+
+                            <CiLogout size={24}/>
+
+                            Logout
+                        </button>
                     </div>
                 </aside>
             </div>
