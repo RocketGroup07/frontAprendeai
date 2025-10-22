@@ -5,50 +5,49 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [turmaId, setTurmaId] = useState(null);
+  const [turmaNome, setTurmaNome] = useState(null);
 
-  // 🔹 Recupera dados do localStorage no carregamento
   useEffect(() => {
     const token = localStorage.getItem('token');
     const savedTurmaId = localStorage.getItem('turmaId');
+    const savedTurmaNome = localStorage.getItem('turmaNome');
     const userData = JSON.parse(localStorage.getItem('userData'));
 
-    if (token && userData) {
-      setUsuario(userData);
-    }
-
-    if (savedTurmaId) {
-      setTurmaId(savedTurmaId);
-    }
+    if (token && userData) setUsuario(userData);
+    if (savedTurmaId) setTurmaId(savedTurmaId);
+    if (savedTurmaNome) setTurmaNome(savedTurmaNome);
   }, []);
 
-  // 🔹 Salva o turmaId no localStorage sempre que mudar
   useEffect(() => {
-    if (turmaId) {
-      localStorage.setItem('turmaId', turmaId);
-    } else {
-      localStorage.removeItem('turmaId');
-    }
+    if (turmaId) localStorage.setItem('turmaId', turmaId);
+    else localStorage.removeItem('turmaId');
   }, [turmaId]);
 
-  // 🔹 Função de login
+  useEffect(() => {
+    if (turmaNome) localStorage.setItem('turmaNome', turmaNome);
+    else localStorage.removeItem('turmaNome');
+  }, [turmaNome]);
+
   const login = (token, userData) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userData', JSON.stringify(userData));
     setUsuario(userData);
   };
 
-  // 🔹 Função de logout
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     localStorage.removeItem('turmaId');
+    localStorage.removeItem('turmaNome');
     setUsuario(null);
     setTurmaId(null);
+    setTurmaNome(null);
   };
 
-  // 🔹 Função para selecionar uma turma
-  const selecionarTurma = (id) => {
+  // aceitar nome opcional
+  const selecionarTurma = (id, nome = null) => {
     setTurmaId(id);
+    if (nome) setTurmaNome(nome);
   };
 
   return (
@@ -59,6 +58,8 @@ export function AuthProvider({ children }) {
       logout,
       turmaId,
       setTurmaId,
+      turmaNome,
+      setTurmaNome,
       selecionarTurma
     }}>
       {children}
@@ -66,7 +67,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// 🔹 Hook para usar o AuthContext
 export function useAuth() {
   return useContext(AuthContext);
 }

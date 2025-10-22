@@ -55,7 +55,7 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!novoTitulo || !novaData || !novaDescricao) return;
     const dataFormatada = format(novaData, "dd/MM/yyyy");

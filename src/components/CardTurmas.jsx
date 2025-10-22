@@ -13,25 +13,30 @@ function CardTurmas() {
             try {
                 const response = await api.get("alunos/minhas-turmas");
                 console.log("Resposta da API:", response.data);
-                setTurmas(response.data);
+                setTurmas(response.data || []);
 
                 if (response.data.length && !turmaId) {
-                    selecionarTurma(response.data[0].id);
+                    selecionarTurma(response.data[0].id, response.data[0].nome);
+                } else if (turmaId) {
+                    const turmaAtual = response.data.find(t => String(t.id) === String(turmaId));
+                    if (turmaAtual) selecionarTurma(turmaAtual.id, turmaAtual.nome);
                 }
             } catch (error) {
                 console.error("Erro ao buscar turmas:", error);
             }
         }
         fetchTurmas();
-    }, []);
+    }, [turmaId, selecionarTurma]);
 
     return (
+        // ...existing code...
         <div className="flex flex-wrap gap-4 font-neuli ">
             {turmas.map((item) => (
                 <Link
                     key={item.id}
                     className='cursor-pointer hover:scale-103 transition-transform'
                     to={`/geral/${item.id}`}
+                    onClick={() => selecionarTurma(item.id, item.nome)}
                 >
                     <div className="w-80 h-40 bg-[var(--main)] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center">
                         <div className='w-full flex-col justify-center items-center'>
@@ -55,7 +60,7 @@ function CardTurmas() {
                 </Link>
             ))}
         </div>
-
+        // ...existing code...
     );
 }
 
