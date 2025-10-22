@@ -25,6 +25,10 @@
   --font-neuli: "neulis-sans", sans-serif;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 body {
   background-color: var(--bg);
   overflow-x: hidden;
