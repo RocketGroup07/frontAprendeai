@@ -23,7 +23,7 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano }) {
                 <div className='flex flex-col gap-2 pt-4'>
                     <div className='flex items-center gap-2'>
                         <p className='font-normal text-sm'>Autor:</p>
-                        <p className='font-light text-sm'>{autor.nome}</p>
+                        <p className='font-light text-sm'>{autor}</p>
                     </div>
                     <div className='flex items-center gap-2'>
                         <p className='font-normal text-sm'>Data:</p>
