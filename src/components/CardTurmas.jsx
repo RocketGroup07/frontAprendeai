@@ -36,6 +36,7 @@ function CardTurmas() {
                     key={item.id}
                     className='cursor-pointer hover:scale-103 transition-transform'
                     to={`/geral/${item.id}`}
+                    onClick={() => selecionarTurma(item.id, item.nome)}
                 >
                     <div className="w-80 h-40 bg-[var(--main)] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center">
                         <div className='w-full flex-col justify-center items-center'>
