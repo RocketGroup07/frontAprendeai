@@ -26,7 +26,7 @@ function CardTurmas() {
             }
         }
         fetchTurmas();
-    }, [turmaId, selecionarTurma]);
+    }, []);
 
     return (
         // ...existing code...

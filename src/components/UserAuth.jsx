@@ -7,13 +7,24 @@ export function AuthProvider({ children }) {
   const [turmaId, setTurmaId] = useState(null);
   const [turmaNome, setTurmaNome] = useState(null);
 
+  function definirRolePorEmail(email) {
+    if (email === "kayque.cassiano1@gmail.com") return "ADMIN";
+    if (email.endsWith("@escola.com")) return "PROFESSOR";
+    return "ALUNO";
+  }
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const savedTurmaId = localStorage.getItem('turmaId');
     const savedTurmaNome = localStorage.getItem('turmaNome');
-    const userData = JSON.parse(localStorage.getItem('userData'));
+    const userData = JSON.parse(localStorage.getItem('userData') || 'null');
 
-    if (token && userData) setUsuario(userData);
+    if (token && userData) {
+      if (!userData.role && userData.login) {
+        userData.role = definirRolePorEmail(userData.login);
+      }
+      setUsuario(userData);
+    }
     if (savedTurmaId) setTurmaId(savedTurmaId);
     if (savedTurmaNome) setTurmaNome(savedTurmaNome);
   }, []);
@@ -29,20 +40,21 @@ export function AuthProvider({ children }) {
   }, [turmaNome]);
 
   const login = (token, userData) => {
+    if (!userData.role && userData.login) {
+      userData.role = definirRolePorEmail(userData.login);
+    }
+
     localStorage.setItem('token', token);
     localStorage.setItem('userData', JSON.stringify(userData));
     setUsuario(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('turmaId');
-    localStorage.removeItem('turmaNome');
-    setUsuario(null);
-    setTurmaId(null);
-    setTurmaNome(null);
-  };
+  localStorage.clear();
+  setUsuario(null);
+  setTurmaId(null);
+  setTurmaNome(null);
+};
 
   // aceitar nome opcional
   const selecionarTurma = (id, nome = null) => {

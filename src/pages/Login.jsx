@@ -25,6 +25,14 @@ function Login() {
       let token = response.data.token;
       let userData = response.data.usuario;
 
+      if (userData.login === "admin.bytes@bytes.com") {
+        userData.role = "ADMIN";
+      } else if (userData.login.endsWith("@senaisp.edu.br")) {
+        userData.role = "PROFESSOR";
+      } else {
+        userData.role = "ALUNO";
+      }
+
       if (!token) {
         toast.error(response.data?.mensagem || "Erro no login. Verifique suas credenciais.");
         return;
@@ -54,7 +62,7 @@ function Login() {
       });
       localStorage.setItem("codigoTurma", data.codigoTurma);
       toast.success("Código validado com sucesso!");
-       setTimeout(() => navigate("/cadastro/" + data.codigoTurma), 1500);
+      setTimeout(() => navigate("/cadastro/" + data.codigoTurma), 1500);
     } catch (error) {
       toast.error("Código inválido.");
       toast.error(`Erro: ${error.response.data?.mensagem || error.response.status}`);
@@ -121,7 +129,7 @@ function Login() {
             onSubmit={handleSubmitCodigo(onSubmitCodigo, onError)}
           >
             <Input
-              className="text-center"
+              className="text-center uppercase"
               placeholder="Digite o código da turma"
               type=""
               name="codigoTurma"

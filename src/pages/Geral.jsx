@@ -103,7 +103,7 @@ function Geral() {
           grupos.map(([data, listaPosts]) => (
             <div key={data} className="mb-8">
               <h2 className="text-xl font-medium mb-4">{data}</h2>
-              <div className="flex flex-row flex-wrap gap-8">
+              <div className="flex flex-row flex-wrap gap-4">
                 {listaPosts.map((post) => (
                   <CardPosts
                     key={post.postId}
