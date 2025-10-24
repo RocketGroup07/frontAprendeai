@@ -273,10 +273,10 @@ export const StaggeredMenu = ({
 
         if (target) {
             onMenuOpen?.();
-            playOpen();   // 👈 ESSENCIAL: anima as camadas roxas + painel
+            playOpen();   
         } else {
             onMenuClose?.();
-            playClose();  // 👈 ESSENCIAL: recolhe tudo
+            playClose();  
         }
 
         animateColor(target);  // opcional

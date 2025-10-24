@@ -54,8 +54,19 @@ function Turmas() {
         <h1 className="text-[28px] font-bold">Suas Turmas</h1>
       </div>
 
-      <div className="flex bg-[var(--primary)] rounded-[4px] ml-19 mt-9 text-white w-21 justify-center">
-        <h2 className="text-[22px] font-[500]">Geral</h2>
+      <div className="w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-[var(--text)] ">
+        <div className="bg-[var(--primary)] items-center p-2 rounded">
+          <h2>Geral</h2>
+        </div>
+        <div className='flex items-center ml-auto'>
+            <button
+              className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] rounded hover:bg-[#b30404] transition-colors'
+              onClick={() => setShowModal(true)}
+            >
+              <span>+</span>
+              Nova atividade
+            </button>
+          </div>
       </div>
 
       <div className="flex m-auto mt-5 w-[90%]">
