@@ -6,27 +6,19 @@ export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [turmaId, setTurmaId] = useState(null);
   const [turmaNome, setTurmaNome] = useState(null);
-
-  function definirRolePorEmail(email) {
-    if (email === "kayque.cassiano1@gmail.com") return "ADMIN";
-    if (email.endsWith("@escola.com")) return "PROFESSOR";
-    return "ALUNO";
-  }
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const savedTurmaId = localStorage.getItem('turmaId');
     const savedTurmaNome = localStorage.getItem('turmaNome');
-    const userData = JSON.parse(localStorage.getItem('userData') || 'null');
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const savedRole = localStorage.getItem('role');
 
-    if (token && userData) {
-      if (!userData.role && userData.login) {
-        userData.role = definirRolePorEmail(userData.login);
-      }
-      setUsuario(userData);
-    }
+    if (token && userData) setUsuario(userData);
     if (savedTurmaId) setTurmaId(savedTurmaId);
     if (savedTurmaNome) setTurmaNome(savedTurmaNome);
+    if (savedRole) setRole(savedRole);
   }, []);
 
   useEffect(() => {
@@ -39,22 +31,29 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem('turmaNome');
   }, [turmaNome]);
 
-  const login = (token, userData) => {
-    if (!userData.role && userData.login) {
-      userData.role = definirRolePorEmail(userData.login);
-    }
+  useEffect(() => {
+    if (role) localStorage.setItem('role', role);
+    else localStorage.removeItem('role');
+  }, [role]);
 
-    localStorage.setItem('token', token);
-    localStorage.setItem('userData', JSON.stringify(userData));
-    setUsuario(userData);
-  };
+  const login = (token, userData) => {
+  localStorage.setItem('token', token);
+  localStorage.setItem('userData', JSON.stringify(userData));
+
+  const userRole = userData?.papel || 'USER'; // vem direto do backend
+  localStorage.setItem('role', userRole);
+
+  setUsuario(userData);
+  setRole(userRole);
+};
+
 
   const logout = () => {
-  localStorage.clear();
-  setUsuario(null);
-  setTurmaId(null);
-  setTurmaNome(null);
-};
+    localStorage.clear();
+    setUsuario(null);
+    setTurmaId(null);
+    setTurmaNome(null);
+  };
 
   // aceitar nome opcional
   const selecionarTurma = (id, nome = null) => {
@@ -72,7 +71,9 @@ export function AuthProvider({ children }) {
       setTurmaId,
       turmaNome,
       setTurmaNome,
-      selecionarTurma
+      selecionarTurma,
+      isProfessor: role === 'PROFESSOR',
+      isAluno: role === 'USER'
     }}>
       {children}
     </AuthContext.Provider>

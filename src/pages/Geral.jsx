@@ -9,27 +9,54 @@ import { ptBR } from "date-fns/locale";
 import semTarefas from '../assets/images/semTarefas.svg';
 import StaggeredMenu from "../components/StaggeredMenu.jsx";
 import LinksContainer from "../components/LinksContainer.jsx";
+import { toast } from "react-toastify";
 
 function Geral() {
   const { turmaId } = useParams();
-  const { turmaNome, selecionarTurma } = useAuth();
+  const { turmaNome, selecionarTurma, isProfessor, isAluno, usuario } = useAuth();
   const [posts, setPosts] = useState([]);
-  const auth = useAuth();
-  const usuario = auth?.usuario;
-  const userName = usuario?.nome || "Usuário";
+  const [turmas, setTurmas] = useState([]);
   const { state } = useLocation();
 
+  const userName = usuario?.nome || "Usuário";
+
+  // 🔒 Adiciona o token no header das requisições
   useEffect(() => {
-    async function fetchTurmaPosts() {
-      try {
-        const response = await api.get(`posts/turma/${turmaId}`);
-        setPosts(response.data || []);
-      } catch (error) {
-        console.error("Erro ao buscar turma:", error);
-      }
+    const token = localStorage.getItem("token");
+    if (token) {
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
-    fetchTurmaPosts();
-  }, [turmaId]);
+  }, []);
+
+  async function fetchTurmas() {
+    try {
+      let endpoint = "";
+
+      if (isProfessor) {
+        endpoint = "turmas/"; // endpoint do professor
+      } else if (isAluno) {
+        endpoint = "alunos/minhas-turmas"; // endpoint do aluno
+      }
+
+      if (!endpoint) return;
+
+      const response = await api.get(endpoint);
+      setTurmas(response.data || []);
+
+      // se já houver turma selecionada, não sobrescreve
+      if (!turmaNome && response.data?.length > 0) {
+        selecionarTurma(response.data[0].id, response.data[0].nome);
+      }
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao carregar turmas");
+    }
+  }
+
+  useEffect(() => {
+    fetchTurmas();
+  }, [isProfessor, isAluno]);
 
   useEffect(() => {
     async function ensureTurmaNome() {
@@ -46,40 +73,34 @@ function Geral() {
     ensureTurmaNome();
   }, [turmaId, turmaNome, selecionarTurma]);
 
-  // Remover duplicados por id
+  // remover duplicados
   const uniquePosts = Array.from(new Map(posts.map(post => [post.postId, post])).values());
-  console.log("Posts únicos:", uniquePosts);
-  // Agrupar por data (ano)
+
+  // agrupar por data
   const postsPorData = uniquePosts.reduce((acc, post) => {
-    const data = format(post.data, "dd 'de' MMMM", { locale: ptBR })
-    console.log("Data do post:", data);
+    const data = format(post.data, "dd 'de' MMMM", { locale: ptBR });
     if (!acc[data]) acc[data] = [];
     acc[data].push(post);
     return acc;
   }, {});
 
-  console.log("Recebido 2" + postsPorData);
-
-  // Ordenar datas do mais recente para o mais antigo
-  const grupos = Object.entries(postsPorData).sort((a, b) => {
-    const [diaA, mesA, anoA] = a[0].split('/').map(Number);
-    const [diaB, mesB, anoB] = b[0].split('/').map(Number);
-    const dateA = new Date(anoA, mesA - 1, diaA);
-    const dateB = new Date(anoB, mesB - 1, diaB);
-    return dateB - dateA;
-  });
-
-  console.log("Recebido" + grupos);
+  const grupos = Object.entries(postsPorData);
 
   return (
     <div className='min-h-screen font-neuli'>
       <div style={{ height: "10vh" }}>
         <StaggeredMenu />
       </div>
+
       <div className='flex flex-col items-center justify-center gap-10 pt-10'>
         <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px]'>
           <TextType
-            text={[`Olá ${userName}!`, `Turma: ${turmaNome || '...'}`, 'Abaixo estão as atividades', 'Bons estudos!']}
+            text={[
+              `Olá ${userName}!`,
+              `Turma: ${turmaNome || '...'}`,
+              'Abaixo estão as atividades',
+              'Bons estudos!'
+            ]}
             typingSpeed={75}
             pauseDuration={1500}
             showCursor={true}
@@ -88,15 +109,16 @@ function Geral() {
         </div>
       </div>
 
-      <LinksContainer turmaId={turmaId}/>
+      <LinksContainer turmaId={turmaId} />
 
       <div className='w-[90%] m-auto mt-5 text-[var(--text)]'>
         {grupos.length === 0 ? (
-          <div className="text-center flex flex-col-reverse items-center text-lg mt-10">Nenhum post encontrado para esta turma.
+          <div className="text-center flex flex-col-reverse items-center text-lg mt-10">
+            Nenhum post encontrado para esta turma.
             <img
               src={semTarefas}
               alt="Nenhuma tarefa encontrada"
-              className="w-64 h-64 mt-4" // Adicione classes para controlar o tamanho
+              className="w-64 h-64 mt-4"
             />
           </div>
         ) : (

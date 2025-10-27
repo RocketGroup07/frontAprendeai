@@ -4,30 +4,7 @@ import { IoMdShareAlt } from "react-icons/io";
 import { api } from "../lib/axios";
 import { useAuth } from "./UserAuth";
 
-function CardTurmas() {
-    const [turmas, setTurmas] = useState([]);
-    const { turmaId, selecionarTurma } = useAuth();
-
-    useEffect(() => {
-        async function fetchTurmas() {
-            try {
-                const response = await api.get("alunos/minhas-turmas");
-                console.log("Resposta da API:", response.data);
-                setTurmas(response.data || []);
-
-                if (response.data.length && !turmaId) {
-                    selecionarTurma(response.data[0].id, response.data[0].nome);
-                } else if (turmaId) {
-                    const turmaAtual = response.data.find(t => String(t.id) === String(turmaId));
-                    if (turmaAtual) selecionarTurma(turmaAtual.id, turmaAtual.nome);
-                }
-            } catch (error) {
-                console.error("Erro ao buscar turmas:", error);
-            }
-        }
-        fetchTurmas();
-    }, []);
-
+function CardTurmas({ turmas }) {
     return (
         // ...existing code...
         <div className="flex flex-wrap gap-4 font-neuli ">

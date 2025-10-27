@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import CardTurmas from "../components/CardTurmas";
 import { FaPlus } from "react-icons/fa";
 import Input from "../components/Input";
@@ -6,30 +6,53 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { api } from "../lib/axios";
 import StaggeredMenu from "../components/StaggeredMenu";
+import { useAuth } from "../components/UserAuth";
 
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
+  const [turmas, setTurmas] = useState([]);
+  const { isProfessor, isAluno } = useAuth();
+  
+  async function fetchTurmas() {
+    try {
+      let endpoint = "";
+
+      if (isProfessor) {
+        endpoint = "turmas/";
+      } else if (isAluno) {
+        endpoint = "alunos/minhas-turmas";
+      }
+
+      if (!endpoint) return;
+
+      const response = await api.get(endpoint);
+      setTurmas(response.data || []);
+    } catch (error) {
+      toast.error("Erro ao carregar turmas");
+    }
+  }
+
+  useEffect(() => {
+    fetchTurmas();
+  }, [isProfessor, isAluno]);
 
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
 
   const onSubmit = async (data) => {
     try {
-      const response = await api.post("alunos/entrar-turma", {
+      await api.post("alunos/entrar-turma", {
         codigoTurma: data.codigoTurma,
       });
 
       toast.success("Turma adicionada com sucesso!");
       setShowInputCard(false);
 
-      
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-
+      // Atualiza lista sem recarregar a página
+      fetchTurmas();
     } catch (error) {
       toast.error(
         error.response?.data?.mensagem || "Há algo de errado com o código!"
@@ -38,14 +61,11 @@ function Turmas() {
   };
 
   const onError = (errors) => {
-    Object.values(errors).forEach((err) => {
-      alert(err.message);
-    });
+    Object.values(errors).forEach((err) => alert(err.message));
   };
 
   return (
     <div className="bg-[var(--bg)] h-[100vh]">
-
       <div style={{ height: "10vh" }}>
         <StaggeredMenu />
       </div>
@@ -58,27 +78,32 @@ function Turmas() {
         <div className="bg-[var(--primary)] items-center p-2 rounded">
           <h2>Geral</h2>
         </div>
-        <div className='flex items-center ml-auto'>
-            <button
-              className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] rounded hover:bg-[#b30404] transition-colors'
-              onClick={() => setShowModal(true)}
-            >
-              <span>+</span>
-              Nova atividade
-            </button>
-          </div>
+
+        <div className="flex items-center ml-auto">
+          <button
+            className="flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] rounded hover:bg-[#b30404] transition-colors"
+            onClick={() => setShowModal(true)}
+          >
+            <span>+</span>
+            Nova atividade
+          </button>
+        </div>
       </div>
 
       <div className="flex m-auto mt-5 w-[90%]">
-        <CardTurmas />
+        <CardTurmas turmas={turmas} />
 
-        <div
-          className="w-80 h-46 ml-4 bg-[var(--main)] text-white rounded-lg p-10 flex flex-col justify-between items-center text-center border-dotted border-gray-500 border-2 cursor-pointer"
-          onClick={() => setShowInputCard(true)}
-        >
-          <FaPlus size={42} className="text-gray-500 mt-5" />
-          <p className="text-gray-500 text-[18px]">Entre em uma nova turma</p>
-        </div>
+        {isAluno && (
+          <div
+            className="w-80 h-46 ml-4 bg-[var(--main)] text-white rounded-lg p-10 flex flex-col justify-between items-center text-center border-dotted border-gray-500 border-2 cursor-pointer"
+            onClick={() => setShowInputCard(true)}
+          >
+            <FaPlus size={42} className="text-gray-500 mt-5" />
+            <p className="text-gray-500 text-[18px]">
+              Entre em uma nova turma
+            </p>
+          </div>
+        )}
 
         {showInputCard && (
           <div className="absolute top-1/2 left-1/2 transform shadow-[0_22px_70px_4px_rgba(0,0,0,0.56)] -translate-x-1/2 -translate-y-1/2 w-120 h-90 bg-zinc-900 rounded-3xl items-center text-center">
@@ -96,7 +121,7 @@ function Turmas() {
               Insira o código da turma:
             </h3>
 
-            <form
+            {/* <form
               title="codigoTurma"
               onSubmit={handleSubmit(onSubmit, onError)}
               className="w-full flex flex-col items-center"
@@ -127,7 +152,7 @@ function Turmas() {
                   Entrar
                 </button>
               </div>
-            </form>
+            </form> */}
           </div>
         )}
       </div>
