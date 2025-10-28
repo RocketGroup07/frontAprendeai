@@ -1,8 +1,15 @@
 import { IoMdShareAlt } from "react-icons/io";
 import beca from '../assets/images/school-svgrepo.svg'
 import star from '../assets/images/star.svg'
+import starFill from '../assets/images/star-fill.svg'
 
 function CardTarefas({ titulo, descricao, ano }) {
+    
+    function alteraEstrela(){
+        
+        console.log("Clicou na estrela")
+    }
+    
     return (
         <div className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
             {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
@@ -21,13 +28,13 @@ function CardTarefas({ titulo, descricao, ano }) {
                     </div>
 
                     <div className='mt-5 font-extralight text-[11px]'>
-                        <p className="overflow-hidden line-clamp-2">
+                        <p className="overflow-hidden line-clamp-1">
                             {descricao}
                         </p>
                     </div>
 
                     <div className="flex justify-end">
-                        <img src={star} alt="ícone de estrela" className="w-7 h-7 mt-4 fill-zinc-300 bg-current-white" />
+                        <img src={star} onClick={(alteraEstrela)} alt="ícone de estrela" className="w-7 h-7 mt-4 fill-zinc-300 bg-current-white" />
                     </div>
                 </div>
 
