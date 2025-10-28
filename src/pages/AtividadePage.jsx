@@ -132,7 +132,6 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
-  // ***** handleSubmit CORRIGIDO: Remoção do Content-Type manual para FormData *****
   async function handleSubmit(e) {
     e.preventDefault();
     if (!novoTitulo || !novaData || !novaDescricao) {

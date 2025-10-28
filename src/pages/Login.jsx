@@ -108,7 +108,7 @@ function Login() {
               <LinkRedirecionavel
                 nome={"Esqueci a senha"}
                 link={"/#"}
-                className="cursor-pointer hover:text-[#d3d3d3] underline duration-200"
+                className="cursor-pointer hover:text-[#d3d3d3] underline duration-200 bg-transparent"
               />
             </div>
             <Button>Entrar</Button>
