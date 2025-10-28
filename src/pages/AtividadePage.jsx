@@ -132,6 +132,7 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
+  // ***** handleSubmit CORRIGIDO: Remoção do Content-Type manual para FormData *****
   async function handleSubmit(e) {
     e.preventDefault();
     if (!novoTitulo || !novaData || !novaDescricao) {
@@ -151,7 +152,7 @@ function AtividadePage() {
       dataEntrega: dataFormatadaISO,
       // Se o back-end está esperando a data de criação no payload, adicione-a aqui.
       // Assumindo que a data de criação é AGORA
-      dataAtividade: new Date().toISOString(), 
+     /*  dataAtividade: new Date().toISOString(),  */
     };
 
     formData.append('atividade', JSON.stringify(post));
