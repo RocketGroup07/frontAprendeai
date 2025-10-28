@@ -12,7 +12,7 @@ function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
   const [turmas, setTurmas] = useState([]);
   const { isProfessor, isAluno } = useAuth();
-  
+
   async function fetchTurmas() {
     try {
       let endpoint = "";
@@ -79,7 +79,8 @@ function Turmas() {
           <h2>Geral</h2>
         </div>
 
-        <div className="flex items-center ml-auto">
+        {isProfessor && (
+          <div className="flex items-center ml-auto">
           <button
             className="flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] rounded hover:bg-[#b30404] transition-colors"
             onClick={() => setShowModal(true)}
@@ -87,7 +88,8 @@ function Turmas() {
             <span>+</span>
             Nova atividade
           </button>
-        </div>
+        </div>)}
+
       </div>
 
       <div className="flex m-auto mt-5 w-[90%]">
@@ -121,7 +123,7 @@ function Turmas() {
               Insira o código da turma:
             </h3>
 
-            {/* <form
+            <form
               title="codigoTurma"
               onSubmit={handleSubmit(onSubmit, onError)}
               className="w-full flex flex-col items-center"
@@ -152,7 +154,7 @@ function Turmas() {
                   Entrar
                 </button>
               </div>
-            </form> */}
+            </form>
           </div>
         )}
       </div>

@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
       turmaNome,
       setTurmaNome,
       selecionarTurma,
-      isProfessor: role === 'PROFESSOR',
+      isProfessor: role === 'ADMIN',
       isAluno: role === 'USER'
     }}>
       {children}
