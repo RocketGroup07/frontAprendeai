@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { CiLogout } from "react-icons/ci";
 
 const menuItems = [
-    { label: 'Turmas', link: '' },
+    { label: 'Turmas', link: '/turmas' },
     { label: 'Atividades', link: '' },
     { label: 'Favoritos', link: '' },
     { label: 'Posts', link: '' },
@@ -31,8 +31,6 @@ export const StaggeredMenu = ({
 }) => {
 
     const { isProfessor, isAluno, usuario, logout } = useAuth();
-    console.log(isProfessor);
-
 
     const [open, setOpen] = useState(false);
     const openRef = useRef(false);
@@ -72,8 +70,6 @@ export const StaggeredMenu = ({
                     preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
                 }
                 preLayerElsRef.current = preLayers;
-
-                console.log(panel)
 
                 const offscreen = position === 'left' ? -100 : 100;
                 gsap.set([panel, ...preLayers], { xPercent: offscreen });

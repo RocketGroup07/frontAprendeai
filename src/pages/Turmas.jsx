@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CardTurmas from "../components/CardTurmas";
 import { FaPlus } from "react-icons/fa";
 import Input from "../components/Input";
@@ -12,6 +12,13 @@ function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
   const [turmas, setTurmas] = useState([]);
   const { isProfessor, isAluno } = useAuth();
+
+  const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef(null);
+
+  const [novoNome, setnovoNome] = useState("");
+  const [novoLimite, setnovoLimite] = useState("");
+  const [novaCargaHoraria, setnovaCargaHoraria] = useState("");
 
   async function fetchTurmas() {
     try {
@@ -64,6 +71,36 @@ function Turmas() {
     Object.values(errors).forEach((err) => alert(err.message));
   };
 
+  async function handleCreateTurma(e) {
+    e.preventDefault();
+    if (!novoNome || !novoLimite || !novaCargaHoraria) return;
+
+    const novaTurma = {
+      nome: novoNome,
+      cargaHorariaTotal: novaCargaHoraria,
+      limiteAlunos: novoLimite,
+    };
+
+    try {
+      // POST para criar uma nova turma (ajuste o endpoint se necessário)
+      const response = await api.post("/turmas/", novaTurma);
+
+      // Atualiza lista local de turmas com a turma retornada pela API
+      setTurmas([response.data, ...turmas]);
+
+      // Limpa o formulário e fecha o modal
+      setShowModal(false);
+      setnovoNome("");
+      setnovoLimite("");
+      setnovaCargaHoraria("");
+
+      toast.success("Turma criada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao criar turma:", error);
+      toast.error("Falha ao criar a turma. Tente novamente.");
+    }
+  }
+
   return (
     <div className="bg-[var(--bg)] h-[100vh]">
       <div style={{ height: "10vh" }}>
@@ -81,14 +118,54 @@ function Turmas() {
 
         {isProfessor && (
           <div className="flex items-center ml-auto">
-          <button
-            className="flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] rounded hover:bg-[#b30404] transition-colors"
-            onClick={() => setShowModal(true)}
-          >
-            <span>+</span>
-            Nova atividade
-          </button>
-        </div>)}
+            <button
+              className="flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] rounded hover:bg-[#b30404] transition-colors"
+              onClick={() => setShowModal(true)}
+            >
+              <span>+</span>
+              Nova Turma
+            </button>
+          </div>)}
+
+        {showModal && (
+          <div className="fixed inset-0 z-50">
+            <div className="absolute inset-0 bg-black opacity-80" onClick={() => setShowModal(false)}></div>
+            <div className="flex items-center justify-center min-h-screen">
+              <div ref={modalRef} className="bg-[#1a1a1a] rounded-lg shadow-lg p-6 w-150 h-125 flex flex-col items-center relative">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="absolute top-2 right-2 text-white font-light text-5xl p-2 cursor-pointer"
+                >
+                  &times;
+                </button>
+                <h2 className="text-2xl font-bold mb-4 text-[var(--text)]">Nova Turma</h2>
+                <form className="flex flex-col gap-4 mt-4 w-full items-start" onSubmit={handleCreateTurma}>
+                  <label className="text-left text-white">Nome da Turma</label>
+                  <input type="text" value={novoNome} onChange={e => setnovoNome(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0" />
+                  <label className="text-left text-white">Limite de Alunos</label>
+                  <input type="text" value={novoLimite} onChange={e => setnovoLimite(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  outline-0" />
+                  <label className="text-left text-white">Carga Horaria Total</label>
+                  <input value={novaCargaHoraria} onChange={e => setnovaCargaHoraria(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0 resize-none" />
+                  <div className="flex gap-2 w-full justify-end  mt-8">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="px-4 py-2 cursor-pointer text-white border border-gray-300 rounded hover:bg-white hover:text-black transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors"
+                    >
+                      Criar Turma
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
 
