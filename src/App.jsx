@@ -14,21 +14,20 @@ import TelaPost from "./pages/TelaPost.jsx";
 function App() {
 
   return (
-    <>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path='/turmas' element={<Turmas />} />
-            <Route path='/geral/:turmaId' element={<Geral />} />
-            <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
-            <Route path='/atividades/:turmaId' element={<AtividadePage />} />
-            <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
-            <Route path='/professor' element={<DashProf />} />
-            <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
-          </Routes>
-        </Router>
-      
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path='/turmas' element={<Turmas />} />
+          <Route path='/geral/:turmaId' element={<Geral />} />
+          <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
+          <Route path='/atividades/:turmaId' element={<AtividadePage />} />
+          <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
+          <Route path='/professor' element={<DashProf />} />
+          <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
+        </Routes>
+      </Router>
+
 
       <ToastContainer
         toastClassName="neulis-sans"
@@ -39,10 +38,9 @@ function App() {
         closeOnClick rtl={false}
         draggable
         pauseOnHover={false}
-        theme="dark" 
-        />
-      </AuthProvider>
-    </>
+        theme="dark"
+      />
+    </AuthProvider>
   );
 }
 

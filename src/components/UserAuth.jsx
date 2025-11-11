@@ -14,19 +14,9 @@ export function AuthProvider({ children }) {
     const savedTurmaNome = localStorage.getItem('turmaNome');
 
     if (token && userData) setUsuario(userData);
-    if (savedTurmaId) setTurmaId(savedTurmaId);
-    if (savedTurmaNome) setTurmaNome(savedTurmaNome);
+    
+    selecionarTurma(savedTurmaId, savedTurmaNome || null);
   }, []);
-
-  useEffect(() => {
-    if (turmaId) localStorage.setItem('turmaId', turmaId);
-    else localStorage.removeItem('turmaId');
-  }, [turmaId]);
-
-  useEffect(() => {
-    if (turmaNome) localStorage.setItem('turmaNome', turmaNome);
-    else localStorage.removeItem('turmaNome');
-  }, [turmaNome]);
 
   const login = (token, userData) => {
   localStorage.setItem('token', token);
@@ -45,10 +35,8 @@ export function AuthProvider({ children }) {
   const selecionarTurma = (id, nome = null) => {
     setTurmaId(id);
     if (nome) setTurmaNome(nome);
+    return;
   };
-
-  //console.log(usuario.papel);
-  
 
   return (
     <AuthContext.Provider value={{

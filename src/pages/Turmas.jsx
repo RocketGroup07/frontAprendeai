@@ -34,6 +34,7 @@ function Turmas() {
 
       const response = await api.get(endpoint);
       setTurmas(response.data || []);
+      
     } catch (error) {
       toast.error("Erro ao carregar turmas");
     }
@@ -48,6 +49,9 @@ function Turmas() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  console.log();
+  
 
   const onSubmit = async (data) => {
     try {

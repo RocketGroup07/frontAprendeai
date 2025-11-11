@@ -58,21 +58,6 @@ function Geral() {
     fetchTurmas();
   }, [isProfessor, isAluno]);
 
-  useEffect(() => {
-    async function ensureTurmaNome() {
-      if (!turmaNome && turmaId) {
-        try {
-          const resp = await api.get('alunos/minhas-turmas');
-          const turmaAtual = (resp.data || []).find(t => String(t.id) === String(turmaId));
-          if (turmaAtual) selecionarTurma(turmaAtual.id, turmaAtual.nome);
-        } catch (err) {
-          console.error('Erro ao buscar nome da turma:', err);
-        }
-      }
-    }
-    ensureTurmaNome();
-  }, [turmaId, turmaNome, selecionarTurma]);
-
   // remover duplicados
   const uniquePosts = Array.from(new Map(posts.map(post => [post.postId, post])).values());
 
