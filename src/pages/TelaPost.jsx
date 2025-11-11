@@ -66,7 +66,7 @@ function TelaPost() {
                                     <FaCircle />
                                 </div>
                                 <div>
-                                    <h6>{format(new Date(post.dataPostagem), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</h6>
+                                    <h6>{format(new Date(post.data), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</h6>
                                 </div>
 
                             </div>

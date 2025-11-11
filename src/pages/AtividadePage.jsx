@@ -10,6 +10,7 @@ import { useAuth } from "../components/UserAuth";
 import { api } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import Modal from "../components/Modal";
 
 // ***** FUNÇÃO DE FORMATAÇÃO CORRIGIDA PARA ORDENAÇÃO *****
 function formatarAtividadeParaComponente(post) {
@@ -43,7 +44,6 @@ function formatarAtividadeParaComponente(post) {
     autor: post.professor?.nome || "Professor"
   };
 }
-
 
 function AtividadePage() {
   const { turmaId: turmaIdParam } = useParams();
@@ -220,7 +220,24 @@ function AtividadePage() {
           </div>
         </LinksContainer>
 
-        {showModal && (
+            <Modal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              modalRef={modalRef}
+              handleSubmit={handleSubmit}
+              novoTitulo={novoTitulo}
+              setNovoTitulo={setNovoTitulo}
+              novaData={novaData}
+              setNovaData={setNovaData}
+              novaDescricao={novaDescricao}
+              setNovaDescricao={setNovaDescricao}
+              novoArquivo={novoArquivo}
+              setNovoArquivo={setNovoArquivo}
+              isAtividade={true}
+              nomeModal={"Nova Atividade"}
+            />
+
+        {/* {showModal && (
           <div className="fixed inset-0 z-50">
             <div className="absolute inset-0 bg-black opacity-80" onClick={() => setShowModal(false)}></div>
             <div className="flex items-center justify-center min-h-screen">
@@ -270,7 +287,7 @@ function AtividadePage() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         <div className='w-[90%] m-auto mt-5 text-white'>
           {grupos.length === 0 ? (

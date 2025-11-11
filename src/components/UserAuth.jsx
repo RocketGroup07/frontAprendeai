@@ -62,7 +62,8 @@ export function AuthProvider({ children }) {
       setTurmaNome,
       selecionarTurma,
       isProfessor: userData && userData.papel === 'ADMIN',
-      isAluno: userData && userData.papel === 'USER'
+      isAluno: userData && userData.papel === 'USER',
+      usuarioId: userData ? userData.id : null
     }}>
       {children}
     </AuthContext.Provider>
