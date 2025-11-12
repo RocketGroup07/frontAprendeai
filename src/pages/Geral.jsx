@@ -193,7 +193,7 @@ async function fetchPosts() {
             text={[
               `Olá ${userName}!`,
               `Turma: ${turmaNome || '...'}`,
-              'Abaixo estão as atividades',
+              'Abaixo estão os posts',
               'Bons estudos!'
             ]}
             typingSpeed={75}

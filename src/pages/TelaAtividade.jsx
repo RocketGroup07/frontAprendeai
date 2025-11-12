@@ -1,31 +1,36 @@
-import TextType from "../components/TextType"
-import { FaLongArrowAltLeft } from "react-icons/fa";
-import { SiGoogleclassroom } from "react-icons/si";
-import { FaCircle } from "react-icons/fa6";
 import { Link, useParams } from "react-router";
-import { useEffect, useState } from "react";
+import StaggeredMenu from "../components/StaggeredMenu";
+import TextType from "../components/TextType";
+import { FaCircle, FaLongArrowAltLeft } from "react-icons/fa";
+import { MdOutlineAddTask } from "react-icons/md";
+import React, { useState, useEffect } from "react";
 import { api } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import StaggeredMenu from "../components/StaggeredMenu";
+import IAMessages from "../components/IAMessages";
 
 
-function TelaPost() {
-    const { turmaId, postId } = useParams();
-    const [post, setPost] = useState(null);
+    
+
+
+function TelaAtividade() {
+    const { turmaId, atividadeId } = useParams();
+    const [atividade, setAtividade] = useState(null);
 
     useEffect(() => {
-        async function fetchPost() {
+        async function fetchAtividade() {
             try {
-                const response = await api.get(`/posts/${postId}/${turmaId}`);
-                setPost(response.data);
+                const response = await api.get(`/atividades/${atividadeId}`);
+                setAtividade(response.data);
+                console.log("Atividade carregada:", response.data);
             } catch (error) {
-                console.error("Erro ao buscar o post:", error);
-                setPost(null); // Garante que não haverá dados antigos em caso de erro
+                console.error("Erro ao buscar a atividade:", error);
+                setAtividade(null); // Garante que não haverá dados antigos em caso de erro
             }
         }
-        fetchPost();
-    }, [postId]);
+        fetchAtividade();
+    }, [atividadeId, turmaId]);
+
 
     return (
         <div>
@@ -34,9 +39,9 @@ function TelaPost() {
                 <StaggeredMenu />
             </div>
 
-            <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
+          <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
                 <TextType
-                    text={["Posts"]}
+                    text={["Atividades"]}
                     typingSpeed={75}
                     pauseDuration={1500}
                     showCursor={true}
@@ -44,52 +49,54 @@ function TelaPost() {
                 />
             </div>
 
-            <div className="w-[90%] m-auto mt-3" >
+                  <div className="w-[90%] m-auto mt-3" >
                 <div>
-                    <Link to={"/geral/" + turmaId} >
+                    <Link to={"/atividades/" + turmaId} >
 
                         <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 "><FaLongArrowAltLeft />Voltar</button>
                     </Link>
                 </div>
-                {post ? (
+                {atividade ? (
                     <div className="flex text-white gap-6 m-auto mt-5 ">
-                        <div className="text-6xl" ><SiGoogleclassroom /></div>
+                        <div className="text-6xl" ><MdOutlineAddTask /></div>
                         <div className="w-full">
                             <div className="text-3xl font-bold">
-                                <h1>{post.titulo}</h1>
+                                <h1>{atividade.titulo}</h1>
                             </div>
                             <div className="flex gap-4 items-center text-[0.7rem] font-light " >
                                 <div>
-                                    <h6>{post.autor.nome}</h6>
+                                    <h6>{atividade.nome}</h6>
                                 </div>
                                 <div>
                                     <FaCircle />
                                 </div>
                                 <div>
-                                    <h6>{format(new Date(post.data), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</h6>
+                                    <h6>{format(new Date(atividade.dataAtividade), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</h6>
                                 </div>
 
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
                             <div>
                                 <div>
-                                    <p className="text-justify whitespace-pre-wrap">{post.conteudo}</p>
+                                    <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
                                 </div>
                                 <div className="mt-4 font-extralight">
                                     <p>Arquivos</p>
+                                    {/* <IAMessages></IAMessages> */}
                                 </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
                         </div>
                     </div>
                 ) : (
-                    <div className="text-white text-center mt-10">Carregando post...</div>
+                    <div className="text-white text-center mt-10">Carregando atividade...</div>
                 )}
 
             </div>
+
 
         </div>
     )
 }
 
-export default TelaPost
+export default TelaAtividade;
