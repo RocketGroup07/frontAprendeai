@@ -8,10 +8,10 @@ export function AuthProvider({ children }) {
   const [turmaNome, setTurmaNome] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedTurmaId = localStorage.getItem('turmaId');
-    const savedTurmaNome = localStorage.getItem('turmaNome');
-    const userData = JSON.parse(localStorage.getItem('userData'));
+    const token = sessionStorage.getItem('token');
+    const savedTurmaId = sessionStorage.getItem('turmaId');
+    const savedTurmaNome = sessionStorage.getItem('turmaNome');
+    const userData = JSON.parse(sessionStorage.getItem('userData'));
 
     if (token && userData) setUsuario(userData);
     if (savedTurmaId) setTurmaId(savedTurmaId);
@@ -19,26 +19,26 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (turmaId) localStorage.setItem('turmaId', turmaId);
-    else localStorage.removeItem('turmaId');
+    if (turmaId) sessionStorage.setItem('turmaId', turmaId);
+    else sessionStorage.removeItem('turmaId');
   }, [turmaId]);
 
   useEffect(() => {
-    if (turmaNome) localStorage.setItem('turmaNome', turmaNome);
-    else localStorage.removeItem('turmaNome');
+    if (turmaNome) sessionStorage.setItem('turmaNome', turmaNome);
+    else sessionStorage.removeItem('turmaNome');
   }, [turmaNome]);
 
   const login = (token, userData) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('userData', JSON.stringify(userData));
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('userData', JSON.stringify(userData));
     setUsuario(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('turmaId');
-    localStorage.removeItem('turmaNome');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userData');
+    sessionStorage.removeItem('turmaId');
+    sessionStorage.removeItem('turmaNome');
     setUsuario(null);
     setTurmaId(null);
     setTurmaNome(null);
