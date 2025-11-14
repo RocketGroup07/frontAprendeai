@@ -117,7 +117,12 @@ async function fetchPosts() {
     return acc;
   }, {});
 
-  const grupos = Object.entries(postsPorData);
+  // Ordenar os grupos de datas do mais recente para o mais antigo
+  const grupos = Object.entries(postsPorData).sort((a, b) => {
+    const dateA = new Date(uniquePosts.find(p => format(p.data, "dd 'de' MMMM", { locale: ptBR }) === a[0]).data);
+    const dateB = new Date(uniquePosts.find(p => format(p.data, "dd 'de' MMMM", { locale: ptBR }) === b[0]).data);
+    return dateB - dateA;
+  });
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -138,10 +143,6 @@ async function fetchPosts() {
       return;
     }
 
-    /* const [ano, mes, dia] = novaData.split('-').map(Number);
-    const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString(); */
-
-    // Payload em FormData (formato string/multipart)
     const formData = new FormData();
 
     const post = {
@@ -165,15 +166,13 @@ async function fetchPosts() {
 
       console.log("Resposta da API ao criar post:", response);
 
-      const postCriado = response.data;
-     // const postFormatado = formatarPostParaComponente(postCriado);
-
-      //setPosts([postFormatado, ...posts]);
-
       setShowModal(false);
       setNovoTitulo("");
       setNovaDescricao("");
       setNovoArquivo(null);
+
+      // Recarrega os posts para atualizar a lista
+      fetchPosts();
 
     } catch (error) {
       console.error("Erro ao postar post:", error);
@@ -193,7 +192,7 @@ async function fetchPosts() {
             text={[
               `Olá ${userName}!`,
               `Turma: ${turmaNome || '...'}`,
-              'Abaixo estão os posts',
+              'Abaixo estão as atividades',
               'Bons estudos!'
             ]}
             typingSpeed={75}
@@ -262,6 +261,7 @@ async function fetchPosts() {
                     descricao={post.conteudo}
                     autor={post.autor}
                     ano={post.data}
+                    onDelete={fetchPosts}
                   />
                 ))}
               </div>

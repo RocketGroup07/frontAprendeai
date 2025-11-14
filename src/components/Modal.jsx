@@ -1,4 +1,12 @@
 function Modal({ showModal, setShowModal, modalRef, handleSubmit, novoTitulo, setNovoTitulo, novaData, setNovaData, novaDescricao, setNovaDescricao, novoArquivo, setNovoArquivo, isAtividade, isTurma, isGeral, isFavoritos, nomeModal}) {
+  
+  // Calcular data de amanhã ao abrir o modal
+  const getAmanhaDia = () => {
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    return amanha.toISOString().split('T')[0];
+  };
+
   return (
     <div>  
         {showModal && (
@@ -20,7 +28,7 @@ function Modal({ showModal, setShowModal, modalRef, handleSubmit, novoTitulo, se
                   {isAtividade && (
                     <>
                       <label className="text-left text-white">Data de Entrega</label>
-                      <input type="date" value={novaData} onChange={e => setNovaData(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  outline-0" />
+                      <input type="date" value={novaData || getAmanhaDia()} onChange={e => setNovaData(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  outline-0" />
                     </>
                   )}
 

@@ -2,9 +2,8 @@ import { IoMdShareAlt } from "react-icons/io";
 import beca from '../assets/images/school-svgrepo.svg'
 import star from '../assets/images/star.svg'
 import starFill from '../assets/images/star-fill.svg'
-import { Link } from "react-router-dom";
 
-function CardTarefas({ id, turmaId, titulo, descricao, ano }) {
+function CardTarefas({ titulo, descricao, ano }) {
     
     function alteraEstrela(){
         
@@ -12,9 +11,7 @@ function CardTarefas({ id, turmaId, titulo, descricao, ano }) {
     }
     
     return (
-        <Link to={`/atividades/${turmaId}/${id}`} className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
-            <div className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
-            {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
+        <div className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
             <div
                 className="h-44 bg-[var(--main)] text-white rounded-t-lg p-5 flex flex-col justify-between"
             >
@@ -53,10 +50,7 @@ function CardTarefas({ id, turmaId, titulo, descricao, ano }) {
                 </div>
             </div>
         </div>
-
-        </Link>
-        
-    );
+    )
 }
 
 export default CardTarefas
