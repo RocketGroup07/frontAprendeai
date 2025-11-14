@@ -19,7 +19,7 @@ function ReactGrid({ data }) {
   // Definições das colunas
   const colDefs = [
     { field: "nomeAluno", headerName: "Nome do Aluno", sortable: true, filter: true },
-    { field: "horasPresente", headerName: "Email", sortable: true, filter: true },
+    { field: "horasPresente", headerName: "Email", sortable: true, filter: true, editable: true },
     { field: "papel", headerName: "Papel", sortable: true, filter: true },
   ];
 
