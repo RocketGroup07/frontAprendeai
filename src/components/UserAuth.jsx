@@ -6,12 +6,12 @@ export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [turmaId, setTurmaId] = useState(null);
   const [turmaNome, setTurmaNome] = useState(null);
+  const userData = JSON.parse(sessionStorage.getItem('userData'));
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const savedTurmaId = sessionStorage.getItem('turmaId');
     const savedTurmaNome = sessionStorage.getItem('turmaNome');
-    const userData = JSON.parse(sessionStorage.getItem('userData'));
 
     if (token && userData) setUsuario(userData);
     if (savedTurmaId) setTurmaId(savedTurmaId);
@@ -29,16 +29,13 @@ export function AuthProvider({ children }) {
   }, [turmaNome]);
 
   const login = (token, userData) => {
-    sessionStorage.setItem('token', token);
-    sessionStorage.setItem('userData', JSON.stringify(userData));
-    setUsuario(userData);
-  };
+  sessionStorage.setItem('token', token);
+  sessionStorage.setItem('userData', JSON.stringify(userData));
+  setUsuario(userData);
+};
 
   const logout = () => {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('userData');
-    sessionStorage.removeItem('turmaId');
-    sessionStorage.removeItem('turmaNome');
+    sessionStorage.clear();
     setUsuario(null);
     setTurmaId(null);
     setTurmaNome(null);
@@ -50,6 +47,9 @@ export function AuthProvider({ children }) {
     if (nome) setTurmaNome(nome);
   };
 
+  //console.log(usuario.papel);
+  
+
   return (
     <AuthContext.Provider value={{
       usuario,
@@ -60,7 +60,10 @@ export function AuthProvider({ children }) {
       setTurmaId,
       turmaNome,
       setTurmaNome,
-      selecionarTurma
+      selecionarTurma,
+      isProfessor: userData && userData.papel === 'ADMIN',
+      isAluno: userData && userData.papel === 'USER',
+      usuarioId: userData ? userData.id : null
     }}>
       {children}
     </AuthContext.Provider>

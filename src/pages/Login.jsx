@@ -22,10 +22,10 @@ function Login() {
         senha: data.senha,
       });
 
-      let token = response.data.token;
-      let userData = response.data.usuario;
+      const token = response.data.token;
+      const userData = response.data.usuario;
 
-      if (!token) {
+      if (!token || !userData) {
         toast.error(response.data?.mensagem || "Erro no login. Verifique suas credenciais.");
         return;
       }
@@ -38,6 +38,7 @@ function Login() {
 
       toast.success("Login realizado com sucesso!");
       setTimeout(() => navigate("turmas"), 1500);
+
     } catch (error) {
       if (error.response) {
         toast.error(`Erro no login: ${error.response.data?.mensagem || error.response.status}`);
@@ -54,10 +55,12 @@ function Login() {
       });
       sessionStorage.setItem("codigoTurma", data.codigoTurma);
       toast.success("Código validado com sucesso!");
-       setTimeout(() => navigate("/cadastro/" + data.codigoTurma), 1500);
+      setTimeout(() => navigate("/cadastro/" + data.codigoTurma), 1500);
     } catch (error) {
       toast.error("Código inválido.");
-      toast.error(`Erro: ${error.response.data?.mensagem || error.response.status}`);
+      if (error.response) {
+        toast.error(`Erro: ${error.response.data?.mensagem || error.response.status}`);
+      }
     }
   };
 
@@ -75,6 +78,7 @@ function Login() {
         </div>
 
         <div className="flex justify-center gap-8 mt-8">
+          {/* FORM LOGIN */}
           <Form
             title={"Login"}
             onSubmit={handleSubmitLogin(onSubmitLogin, onError)}
@@ -91,7 +95,7 @@ function Login() {
                   message: "Digite um e-mail válido"
                 }
               }}
-              error={!!errorsLogin.login} // <-- ESSA LINHA!
+              error={!!errorsLogin.login}
             />
             <Input
               placeholder="Senha"
@@ -114,21 +118,23 @@ function Login() {
             <Button>Entrar</Button>
           </Form>
 
+          {/* DIVISOR */}
           <div className="w-2 bg-[#3f3e40] rounded -my-14"></div>
 
+          {/* FORM CÓDIGO */}
           <Form
             title={"Digite o código de acesso da turma"}
             onSubmit={handleSubmitCodigo(onSubmitCodigo, onError)}
           >
             <Input
-              className="text-center"
+              className="text-center uppercase"
               placeholder="Digite o código da turma"
-              type=""
               name="codigoTurma"
               register={registerCodigo}
               rules={{
                 required: "O código da turma é obrigatório",
               }}
+              error={!!errorsCodigo.codigoTurma}
             />
             <Button>Validar</Button>
           </Form>
@@ -140,4 +146,4 @@ function Login() {
   )
 }
 
-export default Login
+export default Login;

@@ -12,7 +12,6 @@ function CardTarefas({ titulo, descricao, ano }) {
     
     return (
         <div className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80'>
-            {/* AQUI ESTÁ A MUDANÇA: 'flex', 'flex-col' e 'justify-between' */}
             <div
                 className="h-44 bg-[var(--main)] text-white rounded-t-lg p-5 flex flex-col justify-between"
             >
