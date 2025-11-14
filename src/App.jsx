@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./components/UserAuth.jsx";
 import DashProf from "./pages/DashProf.jsx";
 import TelaPost from "./pages/TelaPost.jsx";
+import TelaAtividade from "./pages/TelaAtividade.jsx";
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
             <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
             <Route path='/professor' element={<DashProf />} />
             <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
+            <Route path='/atividades/:turmaId/:atividadeId' element={<TelaAtividade/>} />
           </Routes>
         </Router>
       

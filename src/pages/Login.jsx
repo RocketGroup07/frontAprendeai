@@ -30,10 +30,11 @@ function Login() {
         return;
       }
 
-      sessionStorage.setItem("token", token);
-      if (userData && userData.nome) {
-        sessionStorage.setItem("userData", JSON.stringify(userData));
-      }
+      // Salva no localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("userData", JSON.stringify(userData));
+
+      // Passa para o contexto
       loginContext(token, userData);
 
       toast.success("Login realizado com sucesso!");
@@ -53,7 +54,7 @@ function Login() {
       const response = await api.post("turmas/validar-codigo", {
         codigoTurma: data.codigoTurma,
       });
-      sessionStorage.setItem("codigoTurma", data.codigoTurma);
+      localStorage.setItem("codigoTurma", data.codigoTurma);
       toast.success("Código validado com sucesso!");
       setTimeout(() => navigate("/cadastro/" + data.codigoTurma), 1500);
     } catch (error) {

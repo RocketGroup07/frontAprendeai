@@ -6,12 +6,12 @@ export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [turmaId, setTurmaId] = useState(null);
   const [turmaNome, setTurmaNome] = useState(null);
-  const userData = JSON.parse(sessionStorage.getItem('userData'));
+  const userData = JSON.parse(localStorage.getItem('userData'));
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const savedTurmaId = sessionStorage.getItem('turmaId');
-    const savedTurmaNome = sessionStorage.getItem('turmaNome');
+    const token = localStorage.getItem('token');
+    const savedTurmaId = localStorage.getItem('turmaId');
+    const savedTurmaNome = localStorage.getItem('turmaNome');
 
     if (token && userData) setUsuario(userData);
     if (savedTurmaId) setTurmaId(savedTurmaId);
@@ -19,23 +19,23 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (turmaId) sessionStorage.setItem('turmaId', turmaId);
-    else sessionStorage.removeItem('turmaId');
+    if (turmaId) localStorage.setItem('turmaId', turmaId);
+    else localStorage.removeItem('turmaId');
   }, [turmaId]);
 
   useEffect(() => {
-    if (turmaNome) sessionStorage.setItem('turmaNome', turmaNome);
-    else sessionStorage.removeItem('turmaNome');
+    if (turmaNome) localStorage.setItem('turmaNome', turmaNome);
+    else localStorage.removeItem('turmaNome');
   }, [turmaNome]);
 
   const login = (token, userData) => {
-  sessionStorage.setItem('token', token);
-  sessionStorage.setItem('userData', JSON.stringify(userData));
+  localStorage.setItem('token', token);
+  localStorage.setItem('userData', JSON.stringify(userData));
   setUsuario(userData);
 };
 
   const logout = () => {
-    sessionStorage.clear();
+    localStorage.clear();
     setUsuario(null);
     setTurmaId(null);
     setTurmaNome(null);
