@@ -46,6 +46,8 @@ function Geral() {
     ensureTurmaNome();
   }, [turmaId, turmaNome, selecionarTurma]);
 
+  console.log(turmaId)
+
   // Remover duplicados por id
   const uniquePosts = Array.from(new Map(posts.map(post => [post.postId, post])).values());
   console.log("Posts únicos:", uniquePosts);

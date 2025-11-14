@@ -1,14 +1,59 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StaggeredMenu from '../components/StaggeredMenu';
 import ReactGrid from '../components/ReactGrid';
+import { useAuth } from '../components/UserAuth';
+import { useParams } from 'react-router';
+import { api } from '../lib/axios';
+import FormButton from '../components/FormButton';
+import { toast } from 'react-toastify';
+import Input from '../components/Input';
+import { useForm } from 'react-hook-form';
 
 function DashProf() {
-    const [codigoTurma, setCodigoTurma] = useState(''); // Estado para armazenar o código da turma
+    const [codigoTurma, setCodigoTurma] = useState('');
+    const [data, setdata] = useState('');
+    // Estado para armazenar o código da turma
     const [turmaSelecionada, setTurmaSelecionada] = useState(null); // Estado para armazenar a turma selecionada
+
+    const { turmaId: turmaIdParam } = useParams();
+    const { turmaId: turmaIdContext } = useAuth();
+    const turmaId = turmaIdParam || turmaIdContext;
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors: errors }
+    } = useForm();
 
     const handleInputChange = (e) => {
         setCodigoTurma(e.target.value); // Atualiza o estado com o valor do input
     };
+
+    const onSubmit = async (data) => {
+
+
+        try {
+            const response = await api.post("/api/chamada/inicializar", {
+                turmaId: turmaId,
+                dataAula: data.dataAula,
+                conteudo: data.conteudo,
+                horasMaximas: data.horasMaximas
+            });
+
+            toast.success("Turma adicionada com sucesso!");
+            setdata(response.data);
+            console.log("resposta da api:", response.data);
+
+
+        } catch (error) {
+            toast.error(
+                error.response?.data?.mensagem || "Há algo de errado com o código!"
+            );
+            console.log("erro na api:", error)
+        }
+    };
+
+
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
@@ -32,22 +77,42 @@ function DashProf() {
                         <h1 className='text-5xl text-white'>Nome Turma</h1>
                         <button className='bg-[var(--primary)] text-white cursor-pointer w-[14%] rounded-[4px] h-8'>Voltar Para a Home</button>
                     </div>
-                    <div className="">
-                        <button className='bg-[var(--primary)] text-white w-[12%] rounded-[4px] mb-3'>Gerar Relatório</button>
-                    </div>
-                    <div className="flex g-4 bg-blue-600 gap-6">
-                        <div className='bg-pink-500 w-[12%] text-white'>04/09/2025</div>
-                        <div className='bg-green-600 w-[12%] text-white'>8h nesse dia</div>
-                        <input
-                            className='bg-amber-400 w-[40%]'
-                            type="text"
-                            placeholder='Digite o código da turma e pressione Enter'
-                            value={codigoTurma}
-                            onChange={handleInputChange}
-                            onKeyPress={handleKeyPress}
-                        />
-                    </div>
-                    <ReactGrid codigoTurma={turmaSelecionada} /> {/* Passa a turma selecionada como prop */}
+                    <form action="" onSubmit={handleSubmit(onSubmit)}>
+                        <div className="w-[15%] mb-6">
+                            <FormButton>Gerar Relatório</FormButton>
+                        </div>
+                        <div className="flex g-4 bg-blue-600 gap-6">
+                            <Input
+                                placeholder="21/08/2025"
+                                type="date"
+                                name="dataAula"
+                                id="dataAula"
+                                register={register}
+                            />
+                            <Input
+                                placeholder="8h nesse dia"
+                                type="number"
+                                name="horasMaximas"
+                                id="horasMaximas"
+                                register={register}
+
+                            />
+                            <Input
+                                placeholder="Digite o conteúdo da aula"
+                                type="text"
+                                name="conteudo"
+                                id="conteudo"
+                                register={register}
+
+                            />
+                        </div>
+                    </form>
+
+
+
+                    {data && data.length > 0 && (
+                        <ReactGrid data={data} />
+                    )}
                 </div>
             </div>
         </div>
