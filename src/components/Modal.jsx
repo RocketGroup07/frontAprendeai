@@ -1,3 +1,7 @@
+
+
+
+
 function Modal({ showModal, setShowModal, modalRef, handleSubmit, novoTitulo, setNovoTitulo, novaData, setNovaData, novaDescricao, setNovaDescricao, novoArquivo, setNovoArquivo, isAtividade, isTurma, isGeral, isFavoritos, nomeModal}) {
   
   // Calcular data de amanhã ao abrir o modal
