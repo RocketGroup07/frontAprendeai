@@ -9,7 +9,7 @@ function IAMessages({ contexto }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [displayedText, setDisplayedText] = useState("");
-
+  /* arrumando a ia */
   // ⚠️ Substitua por variável de ambiente em produção
   const ai = new GoogleGenAI({
     apiKey: "AIzaSyC125d7cbsBNo6ANKLu53ir3PfAat4TdMU"
