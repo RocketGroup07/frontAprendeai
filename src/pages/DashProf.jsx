@@ -12,6 +12,8 @@ import { useForm } from 'react-hook-form';
 function DashProf() {
     const [codigoTurma, setCodigoTurma] = useState('');
     const [data, setdata] = useState('');
+    const [percentualPresenca, setpercentualPresenca] = useState("");
+    const { turmaNome, selecionarTurma } = useAuth();
     // Estado para armazenar o código da turma
     const [turmaSelecionada, setTurmaSelecionada] = useState(null); // Estado para armazenar a turma selecionada
 
@@ -29,6 +31,17 @@ function DashProf() {
         setCodigoTurma(e.target.value); // Atualiza o estado com o valor do input
     };
 
+    useEffect(() => {
+        async function chamada() {
+          try {
+            const response = await api.get(`api/chamada/frequencia/${turmaId}`);
+            console.log(response.data);
+          } catch (error) {
+            console.error("Erro ao buscar turma:", error);
+          }
+        }
+      }, [turmaId]);
+
     const onSubmit = async (data) => {
 
 
@@ -43,7 +56,7 @@ function DashProf() {
             toast.success("Turma adicionada com sucesso!");
             setdata(response.data);
             console.log("resposta da api:", response.data);
-
+            chamada();
 
         } catch (error) {
             toast.error(
@@ -74,7 +87,7 @@ function DashProf() {
                 {/* Container menor */}
                 <div className="flex flex-col w-[89%] gap-4">
                     <div className="flex justify-between w-[100%] mb-6">
-                        <h1 className='text-5xl text-white'>Nome Turma</h1>
+                        <h1 className='text-5xl text-white'>{turmaNome}</h1>
                         <button className='bg-[var(--primary)] text-white cursor-pointer w-[14%] rounded-[4px] h-8'>Voltar Para a Home</button>
                     </div>
                     <form action="" onSubmit={handleSubmit(onSubmit)}>
@@ -108,11 +121,11 @@ function DashProf() {
                         </div>
                     </form>
 
-
-
-                    {data && data.length > 0 && (
-                        <ReactGrid data={data} />
-                    )}
+                    {/*  Lógica de aparecer a tabela quando gerar o relatorio */}
+                    <ReactGrid data={data} turmaSelecionada={turmaSelecionada}/>
+                    {/* {data && data.length > 0 && (
+                        
+                    )} */}
                 </div>
             </div>
         </div>
