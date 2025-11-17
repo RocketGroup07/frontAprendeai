@@ -36,7 +36,7 @@ function formatarAtividadeParaComponente(post) {
     titulo: post.titulo,
 
     // Dados "traduzidos" para o front-end:
-    ano: dataParaExibicao,         // Usado no CardTarefas (Ex: "27 de Outubro 2025")
+    ano: dataParaExibicao,         // Usado no CardTarefas (Ex: "27 de Outubro 2025")
     dataDeAgrupamento: dataParaOrdenacao, // Usado para agrupar (Ex: "27 Outubro 2025")
     descricao: descricaoResumida,
 
@@ -275,5 +275,4 @@ function AtividadePage() {
     </div>
   )
 }
-
 export default AtividadePage;
