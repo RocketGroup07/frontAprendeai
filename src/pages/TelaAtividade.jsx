@@ -4,11 +4,12 @@ import TextType from "../components/TextType";
 import { FaCircle, FaLongArrowAltLeft } from "react-icons/fa";
 import { MdOutlineAddTask } from "react-icons/md";
 import React, { useState, useEffect } from "react";
-import { api } from "../lib/axios";
+import { api, baseURL } from "../lib/axios";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ca, ptBR } from "date-fns/locale";
 import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
+import { AiOutlineDownload } from "react-icons/ai";
 
 
 
@@ -22,6 +23,8 @@ function TelaAtividade() {
             try {
                 const response = await api.get(`/atividades/${atividadeId}`);
                 setAtividade(response.data);
+                
+               
                 console.log("Atividade carregada:", response.data);
             } catch (error) {
                 console.error("Erro ao buscar a atividade:", error);
@@ -30,6 +33,16 @@ function TelaAtividade() {
         }
         fetchAtividade();
     }, [atividadeId, turmaId]);
+
+
+    // async function baixarArquivo() {
+    //     try{
+    //         const response = await api.get(`atividades/${postId}/download/anexo`)
+    //         console.log("Está vindo");
+    //     }catch(error){
+    //         console.error("Erro ao buscar a atividade:", error);
+    //     }
+    // }
 
 
     return (
@@ -80,9 +93,17 @@ function TelaAtividade() {
                                 <div>
                                     <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
                                 </div>
-                                <div className="mt-4 font-extralight">
-                                    <p>Arquivos</p>
+                            </div>
+                            <hr className="border-t border-gray-600 my-4" />
+                            <div>
+                                <div>
+                                    <p className="font-bold" >Arquivo:</p>
                                 </div>
+                                <a href={`${baseURL}atividades/${atividade.id}/download/anexo`} target="_blank" download>
+                                <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
+                                    <div>{atividade.nomesArquivosAnexo}</div>
+                                    <div><AiOutlineDownload /></div>
+                                </div> </a>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
                             <div>

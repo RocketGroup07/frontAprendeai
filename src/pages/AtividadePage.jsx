@@ -12,35 +12,33 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Modal from "../components/Modal";
 
-// ***** FUNÇÃO DE FORMATAÇÃO CORRIGIDA PARA ORDENAÇÃO *****
 function formatarAtividadeParaComponente(post) {
 
-  // 🚨 CORREÇÃO AQUI: Usando 'dataAtividade' (data de criação) ao invés de 'dataEntrega'.
+
   const dataDeReferencia = post.dataAtividade || post.dataEntrega;
 
-  // Data para Exibição (Ex: "27 de Outubro")
+
   const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de 'MMMM yyyy", { locale: ptBR });
 
-  // Data para Agrupamento/Ordenação (Ex: "27 de Outubro 2025")
-  // Alterei o formato para 'dd MMMM yyyy' para garantir que agrupe por dia e ano corretamente.
+
   const dataParaOrdenacao = format(new Date(dataDeReferencia), 'dd MMMM yyyy', { locale: ptBR });
 
-  // Fix: Trunca o 'conteudo'
+
   const descricaoResumida = post.conteudo
     ? post.conteudo.substring(0, 100) + "..."
     : "";
 
-  // Fix: Cria um objeto NOVO e usa '?' para evitar crash
+
   return {
     id: post.id,
     titulo: post.titulo,
 
-    // Dados "traduzidos" para o front-end:
-    ano: dataParaExibicao,         // Usado no CardTarefas (Ex: "27 de Outubro 2025")
-    dataDeAgrupamento: dataParaOrdenacao, // Usado para agrupar (Ex: "27 Outubro 2025")
+   
+    ano: dataParaExibicao,         
+    dataDeAgrupamento: dataParaOrdenacao, 
     descricao: descricaoResumida,
 
-    // Usa optional chaining '?' para evitar o crash
+   
     autor: post.professor?.nome || "Professor"
   };
 }
@@ -59,14 +57,14 @@ function AtividadePage() {
   const [novoTitulo, setNovoTitulo] = useState("");
   const [novaData, setNovaData] = useState("");
   const [novaDescricao, setNovaDescricao] = useState("");
-  // Adição do estado para o arquivo anexado
+ 
   const [novoArquivo, setNovoArquivo] = useState(null);
 
   useEffect(() => {
     async function fetchAtividades() {
       try {
         const response = await api.get(`/atividades/turma/${turmaId}`);
-        // console.log("Resposta da API de atividades:", response.data); // Linha removida
+     
         if (response.data && Array.isArray(response.data)) {
 
           const atividadesFormatadas = response.data.map(formatarAtividadeParaComponente);
@@ -82,7 +80,7 @@ function AtividadePage() {
     }
   }, [turmaId]);
 
-  // Agrupamento usando o campo corrigido 'dataDeAgrupamento'
+
   const postsPorData = atividades.reduce((acc, post) => {
     const data = post.dataDeAgrupamento;
     if (!acc[data]) {
@@ -92,18 +90,17 @@ function AtividadePage() {
     return acc;
   }, {});
 
-  // Ordenação que AGORA FUNCIONA
+  
   const grupos = Object.entries(postsPorData).sort((a, b) => {
-    // a[0] e b[0] são agora 'dd MMMM yyyy'
-    // Para ordenar datas em formato de texto, é melhor convertê-las para objeto Date
+  
     const parseDate = (dateString) => {
-      // Cria uma data no formato yyyy-MM-dd para ser reconhecida corretamente
+     
       const parts = dateString.split(' ');
       const dia = parts[0].padStart(2, '0');
-      const mes = parts[1]; // Mês em extenso
+      const mes = parts[1]; 
       const ano = parts[2];
 
-      // Mapeamento simples do mês em português (ajuste caso os meses estejam capitalizados ou em outro formato)
+      
       const mesesMap = {
         'janeiro': 0, 'fevereiro': 1, 'março': 2, 'abril': 3, 'maio': 4, 'junho': 5,
         'julho': 6, 'agosto': 7, 'setembro': 8, 'outubro': 9, 'novembro': 10, 'dezembro': 11
@@ -111,7 +108,7 @@ function AtividadePage() {
 
       const mesIndex = mesesMap[mes.toLowerCase()];
 
-      if (mesIndex === undefined) return new Date(0); // Data inválida em caso de erro
+      if (mesIndex === undefined) return new Date(0); 
 
       return new Date(ano, mesIndex, dia);
     };
@@ -119,7 +116,7 @@ function AtividadePage() {
     const dateA = parseDate(a[0]);
     const dateB = parseDate(b[0]);
 
-    return dateB.getTime() - dateA.getTime(); // Ordena do mais novo para o mais antigo
+    return dateB.getTime() - dateA.getTime(); 
   });
 
   useEffect(() => {
@@ -134,7 +131,7 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
-  // ***** handleSubmit CORRIGIDO: Remoção do Content-Type manual para FormData *****
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!novoTitulo || !novaData || !novaDescricao) {
@@ -145,16 +142,14 @@ function AtividadePage() {
     const [ano, mes, dia] = novaData.split('-').map(Number);
     const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString();
 
-    // Payload em FormData (formato string/multipart)
+
     const formData = new FormData();
 
     const post = {
       titulo: novoTitulo,
       conteudo: novaDescricao,
       dataEntrega: dataFormatadaISO,
-      // Se o back-end está esperando a data de criação no payload, adicione-a aqui.
-      // Assumindo que a data de criação é AGORA
-      /*  dataAtividade: new Date().toISOString(),  */
+      
     };
 
     formData.append('atividade', JSON.stringify(post));
@@ -164,8 +159,7 @@ function AtividadePage() {
     }
 
     try {
-      // **Ajuste Crítico:** Removido o objeto 'headers' para que o Axios/Browser
-      // configure automaticamente o 'Content-Type: multipart/form-data' corretamente.
+      
       api.options.headers = {};
       const response = await api.post(`/atividades/criar/${turmaId}`, formData, {
         headers: {
@@ -262,7 +256,7 @@ function AtividadePage() {
                       titulo={atividade.titulo}
                       descricao={atividade.descricao}
                       autor={atividade.autor}
-                      ano={atividade.ano} // 'ano' é a data formatada em Português
+                      ano={atividade.ano}
                     />
                   ))}
 
