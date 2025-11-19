@@ -1,17 +1,26 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { TbLogout2 } from "react-icons/tb";
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png';
 import { useNavigate } from 'react-router-dom';
 import { CiLogout } from "react-icons/ci";
 
+const menuItems = [
+    { label: 'Turmas', link: '/turmas' },
+    { label: 'Atividades', link: '' },
+    { label: 'Favoritos', link: '' },
+    { label: 'Posts', link: '' },
+];
+
 export const StaggeredMenu = ({
     position = 'right',
     colors = ['var(--secondary)', 'var(--main)'],
     displayItemNumbering = false,
     className,
+    items = menuItems,
     logoUrl = logo,
     menuButtonColor = '#fff',
     openMenuButtonColor = '#fff',
@@ -20,15 +29,8 @@ export const StaggeredMenu = ({
     onMenuOpen,
     onMenuClose
 }) => {
-    const { turmaId } = useAuth(); // 👈 pega direto do contexto
 
-    // menuItems agora sempre usa o turmaId do contexto
-    const menuItems = [
-        { label: 'Turmas', link: '/turmas' },
-        { label: 'Atividades', link: `/atividades/${turmaId || ''}` },
-        { label: 'Favoritos', link: `/favoritos/${turmaId || ''}` },
-        { label: 'Posts', link: `/post/${turmaId || ''}/:postId` },
-    ];
+    const { isProfessor, isAluno, usuario, logout } = useAuth();
 
     const [open, setOpen] = useState(false);
     const openRef = useRef(false);
@@ -56,22 +58,28 @@ export const StaggeredMenu = ({
             const panel = panelRef.current;
             const preContainer = preLayersRef.current;
 
+            if (panel != null) {
 
-            const textInner = textInnerRef.current;
 
-            let preLayers = [];
-            if (preContainer) {
-                preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
+
+
+                const textInner = textInnerRef.current;
+
+                let preLayers = [];
+                if (preContainer) {
+                    preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
+                }
+                preLayerElsRef.current = preLayers;
+
+                const offscreen = position === 'left' ? -100 : 100;
+                gsap.set([panel, ...preLayers], { xPercent: offscreen });
+
+
+                gsap.set(textInner, { yPercent: 0 });
+
+                if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
+
             }
-            preLayerElsRef.current = preLayers;
-
-            const offscreen = position === 'left' ? -100 : 100;
-            gsap.set([panel, ...preLayers], { xPercent: offscreen });
-
-
-            gsap.set(textInner, { yPercent: 0 });
-
-            if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
         });
         return () => ctx.revert();
     }, [menuButtonColor, position]);
@@ -273,17 +281,16 @@ export const StaggeredMenu = ({
 
         if (target) {
             onMenuOpen?.();
-            playOpen();   // 👈 ESSENCIAL: anima as camadas roxas + painel
+            playOpen();
         } else {
             onMenuClose?.();
-            playClose();  // 👈 ESSENCIAL: recolhe tudo
+            playClose();
         }
 
         animateColor(target);  // opcional
         animateText(target);   // opcional
     }, [playOpen, playClose, animateColor, animateText, onMenuOpen, onMenuClose]);
 
-    const { usuario, logout } = useAuth();
     const userName = usuario?.nome || "Usuário";
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -299,7 +306,7 @@ export const StaggeredMenu = ({
                 data-position={position}
                 data-open={open || undefined}
             >
-                <div
+                {isProfessor && (<div
                     ref={preLayersRef}
                     className="sm-prelayers fixed top-0 right-0 h-screen pointer-events-none z-[5]"
                     aria-hidden="true"
@@ -319,7 +326,7 @@ export const StaggeredMenu = ({
                             />
                         ));
                     })()}
-                </div>
+                </div>)}
 
                 <header
                     className="staggered-menu-header absolute top-0 left-0 w-full p-[2em] bg-[#D00909] pointer-events-none z-20"
@@ -350,63 +357,72 @@ export const StaggeredMenu = ({
                                 onClick={toggleMenu}
                                 type="button"
                             >
+                                {isAluno && (<button
+                                    className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
+                                    onClick={handleLogout}>
+                                    <TbLogout2  size={32} />
+                                </button>)}
+                                {isProfessor && (<GiHamburgerMenu className='' size={32} />)}
 
-                                <GiHamburgerMenu className='' size={32} />
                             </button>
                         </div>
                     </div>
                 </header>
 
-                <aside
-                    id="staggered-menu-panel"
-                    ref={panelRef}
-                    className="staggered-menu-panel fixed top-0 right-0 h-screen bg-white flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px]"
-                    style={{ WebkitBackdropFilter: 'blur(12px)' }}
-                    aria-hidden={!open}
-                >
-                    <div className="sm-panel-inner flex-1 flex flex-col gap-5">
-                        <ul
-                            className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
-                            role="list"
-                            data-numbering={displayItemNumbering || undefined}
-                        >
-                            {menuItems && menuItems.length ? (
-                                menuItems.map((it, idx) => (
-                                    <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
-                                        <a
-                                            className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
-                                            href={it.link}
-                                            aria-label={it.ariaLabel}
-                                            data-index={idx + 1}
-                                        >
+                {isProfessor && (
+                    <aside
+                        id="staggered-menu-panel"
+                        ref={panelRef}
+                        className="staggered-menu-panel fixed top-0 right-0 h-screen bg-white flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px]"
+                        style={{ WebkitBackdropFilter: 'blur(12px)' }}
+                        aria-hidden={!open}
+                    >
+                        <div className="sm-panel-inner flex-1 flex flex-col gap-5">
+                            <ul
+                                className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
+                                role="list"
+                                data-numbering={displayItemNumbering || undefined}
+                            >
+                                {items && items.length ? (
+                                    items.map((it, idx) => (
+                                        <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
+                                            <a
+                                                className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
+                                                href={it.link}
+                                                aria-label={it.ariaLabel}
+                                                data-index={idx + 1}
+                                            >
+                                                <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
+                                                    {it.label}
+                                                </span>
+                                            </a>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li className="sm-panel-itemWrap relative overflow-hidden leading-none" aria-hidden="true">
+                                        <span className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
                                             <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                                                {it.label}
+                                                No items
                                             </span>
-                                        </a>
-                                    </li>
-                                ))
-                            ) : (
-                                <li className="sm-panel-itemWrap relative overflow-hidden leading-none" aria-hidden="true">
-                                    <span className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
-                                        <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                                            No items
                                         </span>
-                                    </span>
-                                </li>
-                            )}
-                        </ul>
-                    </div>
-                    <div className='items-center text-center text-white font-semibold'>
-                        <button
-                            className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[var(--secondary)] hover:text-[var(--primary)] duration-200 ease-in uppercase justify-center gap-2 flex'
-                            onClick={handleLogout}>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
+                        <div className='items-center text-center text-white font-semibold'>
+                            <button
+                                className='border-white border-3 w-full p-2 cursor-pointer rounded-md hover:bg-[var(--secondary)] hover:text-[var(--primary)] duration-200 ease-in uppercase justify-center gap-2 flex'
+                                onClick={handleLogout}>
 
-                            <CiLogout size={24}/>
+                                <CiLogout size={24} />
 
-                            Logout
-                        </button>
-                    </div>
-                </aside>
+                                Logout
+                            </button>
+                        </div>
+                    </aside>
+                )}
+
+
             </div>
 
             <style>{`

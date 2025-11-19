@@ -1,26 +1,90 @@
-import LinkRedirecionavel from "../components/LinkRedirecionavel"
-import posts from '../ativ.json';
+import LinkRedirecionavel from "../components/LinkRedirecionavel";
 import CardTarefas from "../components/CardTarefas";
 import React, { useState, useRef, useEffect } from "react";
 import '../index.css';
-// import { format } from "date-fns"; // MODIFICAÇÃO 2: Não é mais necessário formatar a data aqui
 import { useParams } from "react-router";
 import semTarefas from '../assets/images/semTarefas.svg';
 import StaggeredMenu from "../components/StaggeredMenu";
-import LinksContainer from "../components/LinksContainer"; // Adicione este import
-import { log } from "three/tsl";
+import LinksContainer from "../components/LinksContainer";
 import { useAuth } from "../components/UserAuth";
+import { api } from "../lib/axios";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import Modal from "../components/Modal";
+
+// ***** FUNÇÃO DE FORMATAÇÃO CORRIGIDA PARA ORDENAÇÃO *****
+function formatarAtividadeParaComponente(post) {
+
+  // 🚨 CORREÇÃO AQUI: Usando 'dataAtividade' (data de criação) ao invés de 'dataEntrega'.
+  const dataDeReferencia = post.dataAtividade || post.dataEntrega;
+
+  // Data para Exibição (Ex: "27 de Outubro")
+  const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de 'MMMM yyyy", { locale: ptBR });
+
+  // Data para Agrupamento/Ordenação (Ex: "27 de Outubro 2025")
+  // Alterei o formato para 'dd MMMM yyyy' para garantir que agrupe por dia e ano corretamente.
+  const dataParaOrdenacao = format(new Date(dataDeReferencia), 'dd MMMM yyyy', { locale: ptBR });
+
+  // Fix: Trunca o 'conteudo'
+  const descricaoResumida = post.conteudo
+    ? post.conteudo.substring(0, 100) + "..."
+    : "";
+
+  // Fix: Cria um objeto NOVO e usa '?' para evitar crash
+  return {
+    id: post.id,
+    titulo: post.titulo,
+
+    // Dados "traduzidos" para o front-end:
+    ano: dataParaExibicao,         // Usado no CardTarefas (Ex: "27 de Outubro 2025")
+    dataDeAgrupamento: dataParaOrdenacao, // Usado para agrupar (Ex: "27 Outubro 2025")
+    descricao: descricaoResumida,
+
+    // Usa optional chaining '?' para evitar o crash
+    autor: post.professor?.nome || "Professor"
+  };
+}
 
 function AtividadePage() {
   const { turmaId: turmaIdParam } = useParams();
   const { turmaId: turmaIdContext } = useAuth();
   const turmaId = turmaIdParam || turmaIdContext;
 
-  const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values());
-  const [atividades, setAtividades] = useState(uniquePosts);
+  const { isProfessor } = useAuth();
 
+  const [atividades, setAtividades] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef(null);
+
+  const [novoTitulo, setNovoTitulo] = useState("");
+  const [novaData, setNovaData] = useState("");
+  const [novaDescricao, setNovaDescricao] = useState("");
+  // Adição do estado para o arquivo anexado
+  const [novoArquivo, setNovoArquivo] = useState(null);
+
+  useEffect(() => {
+    async function fetchAtividades() {
+      try {
+        const response = await api.get(`/atividades/turma/${turmaId}`);
+        // console.log("Resposta da API de atividades:", response.data); // Linha removida
+        if (response.data && Array.isArray(response.data)) {
+
+          const atividadesFormatadas = response.data.map(formatarAtividadeParaComponente);
+          setAtividades(atividadesFormatadas);
+
+        }
+      } catch (error) {
+        console.error("Erro ao buscar atividades:", error);
+      }
+    }
+    if (turmaId) {
+      fetchAtividades();
+    }
+  }, [turmaId]);
+
+  // Agrupamento usando o campo corrigido 'dataDeAgrupamento'
   const postsPorData = atividades.reduce((acc, post) => {
-    const data = post.ano;
+    const data = post.dataDeAgrupamento;
     if (!acc[data]) {
       acc[data] = [];
     }
@@ -28,20 +92,35 @@ function AtividadePage() {
     return acc;
   }, {});
 
+  // Ordenação que AGORA FUNCIONA
   const grupos = Object.entries(postsPorData).sort((a, b) => {
-    const [diaA, mesA, anoA] = a[0].split('/').map(Number);
-    const [diaB, mesB, anoB] = b[0].split('/').map(Number);
-    const dateA = new Date(anoA, mesA - 1, diaA);
-    const dateB = new Date(anoB, mesB - 1, diaB);
-    return dateB - dateA;
+    // a[0] e b[0] são agora 'dd MMMM yyyy'
+    // Para ordenar datas em formato de texto, é melhor convertê-las para objeto Date
+    const parseDate = (dateString) => {
+      // Cria uma data no formato yyyy-MM-dd para ser reconhecida corretamente
+      const parts = dateString.split(' ');
+      const dia = parts[0].padStart(2, '0');
+      const mes = parts[1]; // Mês em extenso
+      const ano = parts[2];
+
+      // Mapeamento simples do mês em português (ajuste caso os meses estejam capitalizados ou em outro formato)
+      const mesesMap = {
+        'janeiro': 0, 'fevereiro': 1, 'março': 2, 'abril': 3, 'maio': 4, 'junho': 5,
+        'julho': 6, 'agosto': 7, 'setembro': 8, 'outubro': 9, 'novembro': 10, 'dezembro': 11
+      };
+
+      const mesIndex = mesesMap[mes.toLowerCase()];
+
+      if (mesIndex === undefined) return new Date(0); // Data inválida em caso de erro
+
+      return new Date(ano, mesIndex, dia);
+    };
+
+    const dateA = parseDate(a[0]);
+    const dateB = parseDate(b[0]);
+
+    return dateB.getTime() - dateA.getTime(); // Ordena do mais novo para o mais antigo
   });
-
-  const [showModal, setShowModal] = useState(false);
-  const modalRef = useRef(null);
-
-  const [novoTitulo, setNovoTitulo] = useState("");
-  const [novaData, setNovaData] = useState("");
-  const [novaDescricao, setNovaDescricao] = useState("");
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -55,33 +134,55 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
+  // ***** handleSubmit CORRIGIDO: Remoção do Content-Type manual para FormData *****
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!novoTitulo || !novaData || !novaDescricao) return;
-    const dataFormatada = format(novaData, "dd/MM/yyyy");
-    const novoId = atividades.length > 0 ? Math.max(...atividades.map(a => a.id)) + 1 : 1;
-    const novaAtividade = {
-      id: novoId,
+    if (!novoTitulo || !novaData || !novaDescricao) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    const [ano, mes, dia] = novaData.split('-').map(Number);
+    const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString();
+
+    // Payload em FormData (formato string/multipart)
+    const formData = new FormData();
+
+    const post = {
       titulo: novoTitulo,
-      descricao: novaDescricao,
-      ano: dataFormatada,
-      autor: "Você"
+      conteudo: novaDescricao,
+      dataEntrega: dataFormatadaISO,
+      // Se o back-end está esperando a data de criação no payload, adicione-a aqui.
+      // Assumindo que a data de criação é AGORA
+      /*  dataAtividade: new Date().toISOString(),  */
     };
 
+    formData.append('atividade', JSON.stringify(post));
+
+    if (novoArquivo) {
+      formData.append('arquivo', novoArquivo);
+    }
+
     try {
-      // Faz a requisição POST para o endpoint da sua API
-      // Certifique-se de que o endpoint '/atividades' está correto
-      const response = await api.post(`/atividades/criar/${turmaId}`, novaAtividadePayload);
+      // **Ajuste Crítico:** Removido o objeto 'headers' para que o Axios/Browser
+      // configure automaticamente o 'Content-Type: multipart/form-data' corretamente.
+      api.options.headers = {};
+      const response = await api.post(`/atividades/criar/${turmaId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      });
 
-      // Adiciona a nova atividade (retornada pela API) ao estado local
-      // A resposta da API (response.data) deve conter a atividade recém-criada
-      setAtividades([response.data, ...atividades]);
+      const atividadeCriada = response.data;
+      const atividadeFormatada = formatarAtividadeParaComponente(atividadeCriada);
 
-      // Limpa o formulário e fecha o modal
+      setAtividades([atividadeFormatada, ...atividades]);
+
       setShowModal(false);
       setNovoTitulo("");
       setNovaData("");
       setNovaDescricao("");
+      setNovoArquivo(null);
 
     } catch (error) {
       console.error("Erro ao postar atividade:", error);
@@ -103,79 +204,75 @@ function AtividadePage() {
         </div>
 
         <LinksContainer turmaId={turmaId}>
-          {/* Botão para criar atividade */}
           <div className='flex items-center ml-auto'>
-            <button
-              className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors'
-              onClick={() => setShowModal(true)}
-            >
-              <span>+</span>
-              Nova atividade
-            </button>
+
+            {isProfessor && (
+              <button
+                className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors'
+                onClick={() => setShowModal(true)}
+              >
+                <span>+</span>
+                Nova atividade
+              </button>
+            )}
+
+
           </div>
         </LinksContainer>
 
-        {showModal && (
-          <div className="fixed inset-0 z-50">
-            <div className="absolute inset-0 bg-black opacity-80" onClick={() => setShowModal(false)}></div>
-            <div className="flex items-center justify-center min-h-screen">
-              <div ref={modalRef} className="bg-[#1a1a1a] rounded-lg shadow-lg p-6 w-150 h-140 flex flex-col items-center relative">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="absolute top-2 right-2 text-white font-light text-5xl p-2 cursor-pointer"
-                >
-                  &times;
-                </button>
-                <h2 className="text-2xl font-bold mb-4 text-[var(--text)]">Nova Atividade</h2>
-                <form className="flex flex-col gap-4 mt-4 w-full items-start" onSubmit={handleSubmit}>
-                  <label className="text-left text-white">Nome da Atividade</label>
-                  <input type="text" value={novoTitulo} onChange={e => setNovoTitulo(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0" />
-                  <label className="text-left text-white">Data de Entrega</label>
-                  <input type="date" value={novaData} onChange={e => setNovaData(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  outline-0" />
-                  <label className="text-left text-white">Descrição</label>
-                  <textarea value={novaDescricao} onChange={e => setNovaDescricao(e.target.value)} className="w-full bg-[#4a4a4a] p-3 text-white rounded-md  font-neuli outline-0 resize-none" />
-                  <div className="flex gap-2 w-full justify-end  mt-8">
-                    <button
-                      type="button"
-                      onClick={() => setShowModal(false)}
-                      className="px-4 py-2 cursor-pointer text-white border border-gray-300 rounded hover:bg-white hover:text-black transition-colors"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors"
-                    >
-                      Postar Atividade
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
+            <Modal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              modalRef={modalRef}
+              handleSubmit={handleSubmit}
+              novoTitulo={novoTitulo}
+              setNovoTitulo={setNovoTitulo}
+              novaData={novaData}
+              setNovaData={setNovaData}
+              novaDescricao={novaDescricao}
+              setNovaDescricao={setNovaDescricao}
+              novoArquivo={novoArquivo}
+              setNovoArquivo={setNovoArquivo}
+              isAtividade={true}
+              nomeModal={"Nova Atividade"}
+            />
 
+       
         <div className='w-[90%] m-auto mt-5 text-white'>
-          {grupos.map(([data, listaPosts]) => (
-            <div key={data} className="mb-8">
-              <h2 className="text-xl font-medium mb-4 text-[var(--text)]">{data}</h2>
-              <div className="flex flex-row flex-wrap gap-4">
-                {listaPosts.map((post) => (
-                  <CardTarefas
-                    key={post.id}
-                    titulo={post.titulo}
-                    descricao={post.descricao}
-                    autor={post.autor}
-                    ano={post.ano}
-                  />
-                ))}
-              </div>
+          {grupos.length === 0 ? (
+            <div className="text-center flex flex-col-reverse items-center text-lg mt-10 text-[var(--text)]">Nenhuma atividade encontrada para esta turma.
+              <img
+                src={semTarefas}
+                alt="Nenhuma tarefa encontrada"
+                className="w-64 h-64 mt-4"
+              />
             </div>
-          ))}
+          ) : (
+            grupos.map(([data, listaPosts]) => (
+              <div key={data} className="mb-8">
+                {/* O 'data' aqui é o nome do grupo (dataDeAgrupamento) */}
+                <h2 className="text-xl font-medium mb-4 text-[var(--text)]">{data}</h2>
+                <div className="flex flex-row flex-wrap gap-4">
+
+                  {listaPosts.map((atividade) => (
+                    <CardTarefas
+                      key={atividade.id}
+                      id={atividade.id}
+                      turmaId={turmaId}
+                      titulo={atividade.titulo}
+                      descricao={atividade.descricao}
+                      autor={atividade.autor}
+                      ano={atividade.ano} // 'ano' é a data formatada em Português
+                    />
+                  ))}
+
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
   )
 }
-
 export default AtividadePage;
