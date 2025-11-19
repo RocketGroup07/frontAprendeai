@@ -15,7 +15,6 @@ import TelaAtividade from "./pages/TelaAtividade.jsx";
 function App() {
 
   return (
-    <>
       <AuthProvider>
         <Router>
           <Routes>
