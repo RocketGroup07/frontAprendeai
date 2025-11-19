@@ -10,24 +10,27 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./components/UserAuth.jsx";
 import DashProf from "./pages/DashProf.jsx";
 import TelaPost from "./pages/TelaPost.jsx";
+import TelaAtividade from "./pages/TelaAtividade.jsx";
 
 function App() {
 
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path='/turmas' element={<Turmas />} />
-          <Route path='/geral/:turmaId' element={<Geral />} />
-          <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
-          <Route path='/atividades/:turmaId' element={<AtividadePage />} />
-          <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
-          <Route path='/professor' element={<DashProf />} />
-          <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
-        </Routes>
-      </Router>
-
+    <>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path='/turmas' element={<Turmas />} />
+            <Route path='/geral/:turmaId' element={<Geral />} />
+            <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
+            <Route path='/atividades/:turmaId' element={<AtividadePage />} />
+            <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
+            <Route path='/professor' element={<DashProf />} />
+            <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
+            <Route path='/atividades/:turmaId/:atividadeId' element={<TelaAtividade/>} />
+          </Routes>
+        </Router>
+      
 
       <ToastContainer
         toastClassName="neulis-sans"

@@ -214,10 +214,16 @@ function AtividadePage() {
                   {lista.map((atividade) => (
                     <CardTarefas
                       key={atividade.id}
+                      id={atividade.id}
+                      turmaId={turmaId}
                       titulo={atividade.titulo}
                       descricao={atividade.descricao}
                       autor={atividade.autor}
                       ano={atividade.ano}
+                      onDelete={() => {
+                        // Remove a atividade do estado
+                        setAtividades((prev) => prev.filter((a) => a.id !== atividade.id));
+                      }}
                     />
                   ))}
                 </div>
@@ -229,5 +235,4 @@ function AtividadePage() {
     </div>
   );
 }
-
 export default AtividadePage;

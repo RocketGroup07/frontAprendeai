@@ -54,7 +54,7 @@ function TelaPost() {
                 {post ? (
                     <div className="flex text-white gap-6 m-auto mt-5 ">
                         <div className="text-6xl" ><SiGoogleclassroom /></div>
-                        <div>
+                        <div className="w-full" >
                             <div className="text-3xl font-bold">
                                 <h1>{post.titulo}</h1>
                             </div>

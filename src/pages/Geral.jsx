@@ -96,7 +96,12 @@ function Geral() {
     return acc;
   }, {});
 
-  const grupos = Object.entries(postsPorData);
+  // Ordenar os grupos de datas do mais recente para o mais antigo
+  const grupos = Object.entries(postsPorData).sort((a, b) => {
+    const dateA = new Date(uniquePosts.find(p => format(p.data, "dd 'de' MMMM", { locale: ptBR }) === a[0]).data);
+    const dateB = new Date(uniquePosts.find(p => format(p.data, "dd 'de' MMMM", { locale: ptBR }) === b[0]).data);
+    return dateB - dateA;
+  });
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -223,6 +228,7 @@ function Geral() {
                     descricao={post.conteudo}
                     autor={post.autor}
                     ano={post.data}
+                    onDelete={fetchPosts}
                   />
                 ))}
               </div>

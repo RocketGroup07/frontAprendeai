@@ -40,10 +40,7 @@ function FormCadastro() {
       });
 
       const token = response.data.token;
-      const userData = response.data.usuario;
-
-      console.log(response.data);
-      
+      const userData = response.data.usuario;   
 
       login(token, userData);
       toast.success('Cadastro realizado com sucesso!');
