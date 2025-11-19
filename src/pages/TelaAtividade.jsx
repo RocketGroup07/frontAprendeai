@@ -16,6 +16,8 @@ function TelaAtividade() {
     const { turmaId, atividadeId } = useParams();
     const [atividade, setAtividade] = useState(null);
     const [showChat, setShowChat] = useState(false);
+    const [arquivo, setArquivo] = useState(null);
+    const fileInputRef = React.useRef();
 
     useEffect(() => {
         async function fetchAtividade() {
@@ -25,7 +27,7 @@ function TelaAtividade() {
                 console.log("Atividade carregada:", response.data);
             } catch (error) {
                 console.error("Erro ao buscar a atividade:", error);
-                setAtividade(null); // Garante que não haverá dados antigos em caso de erro
+                setAtividade(null);
             }
         }
         fetchAtividade();
@@ -39,7 +41,7 @@ function TelaAtividade() {
                 <StaggeredMenu />
             </div>
 
-          <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
+            <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
                 <TextType
                     text={["Atividades"]}
                     typingSpeed={75}
@@ -49,7 +51,7 @@ function TelaAtividade() {
                 />
             </div>
 
-                  <div className="w-[90%] m-auto mt-3" >
+            <div className="w-[90%] m-auto mt-3" >
                 <div>
                     <Link to={"/atividades/" + turmaId} >
 
@@ -81,10 +83,39 @@ function TelaAtividade() {
                                     <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
                                 </div>
                                 <div className="mt-4 font-extralight">
-                                    <p>Arquivos</p>
+                                    <p>atividade</p> {/* MEXER AQUI */}
                                 </div>
+
+
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
+
+                            <div className="flex gap-4">
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: "none" }}
+                                    onChange={e => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setArquivo(e.target.files[0]);
+                                        }
+                                    }}
+                                />
+                                <button
+                                    className="flex bg-gray-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-gray-700 "
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        fileInputRef.current.click();
+                                    }}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 flex-shrink-0">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21.44 11.05l-9.19 9.19a5 5 0 01-7.07-7.07l9.19-9.19a3 3 0 014.24 4.24L9.9 17.01a1 1 0 01-1.41-1.41L17.25 7.24" />
+                                    </svg>
+                                    {arquivo ? arquivo.name : "Anexar"}
+                                </button>
+                                <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 ">Entregar Atividade</button>
+                            </div>
+
                             <div>
                                 {/* Botão flutuante para abrir o chat IA */}
                                 <button

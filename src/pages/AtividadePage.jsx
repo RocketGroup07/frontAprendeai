@@ -12,20 +12,19 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Modal from "../components/Modal";
 
-// ***** FUNÇÃO DE FORMATAÇÃO CORRIGIDA PARA ORDENAÇÃO *****
+
 function formatarAtividadeParaComponente(post) {
 
-  // 🚨 CORREÇÃO AQUI: Usando 'dataAtividade' (data de criação) ao invés de 'dataEntrega'.
+
   const dataDeReferencia = post.dataAtividade || post.dataEntrega;
 
-  // Data para Exibição (Ex: "27 de Outubro")
+
   const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de 'MMMM yyyy", { locale: ptBR });
 
-  // Data para Agrupamento/Ordenação (Ex: "27 de Outubro 2025")
-  // Alterei o formato para 'dd MMMM yyyy' para garantir que agrupe por dia e ano corretamente.
+
   const dataParaOrdenacao = format(new Date(dataDeReferencia), 'dd MMMM yyyy', { locale: ptBR });
 
-  // Fix: Trunca o 'conteudo'
+
   const descricaoResumida = post.conteudo
     ? post.conteudo.substring(0, 100) + "..."
     : "";
@@ -262,7 +261,11 @@ function AtividadePage() {
                       titulo={atividade.titulo}
                       descricao={atividade.descricao}
                       autor={atividade.autor}
-                      ano={atividade.ano} // 'ano' é a data formatada em Português
+                      ano={atividade.ano}
+                      onDelete={() => {
+                        // Remove a atividade do estado
+                        setAtividades((prev) => prev.filter((a) => a.id !== atividade.id));
+                      }}
                     />
                   ))}
 

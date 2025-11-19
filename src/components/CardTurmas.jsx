@@ -1,24 +1,64 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdShareAlt } from "react-icons/io";
-import { MdContentCopy } from "react-icons/md";
+import { MdContentCopy, MdDelete } from "react-icons/md";
 import { api } from "../lib/axios";
 import { useAuth } from "./UserAuth";
 import { toast } from "react-toastify";
 
-function CardTurmas({ turmas }) {
+function CardTurmas({ turmas, onDelete }) {
     const { selecionarTurma } = useAuth();
 
     const handleCopiarCodigo = (e, codigo) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
         navigator.clipboard.writeText(codigo).then(() => {
             toast.success("Código copiado!");
         }).catch(() => {
             toast.error("Erro ao copiar código");
         });
     };
+
+
+    /* TENTANDO FAZER O DELETE DE TURMAS */
+    /* API para deletar: api.delete(`/turmas/${id}`); */
+    const handleDelete = (e, id) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const ConfirmDelete = () => (
+            <div className="flex gap-2">
+                <button onClick={async () => {
+                    try {
+                        await api.delete(`/turmas/${id}`);
+                        toast.success("Turma deletada com sucesso!");
+                        if (onDelete) onDelete(id);
+                    } catch (error) {
+                        console.error("Erro ao deletar turma:", error);
+                        toast.error("Erro ao deletar turma");
+                    }
+                }}
+                    className="bg-[var(--primary)] hover:bg-[var(--secondary)] text-white hover:text-[var(--primary)] px-3 py-1 rounded text-sm hover:cursor-pointer"
+                >
+                    Deletar
+                </button>
+
+                <button onclick={() => toast.dismiss}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm hover:cursor-pointer">
+                    Cancelar
+                </button>
+            </div>
+        );
+
+        toast.warning(<ConfirmDelete/>, {
+            position: "bottom-right",
+            autoClose: false,
+            closeButton: false,
+        });
+    };
+
+
 
     return (
         <div className="flex flex-wrap gap-4 font-neuli ">
@@ -36,6 +76,15 @@ function CardTurmas({ turmas }) {
                             title="Copiar código"
                         >
                             <MdContentCopy size={18} />
+                        </button>
+
+
+                        <button
+                            onClick={(e) => handleDelete(e, item.id)}
+                            className='cursor-pointer absolute top-2 left-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10'
+                            title="Deletar turma"
+                        >
+                            <MdDelete size={18} />
                         </button>
 
                         <div className='w-full flex-col justify-center items-center'>

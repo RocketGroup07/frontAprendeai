@@ -170,7 +170,10 @@ function Turmas() {
       </div>
 
       <div className="flex m-auto mt-5 w-[90%]">
-        <CardTurmas turmas={turmas} />
+        <CardTurmas turmas={turmas} 
+        onDelete={(id) => setTurmas((prev) => prev.filter((t) => t.id !== id))}
+  />
+        
 
         {isAluno && (
           <div
