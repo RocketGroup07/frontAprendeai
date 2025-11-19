@@ -7,9 +7,9 @@ import { useAuth } from './UserAuth';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-function ReactGrid({ data, turmaSelecionada }) {
+function ReactGrid({ data }) {
   const [rowData, setRowData] = useState([]);
-  
+
 
   const { turmaId: turmaIdParam } = useParams();
   const { turmaId: turmaIdContext } = useAuth();
@@ -45,31 +45,56 @@ function ReactGrid({ data, turmaSelecionada }) {
     }
   ];
 
+
+      /* async function chamada() {
+              try {
+                const response = await api.get(`api/chamada/frequencia/${turmaId}`);
+                console.log(response.data);
+            
+              } catch (error) {
+                console.error("Erro ao buscar turma:", error);
+              }
+            } */
+
   useEffect(() => {
     if (data && data.length > 0) {
       setRowData(data);
     }
   }, [data]);
+
+
+
+
   useEffect(() => {
-    if (turmaSelecionada && turmaSelecionada.length > 0) {
-      setRowData(turmaSelecionada);
-    }
-  }, [turmaSelecionada]);
+  if (Array.isArray(data) && data.length > 0) {
+    // Extrai apenas os percentuais de presença
+    const percentuais = data.map(item => item.percentualPresenca || 0); // Use 0 como valor padrão
+    console.log("Percentuais de presença:", percentuais);
 
-  
+    setRowData(data); // Atualiza o grid com os dados completos
+  } else {
+    console.warn("O array `data` está vazio ou indefinido.");
+  }
+}, [data]);
 
-  /* useEffect(() => {
-    if (percentualPresenca && percentualPresenca.length > 0) {
-      setRowData(percentualPresenca);
-    }
-  }, [percentualPresenca]); */
+async function chamada() {
+  try {
+    const response = await api.get(`api/chamada/frequencia/${turmaId}`);
+    console.log("Dados retornados pela API:", response.data); // Verifique os dados retornados
+    setRowData(response.data);
+  } catch (error) {
+    console.error("Erro ao buscar turma:", error);
+  }
+}
+
 
   // 🔵 PATCH ao clicar no botão
   const handleSave = async (row) => {
     try {
       await api.patch(`api/chamada/presenca/${row.id}`, {
         horasPresentes: Number(row.horasPresente),
-      });
+      }); 
+      await chamada();
 
       alert("Horas atualizadas!");
     } catch (error) {

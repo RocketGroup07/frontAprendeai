@@ -12,10 +12,9 @@ import { useForm } from 'react-hook-form';
 function DashProf() {
     const [codigoTurma, setCodigoTurma] = useState('');
     const [data, setdata] = useState('');
-    const [percentualPresenca, setpercentualPresenca] = useState("");
     const { turmaNome, selecionarTurma } = useAuth();
     // Estado para armazenar o código da turma
-    const [turmaSelecionada, setTurmaSelecionada] = useState(null); // Estado para armazenar a turma selecionada
+   
 
     const { turmaId: turmaIdParam } = useParams();
     const { turmaId: turmaIdContext } = useAuth();
@@ -31,17 +30,6 @@ function DashProf() {
         setCodigoTurma(e.target.value); // Atualiza o estado com o valor do input
     };
 
-    useEffect(() => {
-        async function chamada() {
-          try {
-            const response = await api.get(`api/chamada/frequencia/${turmaId}`);
-            console.log(response.data);
-          } catch (error) {
-            console.error("Erro ao buscar turma:", error);
-          }
-        }
-      }, [turmaId]);
-
     const onSubmit = async (data) => {
 
 
@@ -56,23 +44,12 @@ function DashProf() {
             toast.success("Turma adicionada com sucesso!");
             setdata(response.data);
             console.log("resposta da api:", response.data);
-            chamada();
-
+       
         } catch (error) {
             toast.error(
                 error.response?.data?.mensagem || "Há algo de errado com o código!"
             );
             console.log("erro na api:", error)
-        }
-    };
-
-
-
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            // Quando o usuário pressiona Enter, atualiza a turma selecionada
-            setTurmaSelecionada(codigoTurma);
-            console.log('Código da turma enviado:', codigoTurma);
         }
     };
 
@@ -122,7 +99,7 @@ function DashProf() {
                     </form>
 
                     {/*  Lógica de aparecer a tabela quando gerar o relatorio */}
-                    <ReactGrid data={data} turmaSelecionada={turmaSelecionada}/>
+                    <ReactGrid data={data}/>
                     {/* {data && data.length > 0 && (
                         
                     )} */}
