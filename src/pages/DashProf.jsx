@@ -16,9 +16,8 @@ function DashProf() {
     // Estado para armazenar o código da turma
    
 
-    const { turmaId: turmaIdParam } = useParams();
-    const { turmaId: turmaIdContext } = useAuth();
-    const turmaId = turmaIdParam || turmaIdContext;
+    
+    const turmaId = useParams().turmaId;
 
     const {
         register,
@@ -71,7 +70,7 @@ function DashProf() {
                         <div className="w-[15%] mb-6">
                             <FormButton>Gerar Relatório</FormButton>
                         </div>
-                        <div className="flex g-4 bg-blue-600 gap-6">
+                        <div className="flex g-4 gap-6">
                             <Input
                                 placeholder="21/08/2025"
                                 type="date"

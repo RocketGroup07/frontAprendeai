@@ -5,13 +5,15 @@ import { TbLogout2 } from "react-icons/tb";
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CiLogout } from "react-icons/ci";
+
+
 
 const menuItems = [
     { label: 'Turmas', link: '/turmas' },
     { label: 'Atividades', link: '' },
-    { label: 'Favoritos', link: '' },
+    { label: 'Chamada', link: `/professor/${turmaId}` },
     { label: 'Posts', link: '' },
 ];
 
@@ -29,6 +31,8 @@ export const StaggeredMenu = ({
     onMenuOpen,
     onMenuClose
 }) => {
+
+const turmaId = useParams().turmaId;
 
     const { isProfessor, isAluno, usuario, logout } = useAuth();
 

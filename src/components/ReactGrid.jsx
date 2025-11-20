@@ -4,6 +4,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { api } from '../lib/axios';
 import { useParams } from 'react-router';
 import { useAuth } from './UserAuth';
+import { themeQuartz } from 'ag-grid-community';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -14,6 +15,22 @@ function ReactGrid({ data }) {
   const { turmaId: turmaIdParam } = useParams();
   const { turmaId: turmaIdContext } = useAuth();
   const turmaId = turmaIdParam || turmaIdContext;
+
+  const myTheme = themeQuartz
+ .withParams({
+        accentColor: "#D00909",
+        backgroundColor: "#212121",
+        browserColorScheme: "dark",
+        chromeBackgroundColor: {
+            ref: "foregroundColor",
+            mix: 0.07,
+            onto: "backgroundColor"
+        },
+        foregroundColor: "#FFF",
+        headerBackgroundColor: "#D00909",
+        headerFontSize: 14,
+        headerTextColor: "#F1F1F1"
+    });
 
   // 🔹 Botão de salvar por linha
   const saveButtonRenderer = (params) => {
@@ -105,7 +122,7 @@ async function chamada() {
 
   return (
     <div style={{ height: 500 }}>
-      <AgGridReact rowData={rowData} columnDefs={colDefs} />
+      <AgGridReact theme={myTheme} rowData={rowData} columnDefs={colDefs} />
     </div>
   );
 }
