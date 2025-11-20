@@ -19,19 +19,13 @@ function Geral() {
   const [turmas, setTurmas] = useState([]);
   const { state } = useLocation();
   const [showModal, setShowModal] = useState(false);
-    const modalRef = useRef(null);
-  
-    const [novoTitulo, setNovoTitulo] = useState("");
-    const [novaData, setNovaData] = useState("");
-    const [novaDescricao, setNovaDescricao] = useState("");
-    // Adição do estado para o arquivo anexado
-    const [novoArquivo, setNovoArquivo] = useState(null);
+  const modalRef = useRef(null);
 
   const userName = usuario?.nome || "Usuário";
 
   // Adiciona o token no header das requisições
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
@@ -51,7 +45,7 @@ function Geral() {
 
       const response = await api.get(endpoint);
       setTurmas(response.data || []);
-      
+
 
       // se já houver turma selecionada, não sobrescreve
       if (!turmaNome && response.data?.length > 0) {
@@ -63,18 +57,18 @@ function Geral() {
       toast.error("Erro ao carregar turmas");
     }
   }
-async function fetchPosts() {
+  async function fetchPosts() {
     try {
       if (!turmaId) return;
       const response = await api.get(`/posts/turma/${turmaId}`);
       console.log("Posts recebidos da API:", response.data);
-      
+
       // Converter string de data para Date
       const data = (response.data || []).map(post => ({
         ...post,
         data: post.data ? new Date(post.data) : new Date()
       }));
-      
+
       setPosts(data);
     } catch (error) {
       console.error(error);
@@ -90,21 +84,6 @@ async function fetchPosts() {
   useEffect(() => {
     fetchTurmas();
   }, [isProfessor, isAluno]);
-
-  useEffect(() => {
-    async function ensureTurmaNome() {
-      if (!turmaNome && turmaId) {
-        try {
-          const resp = await api.get('alunos/minhas-turmas');
-          const turmaAtual = (resp.data || []).find(t => String(t.id) === String(turmaId));
-          if (turmaAtual) selecionarTurma(turmaAtual.id, turmaAtual.nome);
-        } catch (err) {
-          console.error('Erro ao buscar nome da turma:', err);
-        }
-      }
-    }
-    ensureTurmaNome();
-  }, [turmaId, turmaNome, selecionarTurma]);
 
   // remover duplicados
   const uniquePosts = Array.from(new Map(posts.map(post => [post.postId, post])).values());
@@ -136,49 +115,39 @@ async function fetchPosts() {
     };
   }, [modalRef]);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!novoTitulo || !novaDescricao) {
-      alert("Por favor, preencha todos os campos.");
-      return;
-    }
+  async function handleSubmit(data) {
+  console.log("Dados recebidos do Modal:", data);
 
-    const formData = new FormData();
+  const formData = new FormData();
 
-    const post = {
-      titulo: novoTitulo,
-      conteudo: novaDescricao,
-    };
+  const post = {
+    titulo: data.titulo,
+    conteudo: data.descricao,
+  };
+  
+  formData.append("post", JSON.stringify(post));
 
-    formData.append('post', JSON.stringify(post));
-
-    if (novoArquivo) {
-      formData.append('arquivo', novoArquivo);
-    }
-
-    try {
-     
-      const response = await api.post(`/posts/criar/${usuarioId}/turma/${turmaId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("Resposta da API ao criar post:", response);
-
-      setShowModal(false);
-      setNovoTitulo("");
-      setNovaDescricao("");
-      setNovoArquivo(null);
-
-      // Recarrega os posts para atualizar a lista
-      fetchPosts();
-
-    } catch (error) {
-      console.error("Erro ao postar post:", error);
-      alert("Falha ao criar o post. Tente novamente.");
-    }
+  if (data.arquivo) {
+    formData.append("arquivo", data.arquivo);
   }
+
+  try {
+    const response = await api.post(
+      `/posts/criar/${usuarioId}/turma/${turmaId}`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    console.log("Resposta da API:", response.data);
+
+    await fetchPosts();
+    setShowModal(false);
+  } catch (error) {
+    console.error(error);
+    alert("Falha ao criar o post.");
+  }
+}
+
 
   return (
     <div className='min-h-screen font-neuli'>
@@ -224,18 +193,16 @@ async function fetchPosts() {
         showModal={showModal}
         setShowModal={setShowModal}
         modalRef={modalRef}
-        handleSubmit={handleSubmit}
-        novoTitulo={novoTitulo}
-        setNovoTitulo={setNovoTitulo}
-        novaData={novaData}
-        setNovaData={setNovaData}
-        novaDescricao={novaDescricao}
-        setNovaDescricao={setNovaDescricao}
-        novoArquivo={novoArquivo}
-        setNovoArquivo={setNovoArquivo}
-        isGeral={true}
-        nomeModal={"Novo Post"}
+        nomeModal="Novo Post"
+        onSubmit={handleSubmit}
+        fields={[
+          { name: "titulo", label: "Título", type: "text", required: true },
+          { name: "descricao", label: "Descrição", type: "textarea", required: true },
+          { name: "arquivo", label: "Anexo", type: "file" }
+        ]}
       />
+
+
 
       <div className='w-[90%] m-auto mt-5 text-[var(--text)]'>
         {grupos.length === 0 ? (
