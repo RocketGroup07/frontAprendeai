@@ -22,7 +22,7 @@ function FormCadastro() {
 
    function getCodigoTurma() {
     const params = new URLSearchParams(location.search);
-     return params.get('codigoTurma') || localStorage.getItem("codigoTurma");
+     return params.get('codigoTurma') || sessionStorage.getItem("codigoTurma");
   }
 
   const onSubmit = async (data) => {
