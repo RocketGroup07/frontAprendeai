@@ -23,6 +23,7 @@ function FormCadastro() {
    function getCodigoTurma() {
     const params = new URLSearchParams(location.search);
      return params.get('codigoTurma') || sessionStorage.getItem("codigoTurma");
+     return params.get('codigoTurma') || sessionStorage.getItem("codigoTurma");
   }
 
   const onSubmit = async (data) => {
@@ -33,13 +34,16 @@ function FormCadastro() {
         return;
       }
       // envia para o backend
-      await api.post(`alunos/cadastro-com-turma?codigoTurma=${codigoTurma}`, {
+      const response = await api.post(`alunos/cadastro-com-turma?codigoTurma=${codigoTurma}`, {
         nome: data.nome,
         login: data.login,
         senha: data.senha,
       });
 
-      login(null, { nome: data.nome, login: data.login });
+      const token = response.data.token;
+      const userData = response.data.usuario;   
+
+      login(token, userData);
       toast.success('Cadastro realizado com sucesso!');
       setTimeout(() => {
         navigate("/turmas");

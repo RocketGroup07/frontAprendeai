@@ -29,12 +29,7 @@ function Login() {
         toast.error(response.data?.mensagem || "Erro no login. Verifique suas credenciais.");
         return;
       }
-
-      // Salva no sessionStorage
-      sessionStorage.setItem("token", token);
-      sessionStorage.setItem("userData", JSON.stringify(userData));
-
-      // Passa para o contexto
+      
       loginContext(token, userData);
 
       toast.success("Login realizado com sucesso!");
