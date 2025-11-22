@@ -11,13 +11,15 @@ import { useForm } from 'react-hook-form';
 
 function DashProf() {
     const [codigoTurma, setCodigoTurma] = useState('');
-    const [data, setdata] = useState('');
+    const [data, setData] = useState('');
     const { turmaNome, selecionarTurma } = useAuth();
     // Estado para armazenar o código da turma
    
 
     
     const turmaId = useParams().turmaId;
+    console.log(turmaId);
+    
 
     const {
         register,
@@ -41,7 +43,7 @@ function DashProf() {
             });
 
             toast.success("Turma adicionada com sucesso!");
-            setdata(response.data);
+            setData(response.data);
             console.log("resposta da api:", response.data);
        
         } catch (error) {

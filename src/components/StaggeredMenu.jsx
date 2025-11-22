@@ -8,21 +8,12 @@ import logo from '../../public/images/logoAp.png';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CiLogout } from "react-icons/ci";
 
-
-
-const menuItems = [
-    { label: 'Turmas', link: '/turmas' },
-    { label: 'Atividades', link: '' },
-    { label: 'Chamada', link: `/professor/${turmaId}` },
-    { label: 'Posts', link: '' },
-];
-
 export const StaggeredMenu = ({
     position = 'right',
     colors = ['var(--secondary)', 'var(--main)'],
     displayItemNumbering = false,
     className,
-    items = menuItems,
+    items,
     logoUrl = logo,
     menuButtonColor = '#fff',
     openMenuButtonColor = '#fff',
@@ -32,7 +23,18 @@ export const StaggeredMenu = ({
     onMenuClose
 }) => {
 
-const turmaId = useParams().turmaId;
+    const { turmaId } = useParams();
+
+    // se items NÃO for passado via props → usa este default abaixo:
+    const defaultItems = [
+        { label: 'Turmas', link: '/turmas' },
+        { label: 'Atividades', link: `/atividades/` },
+        { label: 'Chamada', link: `/professor/${turmaId}` },
+        { label: 'Posts', link: `/posts/` },
+    ];
+
+    // definindo o que será realmente usado:
+    items = defaultItems;
 
     const { isProfessor, isAluno, usuario, logout } = useAuth();
 
@@ -310,7 +312,7 @@ const turmaId = useParams().turmaId;
                 data-position={position}
                 data-open={open || undefined}
             >
-                {isProfessor && (<div
+                {isProfessor && turmaId &&(<div
                     ref={preLayersRef}
                     className="sm-prelayers fixed top-0 right-0 h-screen pointer-events-none z-[5]"
                     aria-hidden="true"
@@ -361,19 +363,38 @@ const turmaId = useParams().turmaId;
                                 onClick={toggleMenu}
                                 type="button"
                             >
-                                {isAluno && (<span
-                                    className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
-                                    onClick={handleLogout}>
-                                    <TbLogout2  size={32} />
-                                </span>)}
-                                {isProfessor && (<GiHamburgerMenu className='' size={32} />)}
+                                {/* Logout do aluno */}
+                                {isAluno && (
+                                    <span
+                                        className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
+                                        onClick={handleLogout}
+                                    >
+                                        <TbLogout2 size={32} />
+                                    </span>
+                                )}
+
+                                {/* Professor: se NÃO tiver turmaId → mostra logout */}
+                                {isProfessor && !turmaId && (
+                                    <span
+                                        className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
+                                        onClick={handleLogout}
+                                    >
+                                        <TbLogout2 size={32} />
+                                    </span>
+                                )}
+
+                                {/* Professor: se tiver turmaId → mostra o menu */}
+                                {isProfessor && turmaId && (
+                                    <GiHamburgerMenu className='' size={32} />
+                                )}
+
 
                             </button>
                         </div>
                     </div>
                 </header>
 
-                {isProfessor && (
+                {isProfessor && turmaId &&(
                     <aside
                         id="staggered-menu-panel"
                         ref={panelRef}

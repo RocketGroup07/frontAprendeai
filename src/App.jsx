@@ -24,7 +24,7 @@ function App() {
             <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
             <Route path='/atividades/:turmaId' element={<AtividadePage />} />
             <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
-            <Route path='/professor' element={<DashProf />} />
+            <Route path='/professor/:turmaId' element={<DashProf />} />
             <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
             <Route path='/atividades/:turmaId/:atividadeId' element={<TelaAtividade/>} />
           </Routes>
