@@ -12,14 +12,23 @@ import { useForm } from 'react-hook-form';
 function DashProf() {
     const [codigoTurma, setCodigoTurma] = useState('');
     const [data, setData] = useState('');
-    const { turmaNome, selecionarTurma } = useAuth();
+    const[turmaNome, setTurmaNome] = useState("");
     // Estado para armazenar o código da turma
-   
 
-    
     const turmaId = useParams().turmaId;
-    console.log(turmaId);
-    
+
+    useEffect(() => {
+        async function fetchTurma() {
+            try {
+                const response = await api.get(`/turmas/${turmaId}`);
+                setTurmaNome(response.data.nome);
+            } catch (err) {
+                toast.error("Erro ao carregar a turma");
+            }
+        }
+
+        if (turmaId) fetchTurma();
+    }, [turmaId]);
 
     const {
         register,
@@ -45,7 +54,7 @@ function DashProf() {
             toast.success("Turma adicionada com sucesso!");
             setData(response.data);
             console.log("resposta da api:", response.data);
-       
+
         } catch (error) {
             toast.error(
                 error.response?.data?.mensagem || "Há algo de errado com o código!"
@@ -100,7 +109,7 @@ function DashProf() {
                     </form>
 
                     {/*  Lógica de aparecer a tabela quando gerar o relatorio */}
-                    <ReactGrid data={data}/>
+                    <ReactGrid data={data} />
                     {/* {data && data.length > 0 && (
                         
                     )} */}
