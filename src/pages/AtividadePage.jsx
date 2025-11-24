@@ -12,45 +12,42 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Modal from "../components/Modal";
 
-// ***** FUNÇÃO DE FORMATAÇÃO CORRIGIDA PARA ORDENAÇÃO *****
 function formatarAtividadeParaComponente(post) {
 
-  // 🚨 CORREÇÃO AQUI: Usando 'dataAtividade' (data de criação) ao invés de 'dataEntrega'.
+
   const dataDeReferencia = post.dataAtividade || post.dataEntrega;
 
-  // Data para Exibição (Ex: "27 de Outubro")
+
   const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de 'MMMM yyyy", { locale: ptBR });
 
-  // Data para Agrupamento/Ordenação (Ex: "27 de Outubro 2025")
-  // Alterei o formato para 'dd MMMM yyyy' para garantir que agrupe por dia e ano corretamente.
+
   const dataParaOrdenacao = format(new Date(dataDeReferencia), 'dd MMMM yyyy', { locale: ptBR });
 
-  // Fix: Trunca o 'conteudo'
+
   const descricaoResumida = post.conteudo
     ? post.conteudo.substring(0, 100) + "..."
     : "";
 
-  // Fix: Cria um objeto NOVO e usa '?' para evitar crash
+
   return {
     id: post.id,
     titulo: post.titulo,
 
-    // Dados "traduzidos" para o front-end:
-    ano: dataParaExibicao,         // Usado no CardTarefas (Ex: "27 de Outubro 2025")
-    dataDeAgrupamento: dataParaOrdenacao, // Usado para agrupar (Ex: "27 Outubro 2025")
+   
+    ano: dataParaExibicao,         
+    dataDeAgrupamento: dataParaOrdenacao, 
     descricao: descricaoResumida,
 
-    // Usa optional chaining '?' para evitar o crash
+   
     autor: post.professor?.nome || "Professor"
   };
 }
 
 function AtividadePage() {
   const { turmaId: turmaIdParam } = useParams();
-  const { turmaId: turmaIdContext } = useAuth();
-  const turmaId = turmaIdParam || turmaIdContext;
+  const { turmaId: turmaIdContext, isProfessor } = useAuth();
 
-  const { isProfessor } = useAuth();
+  const turmaId = turmaIdParam || turmaIdContext;
 
   const [atividades, setAtividades] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -59,59 +56,54 @@ function AtividadePage() {
   const [novoTitulo, setNovoTitulo] = useState("");
   const [novaData, setNovaData] = useState("");
   const [novaDescricao, setNovaDescricao] = useState("");
-  // Adição do estado para o arquivo anexado
+ 
   const [novoArquivo, setNovoArquivo] = useState(null);
 
   useEffect(() => {
     async function fetchAtividades() {
       try {
         const response = await api.get(`/atividades/turma/${turmaId}`);
-        // console.log("Resposta da API de atividades:", response.data); // Linha removida
         if (response.data && Array.isArray(response.data)) {
-
           const atividadesFormatadas = response.data.map(formatarAtividadeParaComponente);
           setAtividades(atividadesFormatadas);
-
+        } else {
+          setAtividades([]);
         }
       } catch (error) {
         console.error("Erro ao buscar atividades:", error);
       }
     }
-    if (turmaId) {
-      fetchAtividades();
-    }
+
+    if (turmaId) fetchAtividades();
   }, [turmaId]);
 
-  // Agrupamento usando o campo corrigido 'dataDeAgrupamento'
+
   const postsPorData = atividades.reduce((acc, post) => {
     const data = post.dataDeAgrupamento;
-    if (!acc[data]) {
-      acc[data] = [];
-    }
+    if (!acc[data]) acc[data] = [];
     acc[data].push(post);
     return acc;
   }, {});
 
-  // Ordenação que AGORA FUNCIONA
+  
   const grupos = Object.entries(postsPorData).sort((a, b) => {
-    // a[0] e b[0] são agora 'dd MMMM yyyy'
-    // Para ordenar datas em formato de texto, é melhor convertê-las para objeto Date
+  
     const parseDate = (dateString) => {
-      // Cria uma data no formato yyyy-MM-dd para ser reconhecida corretamente
+     
       const parts = dateString.split(' ');
       const dia = parts[0].padStart(2, '0');
-      const mes = parts[1]; // Mês em extenso
+      const mes = parts[1]; 
       const ano = parts[2];
 
-      // Mapeamento simples do mês em português (ajuste caso os meses estejam capitalizados ou em outro formato)
+      
       const mesesMap = {
-        'janeiro': 0, 'fevereiro': 1, 'março': 2, 'abril': 3, 'maio': 4, 'junho': 5,
-        'julho': 6, 'agosto': 7, 'setembro': 8, 'outubro': 9, 'novembro': 10, 'dezembro': 11
+        janeiro: 0, fevereiro: 1, março: 2, abril: 3, maio: 4, junho: 5,
+        julho: 6, agosto: 7, setembro: 8, outubro: 9, novembro: 10, dezembro: 11,
       };
 
       const mesIndex = mesesMap[mes.toLowerCase()];
 
-      if (mesIndex === undefined) return new Date(0); // Data inválida em caso de erro
+      if (mesIndex === undefined) return new Date(0); 
 
       return new Date(ano, mesIndex, dia);
     };
@@ -119,9 +111,10 @@ function AtividadePage() {
     const dateA = parseDate(a[0]);
     const dateB = parseDate(b[0]);
 
-    return dateB.getTime() - dateA.getTime(); // Ordena do mais novo para o mais antigo
+    return dateB.getTime() - dateA.getTime(); 
   });
 
+  // Fecha modal quando clicar fora
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -134,7 +127,7 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
-  // ***** handleSubmit CORRIGIDO: Remoção do Content-Type manual para FormData *****
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!novoTitulo || !novaData || !novaDescricao) {
@@ -142,53 +135,49 @@ function AtividadePage() {
       return;
     }
 
+    // Formata data ISO
     const [ano, mes, dia] = novaData.split('-').map(Number);
     const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString();
 
-    // Payload em FormData (formato string/multipart)
     const formData = new FormData();
-
-    const post = {
+    // objeto com campos que a API espera (ajuste nomes se necessário)
+    const atividadeObj = {
       titulo: novoTitulo,
       conteudo: novaDescricao,
-      dataEntrega: dataFormatadaISO,
-      // Se o back-end está esperando a data de criação no payload, adicione-a aqui.
-      // Assumindo que a data de criação é AGORA
-      /*  dataAtividade: new Date().toISOString(),  */
+      dataEntrega: dataFormatadaISO
     };
 
-    formData.append('atividade', JSON.stringify(post));
+    formData.append("atividade", JSON.stringify(atividadeObj));
 
     if (novoArquivo) {
-      formData.append('arquivo', novoArquivo);
+      formData.append("arquivo", novoArquivo);
     }
 
     try {
-      // **Ajuste Crítico:** Removido o objeto 'headers' para que o Axios/Browser
-      // configure automaticamente o 'Content-Type: multipart/form-data' corretamente.
-      api.options.headers = {};
-      const response = await api.post(`/atividades/criar/${turmaId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        }
-      });
+      // NÃO definir Content-Type — o browser faz quando usar multipart/form-data
+      const response = await api.post(`/atividades/criar/${turmaId}`, formData);
+      console.log("Atividade criada (API):", response.data);
 
+      // opcional: buscar novamente ou inserir no estado
       const atividadeCriada = response.data;
       const atividadeFormatada = formatarAtividadeParaComponente(atividadeCriada);
-
-      setAtividades([atividadeFormatada, ...atividades]);
+      setAtividades(prev => [atividadeFormatada, ...prev]);
 
       setShowModal(false);
       setNovoTitulo("");
       setNovaData("");
       setNovaDescricao("");
       setNovoArquivo(null);
-
     } catch (error) {
-      console.error("Erro ao postar atividade:", error);
-      alert("Falha ao criar a atividade. Tente novamente.");
+      console.error("Erro na criação da atividade:", error);
+      if (error.response) {
+        alert(`Falha ao criar a atividade: ${error.response.data?.message || error.response.status}`);
+      } else {
+        alert("Erro inesperado: " + (error.message || "ver console"));
+      }
     }
   }
+
 
   return (
     <div>
@@ -205,7 +194,6 @@ function AtividadePage() {
 
         <LinksContainer turmaId={turmaId}>
           <div className='flex items-center ml-auto'>
-
             {isProfessor && (
               <button
                 className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors'
@@ -215,46 +203,35 @@ function AtividadePage() {
                 Nova atividade
               </button>
             )}
-
-
           </div>
         </LinksContainer>
 
-            <Modal
-              showModal={showModal}
-              setShowModal={setShowModal}
-              modalRef={modalRef}
-              handleSubmit={handleSubmit}
-              novoTitulo={novoTitulo}
-              setNovoTitulo={setNovoTitulo}
-              novaData={novaData}
-              setNovaData={setNovaData}
-              novaDescricao={novaDescricao}
-              setNovaDescricao={setNovaDescricao}
-              novoArquivo={novoArquivo}
-              setNovoArquivo={setNovoArquivo}
-              isAtividade={true}
-              nomeModal={"Nova Atividade"}
-            />
+        <Modal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          modalRef={modalRef}
+          nomeModal="Nova Atividade"
+          onSubmit={handleSubmit}
+          fields={[
+            { name: "titulo", label: "Título", type: "text", required: true },
+            { name: "dataEntrega", label: "Data de Entrega", type: "date", required: true },
+            { name: "descricao", label: "Descrição", type: "textarea", required: true },
+            { name: "arquivo", label: "Anexo", type: "file" }
+          ]}
+        />
 
-       
         <div className='w-[90%] m-auto mt-5 text-white'>
           {grupos.length === 0 ? (
-            <div className="text-center flex flex-col-reverse items-center text-lg mt-10 text-[var(--text)]">Nenhuma atividade encontrada para esta turma.
-              <img
-                src={semTarefas}
-                alt="Nenhuma tarefa encontrada"
-                className="w-64 h-64 mt-4"
-              />
+            <div className="text-center flex flex-col-reverse items-center text-lg mt-10 text-[var(--text)]">
+              Nenhuma atividade encontrada para esta turma.
+              <img src={semTarefas} alt="Nenhuma tarefa encontrada" className="w-64 h-64 mt-4" />
             </div>
           ) : (
-            grupos.map(([data, listaPosts]) => (
+            grupos.map(([data, lista]) => (
               <div key={data} className="mb-8">
-                {/* O 'data' aqui é o nome do grupo (dataDeAgrupamento) */}
                 <h2 className="text-xl font-medium mb-4 text-[var(--text)]">{data}</h2>
                 <div className="flex flex-row flex-wrap gap-4">
-
-                  {listaPosts.map((atividade) => (
+                  {lista.map((atividade) => (
                     <CardTarefas
                       key={atividade.id}
                       id={atividade.id}
@@ -262,10 +239,9 @@ function AtividadePage() {
                       titulo={atividade.titulo}
                       descricao={atividade.descricao}
                       autor={atividade.autor}
-                      ano={atividade.ano} // 'ano' é a data formatada em Português
+                      ano={atividade.ano}
                     />
                   ))}
-
                 </div>
               </div>
             ))
@@ -273,6 +249,6 @@ function AtividadePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 export default AtividadePage;

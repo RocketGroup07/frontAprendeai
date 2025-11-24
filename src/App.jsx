@@ -16,7 +16,6 @@ import ValidarToken from "./pages/ValidarToken.jsx";
 function App() {
 
   return (
-    <>
       <AuthProvider>
         <Router>
           <Routes>
@@ -43,10 +42,9 @@ function App() {
         closeOnClick rtl={false}
         draggable
         pauseOnHover={false}
-        theme="dark" 
-        />
-      </AuthProvider>
-    </>
+        theme="dark"
+      />
+    </AuthProvider>
   );
 }
 

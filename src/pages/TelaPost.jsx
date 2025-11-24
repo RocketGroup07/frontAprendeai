@@ -4,10 +4,11 @@ import { SiGoogleclassroom } from "react-icons/si";
 import { FaCircle } from "react-icons/fa6";
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
-import { api } from "../lib/axios";
+import { api, baseURL } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import StaggeredMenu from "../components/StaggeredMenu";
+import { AiOutlineDownload } from "react-icons/ai";
 
 
 function TelaPost() {
@@ -19,6 +20,7 @@ function TelaPost() {
             try {
                 const response = await api.get(`/posts/${postId}/${turmaId}`);
                 setPost(response.data);
+                console.log("Post carregado:", response.data);
             } catch (error) {
                 console.error("Erro ao buscar o post:", error);
                 setPost(null); // Garante que não haverá dados antigos em caso de erro
@@ -75,11 +77,23 @@ function TelaPost() {
                                 <div>
                                     <p className="text-justify whitespace-pre-wrap">{post.conteudo}</p>
                                 </div>
-                                <div className="mt-4 font-extralight">
-                                    <p>Arquivos</p>
-                                </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
+                            {post.nomeArquivo > "0" && (
+                                <a
+                                    href={`${baseURL}posts/${post.turmaId}/${post.postId}/download/anexo`}
+                                    download={post.nomeArquivo}
+                                >
+                                    <div className="mt-4 bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all">
+                                        <div>{post.nomeArquivo}</div>
+                                        <div><AiOutlineDownload /></div>
+                                        <hr className="border-t border-gray-600 my-4" />
+                                    </div>
+                                </a>
+                                
+                            )}
+
+                            
                         </div>
                     </div>
                 ) : (

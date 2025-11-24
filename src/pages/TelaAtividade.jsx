@@ -4,11 +4,12 @@ import TextType from "../components/TextType";
 import { FaCircle, FaLongArrowAltLeft } from "react-icons/fa";
 import { MdOutlineAddTask } from "react-icons/md";
 import React, { useState, useEffect } from "react";
-import { api } from "../lib/axios";
+import { api, baseURL } from "../lib/axios";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ca, ptBR } from "date-fns/locale";
 import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
+import { AiOutlineDownload } from "react-icons/ai";
 
 
 
@@ -16,20 +17,34 @@ function TelaAtividade() {
     const { turmaId, atividadeId } = useParams();
     const [atividade, setAtividade] = useState(null);
     const [showChat, setShowChat] = useState(false);
+    const [arquivo, setArquivo] = useState(null);
+    const fileInputRef = React.useRef();
 
     useEffect(() => {
         async function fetchAtividade() {
             try {
                 const response = await api.get(`/atividades/${atividadeId}`);
                 setAtividade(response.data);
+                
+               
                 console.log("Atividade carregada:", response.data);
             } catch (error) {
                 console.error("Erro ao buscar a atividade:", error);
-                setAtividade(null); // Garante que não haverá dados antigos em caso de erro
+                setAtividade(null);
             }
         }
         fetchAtividade();
     }, [atividadeId, turmaId]);
+
+
+    // async function baixarArquivo() {
+    //     try{
+    //         const response = await api.get(`atividades/${postId}/download/anexo`)
+    //         console.log("Está vindo");
+    //     }catch(error){
+    //         console.error("Erro ao buscar a atividade:", error);
+    //     }
+    // }
 
 
     return (
@@ -39,7 +54,7 @@ function TelaAtividade() {
                 <StaggeredMenu />
             </div>
 
-          <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
+            <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
                 <TextType
                     text={["Atividades"]}
                     typingSpeed={75}
@@ -49,7 +64,7 @@ function TelaAtividade() {
                 />
             </div>
 
-                  <div className="w-[90%] m-auto mt-3" >
+            <div className="w-[90%] m-auto mt-3" >
                 <div>
                     <Link to={"/atividades/" + turmaId} >
 
@@ -80,11 +95,24 @@ function TelaAtividade() {
                                 <div>
                                     <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
                                 </div>
-                                <div className="mt-4 font-extralight">
-                                    <p>Arquivos</p>
-                                </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
+                            
+                                {atividade.nomesArquivosAnexo > "0" &&(
+                            <div>
+                                <div>
+                                    <p className="font-bold" >Arquivo:</p>
+                                </div>
+                                <a href={`${baseURL}atividades/${atividade.id}/download/anexo`} target="_blank" download>
+                                <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
+                                    <div>{atividade.nomesArquivosAnexo}</div>
+                                    <div><AiOutlineDownload /></div>
+                                </div> </a> <hr className="border-t border-gray-600 my-4" />  
+                            </div>
+                                )}
+                                  
+                           
+                            
                             <div>
                                 {/* Botão flutuante para abrir o chat IA */}
                                 <button
