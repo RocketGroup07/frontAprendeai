@@ -95,6 +95,8 @@ function TelaAtividade() {
                                 </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
+                            
+                                {atividade.nomesArquivosAnexo > "0" &&(
                             <div>
                                 <div>
                                     <p className="font-bold" >Arquivo:</p>
@@ -103,9 +105,12 @@ function TelaAtividade() {
                                 <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
                                     <div>{atividade.nomesArquivosAnexo}</div>
                                     <div><AiOutlineDownload /></div>
-                                </div> </a>
+                                </div> </a> <hr className="border-t border-gray-600 my-4" />  
                             </div>
-                            <hr className="border-t border-gray-600 my-4" />
+                                )}
+                                  
+                           
+                            
                             <div>
                                 {/* Botão flutuante para abrir o chat IA */}
                                 <button
