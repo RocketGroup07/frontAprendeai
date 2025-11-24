@@ -45,10 +45,9 @@ function formatarAtividadeParaComponente(post) {
 
 function AtividadePage() {
   const { turmaId: turmaIdParam } = useParams();
-  const { turmaId: turmaIdContext } = useAuth();
-  const turmaId = turmaIdParam || turmaIdContext;
+  const { turmaId: turmaIdContext, isProfessor } = useAuth();
 
-  const { isProfessor } = useAuth();
+  const turmaId = turmaIdParam || turmaIdContext;
 
   const [atividades, setAtividades] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -74,18 +73,20 @@ function AtividadePage() {
       } catch (error) {
         console.error("Erro ao buscar atividades:", error);
       }
+    } catch (error) {
+      console.error("Erro ao buscar atividades:", error);
     }
-    if (turmaId) {
-      fetchAtividades();
-    }
+  }
+
+  // Carrega ao entrar na página
+  useEffect(() => {
+    if (turmaId) fetchAtividades();
   }, [turmaId]);
 
 
   const postsPorData = atividades.reduce((acc, post) => {
     const data = post.dataDeAgrupamento;
-    if (!acc[data]) {
-      acc[data] = [];
-    }
+    if (!acc[data]) acc[data] = [];
     acc[data].push(post);
     return acc;
   }, {});
@@ -102,8 +103,8 @@ function AtividadePage() {
 
       
       const mesesMap = {
-        'janeiro': 0, 'fevereiro': 1, 'março': 2, 'abril': 3, 'maio': 4, 'junho': 5,
-        'julho': 6, 'agosto': 7, 'setembro': 8, 'outubro': 9, 'novembro': 10, 'dezembro': 11
+        janeiro: 0, fevereiro: 1, março: 2, abril: 3, maio: 4, junho: 5,
+        julho: 6, agosto: 7, setembro: 8, outubro: 9, novembro: 10, dezembro: 11,
       };
 
       const mesIndex = mesesMap[mes.toLowerCase()];
@@ -119,6 +120,7 @@ function AtividadePage() {
     return dateB.getTime() - dateA.getTime(); 
   });
 
+  // Fecha modal quando clicar fora
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -152,10 +154,11 @@ function AtividadePage() {
       
     };
 
-    formData.append('atividade', JSON.stringify(post));
+    formData.append("atividade", JSON.stringify(atividade));
 
-    if (novoArquivo) {
-      formData.append('arquivo', novoArquivo);
+    // se houver arquivo
+    if (data.arquivo) {
+      formData.append("arquivo", data.arquivo);
     }
 
     try {
@@ -178,11 +181,36 @@ function AtividadePage() {
       setNovaDescricao("");
       setNovoArquivo(null);
 
-    } catch (error) {
-      console.error("Erro ao postar atividade:", error);
-      alert("Falha ao criar a atividade. Tente novamente.");
+    // NÃO definir Content-Type manualmente — o browser define o multipart boundary.
+    const response = await api.post(`/atividades/criar/${turmaId}`, formData);
+
+    console.log("Atividade criada (API):", response.data);
+
+    // atualizar lista após criação
+    await fetchAtividades();
+
+    setShowModal(false);
+
+  } catch (error) {
+    // log completo para debugging
+    console.error("Erro na criação da atividade:", error);
+
+    // Axios error com resposta do servidor
+    if (error.response) {
+      console.error("Status:", error.response.status);
+      console.error("Resposta do servidor:", error.response.data);
+      alert(`Falha ao criar a atividade: ${error.response.data?.message || JSON.stringify(error.response.data)}`);
+    } else if (error.request) {
+      // requisição feita mas sem resposta (CORS / servidor off)
+      console.error("No response (request):", error.request);
+      alert("Falha de rede: sem resposta do servidor. Verifique o console / network.");
+    } else {
+      // outro erro
+      alert("Erro inesperado: " + error.message);
     }
   }
+}
+
 
   return (
     <div>
@@ -199,7 +227,6 @@ function AtividadePage() {
 
         <LinksContainer turmaId={turmaId}>
           <div className='flex items-center ml-auto'>
-
             {isProfessor && (
               <button
                 className='flex items-center gap-2 p-2 cursor-pointer bg-[var(--primary)] text-white rounded hover:bg-[#b30404] transition-colors'
@@ -209,46 +236,35 @@ function AtividadePage() {
                 Nova atividade
               </button>
             )}
-
-
           </div>
         </LinksContainer>
 
-            <Modal
-              showModal={showModal}
-              setShowModal={setShowModal}
-              modalRef={modalRef}
-              handleSubmit={handleSubmit}
-              novoTitulo={novoTitulo}
-              setNovoTitulo={setNovoTitulo}
-              novaData={novaData}
-              setNovaData={setNovaData}
-              novaDescricao={novaDescricao}
-              setNovaDescricao={setNovaDescricao}
-              novoArquivo={novoArquivo}
-              setNovoArquivo={setNovoArquivo}
-              isAtividade={true}
-              nomeModal={"Nova Atividade"}
-            />
+        <Modal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          modalRef={modalRef}
+          nomeModal="Nova Atividade"
+          onSubmit={handleSubmit}
+          fields={[
+            { name: "titulo", label: "Título", type: "text", required: true },
+            { name: "dataEntrega", label: "Data de Entrega", type: "date", required: true },
+            { name: "descricao", label: "Descrição", type: "textarea", required: true },
+            { name: "arquivo", label: "Anexo", type: "file" }
+          ]}
+        />
 
-       
         <div className='w-[90%] m-auto mt-5 text-white'>
           {grupos.length === 0 ? (
-            <div className="text-center flex flex-col-reverse items-center text-lg mt-10 text-[var(--text)]">Nenhuma atividade encontrada para esta turma.
-              <img
-                src={semTarefas}
-                alt="Nenhuma tarefa encontrada"
-                className="w-64 h-64 mt-4"
-              />
+            <div className="text-center flex flex-col-reverse items-center text-lg mt-10 text-[var(--text)]">
+              Nenhuma atividade encontrada para esta turma.
+              <img src={semTarefas} alt="Nenhuma tarefa encontrada" className="w-64 h-64 mt-4" />
             </div>
           ) : (
-            grupos.map(([data, listaPosts]) => (
+            grupos.map(([data, lista]) => (
               <div key={data} className="mb-8">
-                {/* O 'data' aqui é o nome do grupo (dataDeAgrupamento) */}
                 <h2 className="text-xl font-medium mb-4 text-[var(--text)]">{data}</h2>
                 <div className="flex flex-row flex-wrap gap-4">
-
-                  {listaPosts.map((atividade) => (
+                  {lista.map((atividade) => (
                     <CardTarefas
                       key={atividade.id}
                       id={atividade.id}
@@ -259,7 +275,6 @@ function AtividadePage() {
                       ano={atividade.ano}
                     />
                   ))}
-
                 </div>
               </div>
             ))
@@ -267,6 +282,6 @@ function AtividadePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 export default AtividadePage;

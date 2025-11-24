@@ -357,11 +357,11 @@ export const StaggeredMenu = ({
                                 onClick={toggleMenu}
                                 type="button"
                             >
-                                {isAluno && (<button
+                                {isAluno && (<span
                                     className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
                                     onClick={handleLogout}>
                                     <TbLogout2  size={32} />
-                                </button>)}
+                                </span>)}
                                 {isProfessor && (<GiHamburgerMenu className='' size={32} />)}
 
                             </button>

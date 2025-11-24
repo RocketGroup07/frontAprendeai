@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "./UserAuth";
 
 function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
-    
+
     const { isProfessor } = useAuth();
 
     async function handleDelete(e) {
@@ -52,14 +52,14 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
         <div className='cursor-pointer hover:scale-103 transition-transform font-neuli w-80 relative group'>
             {isProfessor && (
                 <button
-                onClick={handleDelete}
-                className='absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10'
-                title="Deletar post"
-            >
-                <MdClose size={20} />
-            </button>
+                    onClick={handleDelete}
+                    className='absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer'
+                    title="Deletar post"
+                >
+                    <MdClose size={20} />
+                </button>
             )}
-            
+
 
             <Link to={`/post/${turmaId}/${id}`} className=''>
                 <div
@@ -81,7 +81,7 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                         </div>
                         <div className='flex items-center gap-2'>
                             <p className='font-normal text-sm'>Data:</p>
-                            <p className='font-light text-sm'>{format(ano, "dd 'de' MMM yy", {locale:ptBR})}</p>
+                            <p className='font-light text-sm'>{format(ano, "dd 'de' MMM yy", { locale: ptBR })}</p>
                         </div>
                     </div>
                 </div>

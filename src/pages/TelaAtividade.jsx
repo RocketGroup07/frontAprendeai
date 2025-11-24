@@ -17,6 +17,8 @@ function TelaAtividade() {
     const { turmaId, atividadeId } = useParams();
     const [atividade, setAtividade] = useState(null);
     const [showChat, setShowChat] = useState(false);
+    const [arquivo, setArquivo] = useState(null);
+    const fileInputRef = React.useRef();
 
     useEffect(() => {
         async function fetchAtividade() {
@@ -28,7 +30,7 @@ function TelaAtividade() {
                 console.log("Atividade carregada:", response.data);
             } catch (error) {
                 console.error("Erro ao buscar a atividade:", error);
-                setAtividade(null); // Garante que não haverá dados antigos em caso de erro
+                setAtividade(null);
             }
         }
         fetchAtividade();
@@ -52,7 +54,7 @@ function TelaAtividade() {
                 <StaggeredMenu />
             </div>
 
-          <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
+            <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
                 <TextType
                     text={["Atividades"]}
                     typingSpeed={75}
@@ -62,7 +64,7 @@ function TelaAtividade() {
                 />
             </div>
 
-                  <div className="w-[90%] m-auto mt-3" >
+            <div className="w-[90%] m-auto mt-3" >
                 <div>
                     <Link to={"/atividades/" + turmaId} >
 
