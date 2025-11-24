@@ -4,11 +4,12 @@ import TextType from "../components/TextType";
 import { FaCircle, FaLongArrowAltLeft } from "react-icons/fa";
 import { MdOutlineAddTask } from "react-icons/md";
 import React, { useState, useEffect } from "react";
-import { api } from "../lib/axios";
+import { api, baseURL } from "../lib/axios";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ca, ptBR } from "date-fns/locale";
 import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
+import { AiOutlineDownload } from "react-icons/ai";
 
 
 
@@ -24,6 +25,8 @@ function TelaAtividade() {
             try {
                 const response = await api.get(`/atividades/${atividadeId}`);
                 setAtividade(response.data);
+                
+               
                 console.log("Atividade carregada:", response.data);
             } catch (error) {
                 console.error("Erro ao buscar a atividade:", error);
@@ -32,6 +35,16 @@ function TelaAtividade() {
         }
         fetchAtividade();
     }, [atividadeId, turmaId]);
+
+
+    // async function baixarArquivo() {
+    //     try{
+    //         const response = await api.get(`atividades/${postId}/download/anexo`)
+    //         console.log("Está vindo");
+    //     }catch(error){
+    //         console.error("Erro ao buscar a atividade:", error);
+    //     }
+    // }
 
 
     return (
@@ -82,40 +95,24 @@ function TelaAtividade() {
                                 <div>
                                     <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
                                 </div>
-                                <div className="mt-4 font-extralight">
-                                    <p>atividade</p> {/* MEXER AQUI */}
-                                </div>
-
-
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
-
-                            <div className="flex gap-4">
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    style={{ display: "none" }}
-                                    onChange={e => {
-                                        if (e.target.files && e.target.files[0]) {
-                                            setArquivo(e.target.files[0]);
-                                        }
-                                    }}
-                                />
-                                <button
-                                    className="flex bg-gray-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-gray-700 "
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        fileInputRef.current.click();
-                                    }}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 flex-shrink-0">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21.44 11.05l-9.19 9.19a5 5 0 01-7.07-7.07l9.19-9.19a3 3 0 014.24 4.24L9.9 17.01a1 1 0 01-1.41-1.41L17.25 7.24" />
-                                    </svg>
-                                    {arquivo ? arquivo.name : "Anexar"}
-                                </button>
-                                <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 ">Entregar Atividade</button>
+                            
+                                {atividade.nomesArquivosAnexo > "0" &&(
+                            <div>
+                                <div>
+                                    <p className="font-bold" >Arquivo:</p>
+                                </div>
+                                <a href={`${baseURL}atividades/${atividade.id}/download/anexo`} target="_blank" download>
+                                <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
+                                    <div>{atividade.nomesArquivosAnexo}</div>
+                                    <div><AiOutlineDownload /></div>
+                                </div> </a> <hr className="border-t border-gray-600 my-4" />  
                             </div>
-
+                                )}
+                                  
+                           
+                            
                             <div>
                                 {/* Botão flutuante para abrir o chat IA */}
                                 <button

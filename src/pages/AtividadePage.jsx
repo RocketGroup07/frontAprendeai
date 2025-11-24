@@ -12,23 +12,33 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Modal from "../components/Modal";
 
-// ***** FORMATAÇÃO *****
 function formatarAtividadeParaComponente(post) {
+
+
   const dataDeReferencia = post.dataAtividade || post.dataEntrega;
 
-  const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de' MMMM yyyy", { locale: ptBR });
-  const dataParaAgrupamento = format(new Date(dataDeReferencia), "dd MMMM yyyy", { locale: ptBR });
+
+  const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de 'MMMM yyyy", { locale: ptBR });
+
+
+  const dataParaOrdenacao = format(new Date(dataDeReferencia), 'dd MMMM yyyy', { locale: ptBR });
+
 
   const descricaoResumida = post.conteudo
     ? post.conteudo.substring(0, 100) + "..."
     : "";
 
+
   return {
     id: post.id,
     titulo: post.titulo,
-    ano: dataParaExibicao,
-    dataDeAgrupamento: dataParaAgrupamento,
+
+   
+    ano: dataParaExibicao,         
+    dataDeAgrupamento: dataParaOrdenacao, 
     descricao: descricaoResumida,
+
+   
     autor: post.professor?.nome || "Professor"
   };
 }
@@ -43,14 +53,25 @@ function AtividadePage() {
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
 
-  // 🔥 Agora fetchAtividades está fora e pode ser chamado no handleSubmit
-  async function fetchAtividades() {
-    try {
-      const response = await api.get(`/atividades/turma/${turmaId}`);
+  const [novoTitulo, setNovoTitulo] = useState("");
+  const [novaData, setNovaData] = useState("");
+  const [novaDescricao, setNovaDescricao] = useState("");
+ 
+  const [novoArquivo, setNovoArquivo] = useState(null);
 
-      if (response.data && Array.isArray(response.data)) {
-        const atividadesFormatadas = response.data.map(formatarAtividadeParaComponente);
-        setAtividades(atividadesFormatadas);
+  useEffect(() => {
+    async function fetchAtividades() {
+      try {
+        const response = await api.get(`/atividades/turma/${turmaId}`);
+     
+        if (response.data && Array.isArray(response.data)) {
+
+          const atividadesFormatadas = response.data.map(formatarAtividadeParaComponente);
+          setAtividades(atividadesFormatadas);
+
+        }
+      } catch (error) {
+        console.error("Erro ao buscar atividades:", error);
       }
     } catch (error) {
       console.error("Erro ao buscar atividades:", error);
@@ -62,7 +83,7 @@ function AtividadePage() {
     if (turmaId) fetchAtividades();
   }, [turmaId]);
 
-  // Agrupar atividades por data
+
   const postsPorData = atividades.reduce((acc, post) => {
     const data = post.dataDeAgrupamento;
     if (!acc[data]) acc[data] = [];
@@ -70,18 +91,33 @@ function AtividadePage() {
     return acc;
   }, {});
 
-  // Ordenar (mais nova → mais antiga)
+  
   const grupos = Object.entries(postsPorData).sort((a, b) => {
+  
     const parseDate = (dateString) => {
-      const [dia, mesNome, ano] = dateString.split(" ");
+     
+      const parts = dateString.split(' ');
+      const dia = parts[0].padStart(2, '0');
+      const mes = parts[1]; 
+      const ano = parts[2];
+
+      
       const mesesMap = {
         janeiro: 0, fevereiro: 1, março: 2, abril: 3, maio: 4, junho: 5,
         julho: 6, agosto: 7, setembro: 8, outubro: 9, novembro: 10, dezembro: 11,
       };
-      return new Date(Number(ano), mesesMap[mesNome.toLowerCase()], Number(dia));
+
+      const mesIndex = mesesMap[mes.toLowerCase()];
+
+      if (mesIndex === undefined) return new Date(0); 
+
+      return new Date(ano, mesIndex, dia);
     };
 
-    return parseDate(b[0]).getTime() - parseDate(a[0]).getTime();
+    const dateA = parseDate(a[0]);
+    const dateB = parseDate(b[0]);
+
+    return dateB.getTime() - dateA.getTime(); 
   });
 
   // Fecha modal quando clicar fora
@@ -92,28 +128,30 @@ function AtividadePage() {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [modalRef]);
 
-  // ***** handleSubmit CORRIGIDO *****
-  async function handleSubmit(data) {
-  try {
-    // validação rápida no frontend (mostra problema imediatamente)
-    if (!data.titulo || !data.descricao || !data.dataEntrega) {
-      alert("Por favor, preencha título, descrição e data de entrega.");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!novoTitulo || !novaData || !novaDescricao) {
+      alert("Por favor, preencha todos os campos.");
       return;
     }
 
-    // montar FormData
+    const [ano, mes, dia] = novaData.split('-').map(Number);
+    const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString();
+
+
     const formData = new FormData();
 
-    // garantir que o backend receba a data no formato esperado (ISO)
-    const isoDataEntrega = new Date(data.dataEntrega).toISOString();
-
-    const atividade = {
-      titulo: data.titulo,
-      conteudo: data.descricao,
-      dataEntrega: isoDataEntrega
+    const post = {
+      titulo: novoTitulo,
+      conteudo: novaDescricao,
+      dataEntrega: dataFormatadaISO,
+      
     };
 
     formData.append("atividade", JSON.stringify(atividade));
@@ -123,10 +161,25 @@ function AtividadePage() {
       formData.append("arquivo", data.arquivo);
     }
 
-    // debug: listar keys do FormData (ajuda a confirmar o que será enviado)
-    for (const pair of formData.entries()) {
-      console.log("FormData entry:", pair[0], pair[1]);
-    }
+    try {
+      
+      api.options.headers = {};
+      const response = await api.post(`/atividades/criar/${turmaId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      });
+
+      const atividadeCriada = response.data;
+      const atividadeFormatada = formatarAtividadeParaComponente(atividadeCriada);
+
+      setAtividades([atividadeFormatada, ...atividades]);
+
+      setShowModal(false);
+      setNovoTitulo("");
+      setNovaData("");
+      setNovaDescricao("");
+      setNovoArquivo(null);
 
     // NÃO definir Content-Type manualmente — o browser define o multipart boundary.
     const response = await api.post(`/atividades/criar/${turmaId}`, formData);
@@ -220,10 +273,6 @@ function AtividadePage() {
                       descricao={atividade.descricao}
                       autor={atividade.autor}
                       ano={atividade.ano}
-                      onDelete={() => {
-                        // Remove a atividade do estado
-                        setAtividades((prev) => prev.filter((a) => a.id !== atividade.id));
-                      }}
                     />
                   ))}
                 </div>
