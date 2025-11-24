@@ -63,23 +63,17 @@ function AtividadePage() {
     async function fetchAtividades() {
       try {
         const response = await api.get(`/atividades/turma/${turmaId}`);
-     
         if (response.data && Array.isArray(response.data)) {
-
           const atividadesFormatadas = response.data.map(formatarAtividadeParaComponente);
           setAtividades(atividadesFormatadas);
-
+        } else {
+          setAtividades([]);
         }
       } catch (error) {
         console.error("Erro ao buscar atividades:", error);
       }
-    } catch (error) {
-      console.error("Erro ao buscar atividades:", error);
     }
-  }
 
-  // Carrega ao entrar na página
-  useEffect(() => {
     if (turmaId) fetchAtividades();
   }, [turmaId]);
 
@@ -141,75 +135,48 @@ function AtividadePage() {
       return;
     }
 
+    // Formata data ISO
     const [ano, mes, dia] = novaData.split('-').map(Number);
     const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString();
 
-
     const formData = new FormData();
-
-    const post = {
+    // objeto com campos que a API espera (ajuste nomes se necessário)
+    const atividadeObj = {
       titulo: novoTitulo,
       conteudo: novaDescricao,
-      dataEntrega: dataFormatadaISO,
-      
+      dataEntrega: dataFormatadaISO
     };
 
-    formData.append("atividade", JSON.stringify(atividade));
+    formData.append("atividade", JSON.stringify(atividadeObj));
 
-    // se houver arquivo
-    if (data.arquivo) {
-      formData.append("arquivo", data.arquivo);
+    if (novoArquivo) {
+      formData.append("arquivo", novoArquivo);
     }
 
     try {
-      
-      api.options.headers = {};
-      const response = await api.post(`/atividades/criar/${turmaId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        }
-      });
+      // NÃO definir Content-Type — o browser faz quando usar multipart/form-data
+      const response = await api.post(`/atividades/criar/${turmaId}`, formData);
+      console.log("Atividade criada (API):", response.data);
 
+      // opcional: buscar novamente ou inserir no estado
       const atividadeCriada = response.data;
       const atividadeFormatada = formatarAtividadeParaComponente(atividadeCriada);
-
-      setAtividades([atividadeFormatada, ...atividades]);
+      setAtividades(prev => [atividadeFormatada, ...prev]);
 
       setShowModal(false);
       setNovoTitulo("");
       setNovaData("");
       setNovaDescricao("");
       setNovoArquivo(null);
-
-    // NÃO definir Content-Type manualmente — o browser define o multipart boundary.
-    const response = await api.post(`/atividades/criar/${turmaId}`, formData);
-
-    console.log("Atividade criada (API):", response.data);
-
-    // atualizar lista após criação
-    await fetchAtividades();
-
-    setShowModal(false);
-
-  } catch (error) {
-    // log completo para debugging
-    console.error("Erro na criação da atividade:", error);
-
-    // Axios error com resposta do servidor
-    if (error.response) {
-      console.error("Status:", error.response.status);
-      console.error("Resposta do servidor:", error.response.data);
-      alert(`Falha ao criar a atividade: ${error.response.data?.message || JSON.stringify(error.response.data)}`);
-    } else if (error.request) {
-      // requisição feita mas sem resposta (CORS / servidor off)
-      console.error("No response (request):", error.request);
-      alert("Falha de rede: sem resposta do servidor. Verifique o console / network.");
-    } else {
-      // outro erro
-      alert("Erro inesperado: " + error.message);
+    } catch (error) {
+      console.error("Erro na criação da atividade:", error);
+      if (error.response) {
+        alert(`Falha ao criar a atividade: ${error.response.data?.message || error.response.status}`);
+      } else {
+        alert("Erro inesperado: " + (error.message || "ver console"));
+      }
     }
   }
-}
 
 
   return (
