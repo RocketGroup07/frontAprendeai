@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 function DashProf() {
     const [codigoTurma, setCodigoTurma] = useState('');
     const [data, setData] = useState('');
-    const[turmaNome, setTurmaNome] = useState("");
+    const [turmaNome, setTurmaNome] = useState("");
     // Estado para armazenar o código da turma
 
     const turmaId = useParams().turmaId;
@@ -36,9 +36,17 @@ function DashProf() {
         formState: { errors: errors }
     } = useForm();
 
-    const handleInputChange = (e) => {
-        setCodigoTurma(e.target.value); // Atualiza o estado com o valor do input
+
+
+    const getTodayDate = () => {
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+        return `${day}/${month}/${year}`; // Retorna no formato dd/mm/aaaa
     };
+
+
 
     const onSubmit = async (data) => {
 
@@ -83,11 +91,11 @@ function DashProf() {
                         </div>
                         <div className="flex g-4 gap-6">
                             <Input
-                                placeholder="21/08/2025"
-                                type="date"
+                                type="text" // Alterado para texto
                                 name="dataAula"
                                 id="dataAula"
                                 register={register}
+                                defaultValue={getTodayDate()} // Define o valor inicial como dd/mm/aaaa
                             />
                             <Input
                                 placeholder="8h nesse dia"
