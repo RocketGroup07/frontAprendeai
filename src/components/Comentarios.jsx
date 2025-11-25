@@ -6,15 +6,20 @@ function Comentarios({ postId, turmaId }) {
     const [comentarios, setComentarios] = useState([]);
 
     // Buscar comentários
-    const buscarComentarios = async () => {
-        try {
-            const response = await api.get(`/comentarios/post/${postId}`);
-            setComentarios(response.data);
-        } catch (error) {
-            console.error("Erro ao buscar comentários:", error);
-        }
-    };
+   const buscarComentarios = async () => {
+    try {
+        const response = await api.get(`/comentarios/post/${postId}`);
 
+        // Ordenar por data (do mais recente para o mais antigo)
+        const comentariosOrdenados = response.data.sort(
+            (a, b) => new Date(b.dataComentario) - new Date(a.dataComentario)
+        );
+
+        setComentarios(comentariosOrdenados);
+    } catch (error) {
+        console.error("Erro ao buscar comentários:", error);
+    }
+};
     // Enviar comentário
     const enviarComentario = async () => {
     if (!postId || !turmaId) {
