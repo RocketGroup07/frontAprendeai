@@ -10,6 +10,7 @@ import { ca, ptBR } from "date-fns/locale";
 import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
+import Comentarios from "../components/Comentarios";
 
 
 
@@ -136,22 +137,8 @@ function TelaAtividade() {
                                     </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
-                            <h1>Comentários:</h1>
-
-                            {/* {atividade.nomesArquivosAnexo > "0" && (
-                                <div>
-                                    <div>
-                                        <p className="font-bold" >Material Extra:</p>
-                                    </div>
-                                    <a href={`${baseURL}atividades/${atividade.id}/download/anexo`} target="_blank" download>
-                                        <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
-                                            <div>{atividade.nomesArquivosAnexo}</div>
-                                            <div><AiOutlineDownload /></div>
-                                        </div> </a> <hr className="border-t border-gray-600 my-4" />
-
-                                   
-                                </div>
-                            )} */}
+                            <Comentarios/>
+                         
 
 
 
