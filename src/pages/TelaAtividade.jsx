@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router";
 import StaggeredMenu from "../components/StaggeredMenu";
 import TextType from "../components/TextType";
-import { FaCircle, FaLongArrowAltLeft } from "react-icons/fa";
+import { FaCircle, FaLongArrowAltLeft, FaPaperclip } from "react-icons/fa";
 import { MdOutlineAddTask } from "react-icons/md";
 import React, { useState, useEffect } from "react";
 import { api, baseURL } from "../lib/axios";
@@ -25,8 +25,8 @@ function TelaAtividade() {
             try {
                 const response = await api.get(`/atividades/${atividadeId}`);
                 setAtividade(response.data);
-                
-               
+
+
                 console.log("Atividade carregada:", response.data);
             } catch (error) {
                 console.error("Erro ao buscar a atividade:", error);
@@ -95,24 +95,66 @@ function TelaAtividade() {
                                 <div>
                                     <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
                                 </div>
+
+                                {atividade.nomesArquivosAnexo > "0" && (
+                                <div>
+                                    <div>
+                                        <p className="font-bold" >Material Extra:</p>
+                                    </div>
+                                    <a href={`${baseURL}atividades/${atividade.id}/download/anexo`} target="_blank" download>
+                                        <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
+                                            <div>{atividade.nomesArquivosAnexo}</div>
+                                            <div><AiOutlineDownload /></div>
+                                        </div> </a> <hr className="border-t border-gray-600 my-4" />
+
+                                   
+                                </div>
+                            )}
+
+                                 <div className="flex gap-4 mt-6">
+
+                                        {/* INPUT INVISÍVEL */}
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            style={{ display: "none" }}
+                                            onChange={(e) => setArquivo(e.target.files[0])}
+                                        />
+
+                                        {/* BOTÃO QUE ABRE O SELECT DE ARQUIVOS */}
+                                        <button
+                                            onClick={() => fileInputRef.current.click()}
+                                            className="flex bg-gray-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-gray-700"
+                                        >
+                                            <FaPaperclip />
+                                            {arquivo ? arquivo.name : "Anexar Arquivo"}
+                                        </button>
+
+                                        <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700">
+                                            Entregar Atividade
+                                        </button>
+                                    </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
-                            
-                                {atividade.nomesArquivosAnexo > "0" &&(
-                            <div>
+                            <h1>Comentários:</h1>
+
+                            {/* {atividade.nomesArquivosAnexo > "0" && (
                                 <div>
-                                    <p className="font-bold" >Arquivo:</p>
+                                    <div>
+                                        <p className="font-bold" >Material Extra:</p>
+                                    </div>
+                                    <a href={`${baseURL}atividades/${atividade.id}/download/anexo`} target="_blank" download>
+                                        <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
+                                            <div>{atividade.nomesArquivosAnexo}</div>
+                                            <div><AiOutlineDownload /></div>
+                                        </div> </a> <hr className="border-t border-gray-600 my-4" />
+
+                                   
                                 </div>
-                                <a href={`${baseURL}atividades/${atividade.id}/download/anexo`} target="_blank" download>
-                                <div className="mt-4  bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all ">
-                                    <div>{atividade.nomesArquivosAnexo}</div>
-                                    <div><AiOutlineDownload /></div>
-                                </div> </a> <hr className="border-t border-gray-600 my-4" />  
-                            </div>
-                                )}
-                                  
-                           
-                            
+                            )} */}
+
+
+
                             <div>
                                 {/* Botão flutuante para abrir o chat IA */}
                                 <button
