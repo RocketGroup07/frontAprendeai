@@ -14,6 +14,7 @@ function Modal({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors }
   } = useForm({ defaultValues });
 
@@ -50,72 +51,77 @@ function Modal({
             className="flex flex-col gap-4 mt-4 w-full items-start"
             onSubmit={handleSubmit(onSubmit)}
           >
-            {fields.map((field) => (
-              <div key={field.name} className="w-full flex flex-col gap-1">
+            {fields.map((field) => {
 
-                <label className="text-left text-white">{field.label}</label>
+              const fileValue = watch(field.name);
 
-                {/* TEXTAREA */}
-                {field.type === "textarea" ? (
-                  <textarea
-                    {...register(field.name, {
-                      required: field.required
-                        ? `${field.label} é obrigatório(a)`
-                        : false
-                    })}
-                    className="w-full bg-[#4a4a4a] p-3 text-white rounded-md outline-0 resize-none"
-                  />
-                ) : null}
+              return (
+                <div key={field.name} className="w-full flex flex-col gap-1">
 
-                {/* FILE */}
-                {field.type === "file" ? (
-                  <label className="flex items-center justify-between gap-3 w-full bg-[#4a4a4a] p-3 text-white rounded-md cursor-pointer">
-                    <span>
-                      {defaultValues[field.name] instanceof File
-                        ? defaultValues[field.name].name
-                        : "Selecionar arquivo..."}
-                    </span>
+                  <label className="text-left text-white">{field.label}</label>
 
-                    <input
-                      type="file"
-                      className="hidden"
+                  {/* TEXTAREA */}
+                  {field.type === "textarea" && (
+                    <textarea
                       {...register(field.name, {
                         required: field.required
                           ? `${field.label} é obrigatório(a)`
                           : false
                       })}
-                      onChange={(e) =>
-                        setValue(field.name, e.target.files[0], {
-                          shouldValidate: field.required, // valida só se for obrigatório
-                          shouldDirty: true
-                        })
-                      }
+                      className="w-full bg-[#4a4a4a] p-3 text-white rounded-md outline-0 resize-none"
                     />
-                  </label>
-                ) : null}
+                  )}
 
-                {/* INPUT NORMAL */}
-                {field.type !== "textarea" && field.type !== "file" ? (
-                  <input
-                    type={field.type}
-                    {...register(field.name, {
-                      required: field.required
-                        ? `${field.label} é obrigatório(a)`
-                        : false
-                    })}
-                    className="w-full bg-[#4a4a4a] p-3 text-white rounded-md outline-0"
-                  />
-                ) : null}
+                  {/* FILE */}
+                  {field.type === "file" && (
+                    <label className="flex items-center justify-between gap-3 w-full bg-[#4a4a4a] p-3 text-white rounded-md cursor-pointer">
+                      <span>
+                        {fileValue instanceof File
+                          ? fileValue.name
+                          : "Selecionar arquivo..."}
+                      </span>
 
-                {/* ERROS */}
-                {errors[field.name] && (
-                  <span className="text-red-500 text-sm">
-                    {errors[field.name].message}
-                  </span>
-                )}
+                      <input
+                        type="file"
+                        className="hidden"
+                        {...register(field.name, {
+                          required: field.required
+                            ? `${field.label} é obrigatório(a)`
+                            : false
+                        })}
+                        onChange={(e) =>
+                          setValue(field.name, e.target.files[0], {
+                            shouldValidate: field.required,
+                            shouldDirty: true
+                          })
+                        }
+                      />
+                    </label>
+                  )}
 
-              </div>
-            ))}
+                  {/* INPUT NORMAL */}
+                  {field.type !== "textarea" && field.type !== "file" && (
+                    <input
+                      type={field.type}
+                      {...register(field.name, {
+                        required: field.required
+                          ? `${field.label} é obrigatório(a)`
+                          : false
+                      })}
+                      className="w-full bg-[#4a4a4a] p-3 text-white rounded-md outline-0"
+                    />
+                  )}
+
+                  {/* ERROS */}
+                  {errors[field.name] && (
+                    <span className="text-red-500 text-sm">
+                      {errors[field.name].message}
+                    </span>
+                  )}
+
+                </div>
+              );
+            })}
 
             {/* BOTÕES */}
             <div className="flex gap-2 w-full justify-end mt-8">

@@ -13,32 +13,22 @@ import { ptBR } from "date-fns/locale";
 import Modal from "../components/Modal";
 
 function formatarAtividadeParaComponente(post) {
-
-
   const dataDeReferencia = post.dataAtividade || post.dataEntrega;
-
 
   const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de 'MMMM yyyy", { locale: ptBR });
 
-
   const dataParaOrdenacao = format(new Date(dataDeReferencia), 'dd MMMM yyyy', { locale: ptBR });
-
 
   const descricaoResumida = post.conteudo
     ? post.conteudo.substring(0, 100) + "..."
     : "";
 
-
   return {
     id: post.id,
     titulo: post.titulo,
-
-   
-    ano: dataParaExibicao,         
-    dataDeAgrupamento: dataParaOrdenacao, 
+    ano: dataParaExibicao,
+    dataDeAgrupamento: dataParaOrdenacao,
     descricao: descricaoResumida,
-
-   
     autor: post.professor?.nome || "Professor"
   };
 }
@@ -52,12 +42,6 @@ function AtividadePage() {
   const [atividades, setAtividades] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
-
-  const [novoTitulo, setNovoTitulo] = useState("");
-  const [novaData, setNovaData] = useState("");
-  const [novaDescricao, setNovaDescricao] = useState("");
- 
-  const [novoArquivo, setNovoArquivo] = useState(null);
 
   useEffect(() => {
     async function fetchAtividades() {
@@ -77,7 +61,6 @@ function AtividadePage() {
     if (turmaId) fetchAtividades();
   }, [turmaId]);
 
-
   const postsPorData = atividades.reduce((acc, post) => {
     const data = post.dataDeAgrupamento;
     if (!acc[data]) acc[data] = [];
@@ -85,25 +68,20 @@ function AtividadePage() {
     return acc;
   }, {});
 
-  
   const grupos = Object.entries(postsPorData).sort((a, b) => {
-  
     const parseDate = (dateString) => {
-     
       const parts = dateString.split(' ');
       const dia = parts[0].padStart(2, '0');
-      const mes = parts[1]; 
+      const mes = parts[1];
       const ano = parts[2];
 
-      
       const mesesMap = {
         janeiro: 0, fevereiro: 1, março: 2, abril: 3, maio: 4, junho: 5,
         julho: 6, agosto: 7, setembro: 8, outubro: 9, novembro: 10, dezembro: 11,
       };
 
       const mesIndex = mesesMap[mes.toLowerCase()];
-
-      if (mesIndex === undefined) return new Date(0); 
+      if (mesIndex === undefined) return new Date(0);
 
       return new Date(ano, mesIndex, dia);
     };
@@ -111,10 +89,10 @@ function AtividadePage() {
     const dateA = parseDate(a[0]);
     const dateB = parseDate(b[0]);
 
-    return dateB.getTime() - dateA.getTime(); 
+    return dateB.getTime() - dateA.getTime();
   });
 
-  // Fecha modal quando clicar fora
+  // Fecha modal ao clicar fora
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -127,57 +105,45 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
+  // NOVO handleSubmit — CORRIGIDO
+  async function handleSubmit(data) {
+    console.log("Dados do form:", data);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!novoTitulo || !novaData || !novaDescricao) {
+    const { titulo, dataEntrega, descricao, arquivo } = data;
+
+    if (!titulo || !dataEntrega || !descricao) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
 
-    // Formata data ISO
-    const [ano, mes, dia] = novaData.split('-').map(Number);
-    const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString();
+    const dataFormatadaISO = new Date(dataEntrega).toISOString();
 
     const formData = new FormData();
-    // objeto com campos que a API espera (ajuste nomes se necessário)
     const atividadeObj = {
-      titulo: novoTitulo,
-      conteudo: novaDescricao,
+      titulo,
+      conteudo: descricao,
       dataEntrega: dataFormatadaISO
     };
 
     formData.append("atividade", JSON.stringify(atividadeObj));
 
-    if (novoArquivo) {
-      formData.append("arquivo", novoArquivo);
+    if (arquivo instanceof File) {
+      formData.append("arquivo", arquivo);
     }
 
     try {
-      // NÃO definir Content-Type — o browser faz quando usar multipart/form-data
       const response = await api.post(`/atividades/criar/${turmaId}`, formData);
-      console.log("Atividade criada (API):", response.data);
 
-      // opcional: buscar novamente ou inserir no estado
-      const atividadeCriada = response.data;
-      const atividadeFormatada = formatarAtividadeParaComponente(atividadeCriada);
-      setAtividades(prev => [atividadeFormatada, ...prev]);
+      const atividadeCriada = formatarAtividadeParaComponente(response.data);
+      setAtividades(prev => [atividadeCriada, ...prev]);
 
       setShowModal(false);
-      setNovoTitulo("");
-      setNovaData("");
-      setNovaDescricao("");
-      setNovoArquivo(null);
+
     } catch (error) {
       console.error("Erro na criação da atividade:", error);
-      if (error.response) {
-        alert(`Falha ao criar a atividade: ${error.response.data?.message || error.response.status}`);
-      } else {
-        alert("Erro inesperado: " + (error.message || "ver console"));
-      }
+      alert("Erro ao criar atividade.");
     }
   }
-
 
   return (
     <div>
@@ -206,6 +172,7 @@ function AtividadePage() {
           </div>
         </LinksContainer>
 
+        {/* MODAL */}
         <Modal
           showModal={showModal}
           setShowModal={setShowModal}
@@ -251,4 +218,5 @@ function AtividadePage() {
     </div>
   );
 }
+
 export default AtividadePage;
