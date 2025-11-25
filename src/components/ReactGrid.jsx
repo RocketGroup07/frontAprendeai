@@ -53,13 +53,7 @@ function ReactGrid({ data }) {
 
   const colDefs = [
     { field: "nomeAluno", headerName: "Nome do Aluno", sortable: true, filter: true },
-    { field: "horasPresente", headerName: "Horas", editable: true },
-    { field: "percentualPresenca", headerName: "Percentual de Presença" },
-    {
-      headerName: "Ações",
-      cellRenderer: saveButtonRenderer, // 🔹 botão
-      width: 120
-    }
+    { field: "horasPresente", headerName: "Horas", editable: true }
   ];
 
 

@@ -28,7 +28,7 @@ export const StaggeredMenu = ({
     // se items NÃO for passado via props → usa este default abaixo:
     const defaultItems = [
         { label: 'Turmas', link: '/turmas' },
-        { label: 'Atividades', link: `/atividades/` },
+        { label: 'Atividades', link: `/atividades/${turmaId}` },
         { label: 'Chamada', link: `/professor/${turmaId}` },
         { label: 'Posts', link: `/posts/` },
     ];
