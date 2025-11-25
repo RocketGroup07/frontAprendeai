@@ -96,7 +96,7 @@ function AtividadePage() {
     return dateB.getTime() - dateA.getTime();
   });
 
-  // Fecha modal quando clicar fora
+  // Fecha modal ao clicar fora
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -173,6 +173,7 @@ function AtividadePage() {
           </div>
         </LinksContainer>
 
+        {/* MODAL */}
         <Modal
           showModal={showModal}
           setShowModal={setShowModal}
