@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import StaggeredMenu from "../components/StaggeredMenu";
 import { AiOutlineDownload } from "react-icons/ai";
+import Comentarios from "../components/Comentarios";
 
 
 function TelaPost() {
@@ -79,6 +80,7 @@ function TelaPost() {
                                 </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
+                            <Comentarios turmaId={turmaId} postId={postId} />
                             {post.nomeArquivo > "0" && (
                                 <a
                                     href={`${baseURL}posts/${post.turmaId}/${post.postId}/download/anexo`}

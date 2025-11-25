@@ -13,6 +13,7 @@ import { ptBR } from "date-fns/locale";
 import Modal from "../components/Modal";
 
 function formatarAtividadeParaComponente(post) {
+
   const dataDeReferencia = post.dataAtividade || post.dataEntrega;
 
   const dataParaExibicao = format(new Date(dataDeReferencia), "dd 'de 'MMMM yyyy", { locale: ptBR });
@@ -69,7 +70,9 @@ function AtividadePage() {
   }, {});
 
   const grupos = Object.entries(postsPorData).sort((a, b) => {
+
     const parseDate = (dateString) => {
+
       const parts = dateString.split(' ');
       const dia = parts[0].padStart(2, '0');
       const mes = parts[1];
@@ -81,6 +84,7 @@ function AtividadePage() {
       };
 
       const mesIndex = mesesMap[mes.toLowerCase()];
+
       if (mesIndex === undefined) return new Date(0);
 
       return new Date(ano, mesIndex, dia);
@@ -105,37 +109,34 @@ function AtividadePage() {
     };
   }, [modalRef]);
 
-  // NOVO handleSubmit — CORRIGIDO
+  // 🌟 NOVO handleSubmit — usando dados do react-hook-form
   async function handleSubmit(data) {
-    console.log("Dados do form:", data);
-
-    const { titulo, dataEntrega, descricao, arquivo } = data;
-
-    if (!titulo || !dataEntrega || !descricao) {
-      alert("Por favor, preencha todos os campos.");
-      return;
-    }
-
-    const dataFormatadaISO = new Date(dataEntrega).toISOString();
-
-    const formData = new FormData();
-    const atividadeObj = {
-      titulo,
-      conteudo: descricao,
-      dataEntrega: dataFormatadaISO
-    };
-
-    formData.append("atividade", JSON.stringify(atividadeObj));
-
-    if (arquivo instanceof File) {
-      formData.append("arquivo", arquivo);
-    }
-
     try {
+      const { titulo, dataEntrega, descricao, arquivo } = data;
+
+      const [ano, mes, dia] = dataEntrega.split('-').map(Number);
+      const dataFormatadaISO = new Date(ano, mes - 1, dia).toISOString();
+
+      const formData = new FormData();
+
+      const atividadeObj = {
+        titulo,
+        conteudo: descricao,
+        dataEntrega: dataFormatadaISO
+      };
+
+      formData.append("atividade", JSON.stringify(atividadeObj));
+
+      if (arquivo) {
+        formData.append("arquivo", arquivo);
+      }
+
       const response = await api.post(`/atividades/criar/${turmaId}`, formData);
 
-      const atividadeCriada = formatarAtividadeParaComponente(response.data);
-      setAtividades(prev => [atividadeCriada, ...prev]);
+      const atividadeCriada = response.data;
+      const atividadeFormatada = formatarAtividadeParaComponente(atividadeCriada);
+
+      setAtividades(prev => [atividadeFormatada, ...prev]);
 
       setShowModal(false);
 
