@@ -137,7 +137,7 @@ function TelaAtividade() {
                                     </div>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
-                            <Comentarios/>
+                            
                          
 
 
