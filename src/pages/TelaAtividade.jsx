@@ -10,7 +10,7 @@ import { ca, ptBR } from "date-fns/locale";
 import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
-import Comentarios from "../components/Comentarios";
+import EntregaAtividade from "../components/EntregaAtividade";    
 
 
 
@@ -112,29 +112,7 @@ function TelaAtividade() {
                                 </div>
                             )}
 
-                                 <div className="flex gap-4 mt-6">
-
-                                        {/* INPUT INVISÍVEL */}
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            style={{ display: "none" }}
-                                            onChange={(e) => setArquivo(e.target.files[0])}
-                                        />
-
-                                        {/* BOTÃO QUE ABRE O SELECT DE ARQUIVOS */}
-                                        <button
-                                            onClick={() => fileInputRef.current.click()}
-                                            className="flex bg-gray-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-gray-700"
-                                        >
-                                            <FaPaperclip />
-                                            {arquivo ? arquivo.name : "Anexar Arquivo"}
-                                        </button>
-
-                                        <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700">
-                                            Entregar Atividade
-                                        </button>
-                                    </div>
+                                <EntregaAtividade/>
                             </div>
                             <hr className="border-t border-gray-600 my-4" />
                             
