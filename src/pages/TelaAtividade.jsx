@@ -11,6 +11,7 @@ import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
 import EntregaAtividade from "../components/EntregaAtividade";
+import QuadroEntrega from "../components/QuadroEntrega";
 
 function TelaAtividade() {
     const { turmaId, atividadeId } = useParams();
@@ -195,6 +196,9 @@ function TelaAtividade() {
                                     ) : (
                                         <EntregaAtividade onEntregar={enviarEntrega} />
                                     )}
+                                    <br />
+                                    <br />
+                                    <QuadroEntrega/>
                                 </div>
                             </div>
 
