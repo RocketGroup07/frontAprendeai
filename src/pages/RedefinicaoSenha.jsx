@@ -51,7 +51,7 @@ function RedefinicaoSenha() {
       // Chama o endpoint de validação do backend que espera { email, codigo }
       await api.post('/redefinicao/validar', { email: data.email, codigo: data.token });
       toast.success('Código validado com sucesso. A redefinição foi concluída. Faça login.');
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate(`/redefinicao-token?email=${encodeURIComponent(data.email)}&token=${encodeURIComponent(data.token)}`), 1500);
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data || 'Código inválido ou expirado.');
