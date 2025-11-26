@@ -19,12 +19,17 @@ export default function EntregaAtividade({ onEntregar }) {
         console.log("Entrega enviada:", entrega);
     };
 
+
+    
+
+
+
     return (
         <div className="flex flex-col gap-4 mt-6">
 
             {/* ÁREA DE TEXTO */}
             <textarea
-                className="w-full p-3 rounded-sm bg-gray-700 focus:outline-none  cursor-default"
+                className="w-full p-3 rounded-sm bg-gray-700 focus:outline-none"
                 rows={4}
                 placeholder="Escreva sua resposta aqui..."
                 value={texto}
