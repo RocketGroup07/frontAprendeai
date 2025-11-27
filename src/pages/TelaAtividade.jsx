@@ -1,69 +1,75 @@
 import { Link, useParams } from "react-router";
 import StaggeredMenu from "../components/StaggeredMenu";
 import TextType from "../components/TextType";
-import { FaCircle, FaLongArrowAltLeft, FaPaperclip } from "react-icons/fa";
+import { FaCircle, FaLongArrowAltLeft } from "react-icons/fa";
 import { MdOutlineAddTask } from "react-icons/md";
 import React, { useState, useEffect } from "react";
 import { api, baseURL } from "../lib/axios";
 import { format } from "date-fns";
-import { ca, ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale";
 import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
 import EntregaAtividade from "../components/EntregaAtividade";
 import QuadroEntrega from "../components/QuadroEntrega";
+import { useAuth } from "../components/UserAuth";
 
 function TelaAtividade() {
     const { turmaId, atividadeId } = useParams();
     const [atividade, setAtividade] = useState(null);
     const [showChat, setShowChat] = useState(false);
     const [entregue, setEntregue] = useState(false);
-    const [arquivo, setArquivo] = useState(null);
-    const fileInputRef = React.useRef();
+    const { isProfessor } = useAuth();
 
+    const [entregasGerais, setEntregasGerais] = useState([]);
+
+    // -------------------------------
+    // FUNÇÕES QUE PODEMOS REUTILIZAR
+    // -------------------------------
+
+    async function fetchAtividade() {
+        try {
+            const response = await api.get(`/atividades/${atividadeId}`);
+            setAtividade(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar a atividade:", error);
+        }
+    }
+
+    async function checkEntrega() {
+        try {
+            const response = await api.get(`/entregas/${atividadeId}`);
+            setEntregue(response.data.entregue || false);
+        } catch (error) {
+            console.error("Erro ao verificar entrega:", error);
+        }
+    }
+
+    async function fetchEntregasGerais() {
+        try {
+            const response = await api.get(`/entregas/${atividadeId}/geral`);
+            setEntregasGerais(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar entregas gerais:", error);
+        }
+    }
+
+    // RODA QUANDO ABRE A TELA
     useEffect(() => {
-        async function fetchAtividade() {
-            try {
-                const response = await api.get(`/atividades/${atividadeId}`);
-                setAtividade(response.data);
-                console.log("Atividade carregada:", response.data);
-            } catch (error) {
-                console.error("Erro ao buscar a atividade:", error);
-                setAtividade(null);
-            }
-        }
-
-        async function checkEntrega() {
-            try {
-                const response = await api.get(`/entregas/${atividadeId}`);
-                // Supondo que a API retorna algo como { entregue: true }
-                setEntregue(response.data.entregue || false);
-            } catch (error) {
-                console.error("Erro ao verificar entrega:", error);
-                setEntregue(false);
-            }
-        }
-
         fetchAtividade();
         checkEntrega();
+        fetchEntregasGerais();
     }, [atividadeId]);
 
-
-    // async function baixarArquivo() {
-    //   try{
-    //     const response = await api.get(atividades/${postId}/download/anexo)
-    //     console.log("Está vindo");
-    //   }catch(error){
-    //     console.error("Erro ao buscar a atividade:", error);
-    //   }
-    // }
-
-    /* Para entregar as atividades, temos abaixo: */
+    // ---------------------------------
+    // ENVIO DA ENTREGA + ATUALIZAÇÃO
+    // ---------------------------------
     async function enviarEntrega({ texto, arquivo }) {
         if (!texto && !arquivo) {
             alert("Você precisa enviar um texto, um arquivo ou ambos.");
             return;
         }
+
         try {
             const formData = new FormData();
             if (texto) formData.append("resposta", texto);
@@ -72,14 +78,18 @@ function TelaAtividade() {
             const response = await api.post(
                 `/entregas/${atividadeId}/entregar/`,
                 formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
+                { headers: { "Content-Type": "multipart/form-data" } }
             );
+
             alert("Entrega enviada com sucesso!");
+
+            // Atualiza imediatamente sem precisar dar F5
+            setEntregue(true);
+            fetchAtividade(); // recarrega os dados da entrega
+            fetchEntregasGerais(); // caso professor esteja vendo
+
             console.log("Resposta da API:", response.data);
+
         } catch (error) {
             console.error("Erro ao enviar entrega:", error);
             alert("Erro ao enviar entrega!");
@@ -142,15 +152,13 @@ function TelaAtividade() {
                             <hr className="border-t border-gray-600 my-4" />
 
                             <div>
-                                <div>
-                                    <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
-                                </div>
+                                <p className="text-justify whitespace-pre-wrap">
+                                    {atividade.conteudo}
+                                </p>
 
                                 {atividade.nomesArquivosAnexo > "0" && (
                                     <div>
-                                        <div>
-                                            <p className="font-bold">Material Extra:</p>
-                                        </div>
+                                        <p className="font-bold mt-4">Material Extra:</p>
 
                                         <a
                                             href={`${baseURL}atividades/${atividade.id}/download/anexo`}
@@ -170,84 +178,85 @@ function TelaAtividade() {
                                 )}
 
                                 <div className="w-full mt-4">
-                                    {entregue ? (
-                                        <div className="bg-gray-700 text-white font-bold p-3 rounded text-left">
-                                            <div>ATIVIDADE ENTREGUE</div>
 
-                                            {/* Exibe a resposta de texto, mantendo quebras de linha */}
-                                            {atividade?.entrega?.[0]?.respostaTexto && (
-                                                <div
-                                                    className="mt-2 font-normal text-white/90 text-left"
-                                                    style={{ whiteSpace: "pre-wrap" }}
-                                                >
-                                                    {atividade.entrega[0].respostaTexto}
-                                                </div>
-                                            )}
+                                    {/* PROFESSOR */}
+                                    {isProfessor && <QuadroEntrega entregas={entregasGerais} />}
 
-                                            {/* Exibe nomes de arquivos entregues */}
-                                            {atividade?.entrega?.[0]?.nomesArquivoEntrega?.length > 0 && (
-                                                <div className="mt-2 font-normal text-white/90 text-left">
-                                                    {atividade.entrega[0].nomesArquivoEntrega.map((nome, index) => (
-                                                        <div key={index}>{nome}</div>
-                                                    ))}
+                                    {/* ALUNO */}
+                                    {!isProfessor && (
+                                        <>
+                                            {entregue ? (
+                                                <div className="bg-gray-700 text-white font-bold p-3 rounded text-left">
+                                                    <div>ATIVIDADE ENTREGUE</div>
+
+                                                    {atividade?.entrega?.[0]?.respostaTexto && (
+                                                        <div
+                                                            className="mt-2 font-normal text-white/90 text-left"
+                                                            style={{ whiteSpace: "pre-wrap" }}
+                                                        >
+                                                            {atividade.entrega[0].respostaTexto}
+                                                        </div>
+                                                    )}
+
+                                                    {atividade?.entrega?.[0]?.nomesArquivoEntrega?.length > 0 && (
+                                                        <div className="mt-2 font-normal text-white/90 text-left">
+                                                            {atividade.entrega[0].nomesArquivoEntrega.map((nome, index) => (
+                                                                <div key={index}>{nome}</div>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
+                                            ) : (
+                                                <EntregaAtividade onEntregar={enviarEntrega} />
                                             )}
-                                        </div>
-                                    ) : (
-                                        <EntregaAtividade onEntregar={enviarEntrega} />
+                                        </>
                                     )}
-                                    <br />
-                                    <br />
-                                    <QuadroEntrega/>
+
                                 </div>
                             </div>
 
                             <hr className="border-t border-gray-600 my-4" />
 
-                            <div>
-                                {/* Botão flutuante para abrir o chat IA */}
-                                <button
-                                    onClick={() => setShowChat((v) => !v)}
-                                    style={{
-                                        position: "fixed",
-                                        bottom: 40,
-                                        right: 40,
-                                        zIndex: 1000,
-                                        background: "#b30404",
-                                        color: "#fff",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        width: 60,
-                                        height: 60,
-                                        boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: 32,
-                                        cursor: "pointer",
-                                        transition: "transform 0.2s",
-                                        transform: showChat ? "scale(1.1) rotate(15deg)" : "scale(1)",
-                                    }}
-                                    title={showChat ? "Fechar chat IA" : "Abrir chat IA"}
-                                >
-                                    <FaRobot />
-                                </button>
+                            {/* Botão flutuante IA */}
+                            <button
+                                onClick={() => setShowChat((v) => !v)}
+                                style={{
+                                    position: "fixed",
+                                    bottom: 40,
+                                    right: 40,
+                                    zIndex: 1000,
+                                    background: "#b30404",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "50%",
+                                    width: 60,
+                                    height: 60,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: 32,
+                                    cursor: "pointer",
+                                    transition: "transform 0.2s",
+                                    transform: showChat ? "scale(1.1) rotate(15deg)" : "scale(1)",
+                                }}
+                                title={showChat ? "Fechar chat IA" : "Abrir chat IA"}
+                            >
+                                <FaRobot />
+                            </button>
 
-                                {/* Chat IA com animação de fade/slide */}
-                                <div
-                                    style={{
-                                        position: "fixed",
-                                        bottom: showChat ? 120 : 60,
-                                        right: 40,
-                                        zIndex: 1001,
-                                        opacity: showChat ? 1 : 0,
-                                        pointerEvents: showChat ? "auto" : "none",
-                                        transform: showChat ? "translateY(0)" : "translateY(40px)",
-                                        transition: "all 0.4s cubic-bezier(.4,2,.6,1)",
-                                    }}
-                                >
-                                    {showChat && <IAMessages contexto={atividade.conteudo} />}
-                                </div>
+                            <div
+                                style={{
+                                    position: "fixed",
+                                    bottom: showChat ? 120 : 60,
+                                    right: 40,
+                                    zIndex: 1001,
+                                    opacity: showChat ? 1 : 0,
+                                    pointerEvents: showChat ? "auto" : "none",
+                                    transform: showChat ? "translateY(0)" : "translateY(40px)",
+                                    transition: "all 0.4s cubic-bezier(.4,2,.6,1)",
+                                }}
+                            >
+                                {showChat && <IAMessages contexto={atividade.conteudo} />}
                             </div>
                         </div>
                     </div>
