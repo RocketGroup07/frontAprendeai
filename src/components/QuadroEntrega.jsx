@@ -1,14 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 
-export default function QuadroEntrega({ entregas }) {
+export default function QuadroEntrega({ entregas, alunosTurma }) {
 
     // Converter formato vindo da API para o usado no componente
-    const alunos = entregas.map((e) => ({
-        nome: e.alunoNome,
-        entregue: e.status === "ENTREGUE",
-        resposta: e.respostaTexto,
-        anexos: e.nomesArquivoEntrega || []
-    }));
+    const alunos = alunosTurma.map((aluno) => {
+        const entrega = entregas.find((e) => e.alunoId === aluno.id);
+
+        return {
+            nome: aluno.nome,
+            id: aluno.id,
+            entregue: !!entrega,
+            resposta: entrega?.respostaTexto || "",
+            anexos: entrega?.nomesArquivoEntrega || []
+        };
+    });
 
     const [aberto, setAberto] = useState(false);
     const [alunoSelecionado, setAlunoSelecionado] = useState(alunos[0] || null);
@@ -25,7 +30,7 @@ export default function QuadroEntrega({ entregas }) {
         setAberto(false);
     }
 
-    // fechar dropdown
+    // Fechar dropdown ao clicar fora
     useEffect(() => {
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -63,10 +68,16 @@ export default function QuadroEntrega({ entregas }) {
                 </button>
 
                 {aberto && (
-                    <div className="absolute mt-1 w-full bg-gray-700 rounded-sm shadow-md z-10">
+                    <div
+                        className="
+                            absolute mt-1 w-full bg-gray-700 rounded-sm shadow-md z-10
+                            max-h-46 overflow-y-scroll
+                            scrollbar-thin scrollbar-thumb-red-600 scrollbar-track-gray-800
+                        "
+                    >
                         {alunos.map((aluno) => (
                             <div
-                                key={aluno.nome}
+                                key={aluno.id}
                                 className="p-2 cursor-pointer hover:bg-red-700 transition-colors duration-150"
                                 onClick={() => selecionarAluno(aluno)}
                             >
@@ -88,8 +99,9 @@ export default function QuadroEntrega({ entregas }) {
                 </div>
 
                 <div
-                    className={`p-2 rounded-sm mt-4 mb-4 w-28 text-center text-white font-semibold ${alunoSelecionado.entregue ? "bg-green-600" : "bg-red-600"
-                        }`}
+                    className={`p-2 rounded-sm mt-4 mb-10 w-28 text-center text-white font-semibold ${
+                        alunoSelecionado.entregue ? "bg-green-600" : "bg-red-600"
+                    }`}
                 >
                     {alunoSelecionado.entregue ? "Entregue" : "Pendente"}
                 </div>

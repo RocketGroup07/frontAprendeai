@@ -19,6 +19,8 @@ function TelaAtividade() {
     const [atividade, setAtividade] = useState(null);
     const [showChat, setShowChat] = useState(false);
     const [entregue, setEntregue] = useState(false);
+    const [alunosTurma, setAlunosTurma] = useState([]);
+
     const { isProfessor } = useAuth();
 
     const [entregasGerais, setEntregasGerais] = useState([]);
@@ -26,6 +28,16 @@ function TelaAtividade() {
     // -------------------------------
     // FUNÇÕES QUE PODEMOS REUTILIZAR
     // -------------------------------
+
+    async function fetchAlunosTurma() {
+        try {
+            const response = await api.get(`/turmas/${turmaId}`);
+            setAlunosTurma(response.data.alunos || []);
+        } catch (error) {
+            console.error("Erro ao buscar alunos da turma:", error);
+        }
+    }
+
 
     async function fetchAtividade() {
         try {
@@ -59,6 +71,7 @@ function TelaAtividade() {
         fetchAtividade();
         checkEntrega();
         fetchEntregasGerais();
+        fetchAlunosTurma();
     }, [atividadeId]);
 
     // ---------------------------------
@@ -180,7 +193,12 @@ function TelaAtividade() {
                                 <div className="w-full mt-4">
 
                                     {/* PROFESSOR */}
-                                    {isProfessor && <QuadroEntrega entregas={entregasGerais} />}
+                                    {isProfessor && (
+                                        <QuadroEntrega
+                                            entregas={entregasGerais}
+                                            alunosTurma={alunosTurma}
+                                        />
+                                    )}
 
                                     {/* ALUNO */}
                                     {!isProfessor && (
