@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { IoMdShareAlt } from "react-icons/io";
 import { MdClose } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // Importando o Link para navegação
 import { api } from "../lib/axios";
 import { toast } from "react-toastify";
 import { useAuth } from "./UserAuth";
@@ -14,12 +14,12 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     const [favoritado, setFavoritado] = useState(false);
 
     // Função que será chamada ao clicar na estrela para favoritar/desfavoritar
-    async function handleFavoritar() {
+    async function handleFavoritar(e) {
+        e.stopPropagation(); // Impede que o clique na estrela propague para o Link
         try {
-            // Enviar a requisição para favoritar o post
             const response = await api.post(`/favoritos/adicionar/post/${id}`);
             if (response.status === 200) {
-                setFavoritado(prevState => !prevState); // Alternar o estado de favoritado
+                setFavoritado(prevState => !prevState); // Alterna o estado de favoritado
             }
         } catch (error) {
             console.error("Erro ao favoritar o post:", error);
@@ -27,7 +27,6 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     }
 
     useEffect(() => {
-        // Verificar se o post já está favoritado ao carregar a página
         async function checkFavorito() {
             try {
                 const response = await api.get(`/favoritos/listar/`);
@@ -37,9 +36,8 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                 console.error("Erro ao verificar status de favorito:", error);
             }
         }
-
         checkFavorito();
-    }, [id]); // Verifica quando o id mudar
+    }, [id]);
 
     const { isProfessor } = useAuth();
 
@@ -81,27 +79,24 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     }
 
     return (
-        <div className="cursor-pointer hover:scale-103 transition-transform font-neuli w-80 relative group">
+        <div className="relative w-80 cursor-pointer hover:scale-103 transition-transform font-neuli">
             {isProfessor && (
                 <button
                     onClick={handleDelete}
-                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
+                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                     title="Deletar post"
                 >
                     <MdClose size={20} />
                 </button>
             )}
 
-            <div>
-                <div
-                    className="h-80 bg-[var(--main)] text-white rounded-t-lg p-10 flex flex-col justify-between"
-                >
+            {/* O Link cobre todo o card, mas sem afetar a estrela */}
+            <Link to={`/post/${turmaId}/${id}`} className="block">
+                <div className="h-80 bg-[var(--main)] text-white rounded-t-lg p-10 flex flex-col justify-between">
                     <div>
                         <h2 className="text-3xl line-clamp-1">{titulo}</h2>
                         <div className="mt-5 font-extralight text-[16px]">
-                            <p className="overflow-hidden line-clamp-2">
-                                {descricao}
-                            </p>
+                            <p className="overflow-hidden line-clamp-2">{descricao}</p>
                         </div>
                     </div>
 
@@ -113,15 +108,6 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                         <div className="flex items-center gap-2">
                             <p className="font-normal text-sm">Data:</p>
                             <p className="font-light text-sm">{format(ano, "dd 'de' MMM yy", { locale: ptBR })}</p>
-                        </div>
-
-                        <div className="flex justify-end">
-                            <img
-                                src={favoritado ? starFill : star}
-                                alt="Ícone de estrela"
-                                className="w-7 h-7 mt-4 fill-zinc-300 bg-current-white cursor-pointer"
-                                onClick={handleFavoritar} // Chama a função ao clicar
-                            />
                         </div>
                     </div>
                 </div>
@@ -135,6 +121,18 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                         </div>
                     </div>
                 </div>
+            </Link>
+
+            {/* Estrela para favoritar - Impede redirecionamento ao ser clicada */}
+            <div
+                className="absolute bottom-16 right-4 cursor-pointer"
+                onClick={handleFavoritar} // Chama a função ao clicar, mas não redireciona
+            >
+                <img
+                    src={favoritado ? starFill : star}
+                    alt="Ícone de estrela"
+                    className="w-7 h-7 mt-4 fill-zinc-300 bg-current-white"
+                />
             </div>
         </div>
     );
