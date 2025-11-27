@@ -18,6 +18,7 @@ function FavoritosPage() {
       try {
         // Requisição GET para listar os posts favoritos
         const response = await api.get('/favoritos/listar/posts');
+        console.log(response.data); // Verifica a estrutura dos dados retornados
         setFavoritos(response.data); // Armazena os favoritos no estado
         setLoading(false);
       } catch (err) {

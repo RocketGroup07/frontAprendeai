@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { IoMdShareAlt } from "react-icons/io";
 import { MdClose } from "react-icons/md";
-import { Link } from "react-router-dom"; // Importando o Link para navegação
+import { Link } from "react-router-dom";
 import { api } from "../lib/axios";
 import { toast } from "react-toastify";
 import { useAuth } from "./UserAuth";
@@ -12,17 +12,36 @@ import { useEffect, useState } from "react";
 
 function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     const [favoritado, setFavoritado] = useState(false);
+    const [favoritoId, setFavoritoId] = useState(null);
 
     // Função que será chamada ao clicar na estrela para favoritar/desfavoritar
     async function handleFavoritar(e) {
         e.stopPropagation(); // Impede que o clique na estrela propague para o Link
-        try {
-            const response = await api.post(`/favoritos/adicionar/post/${id}`);
-            if (response.status === 200) {
-                setFavoritado(prevState => !prevState); // Alterna o estado de favoritado
+
+        if (favoritado) {
+            // Se o post já estiver favoritado, fazer a requisição DELETE para remover o favorito
+            try {
+                const response = await api.delete(`/favoritos/remover/${postId}`);
+                if (response.status === 200) {
+                    setFavoritado(false); // Desmarcar como favoritado
+                    setFavoritoId(null);  // Limpar o id do favorito
+                    toast.success("Post removido dos favoritos!");
+                }
+            } catch (error) {
+                console.error("Erro ao remover favorito:", error);
             }
-        } catch (error) {
-            console.error("Erro ao favoritar o post:", error);
+        } else {
+            // Caso contrário, favoritar o post
+            try {
+                const response = await api.post(`/favoritos/adicionar/post/${id}`);
+                if (response.status === 200) {
+                    setFavoritado(true); // Marcar como favoritado
+                    setFavoritoId(response.data.favoritoId); // Armazenar o id do favorito retornado
+                    toast.success("Post adicionado aos favoritos!");
+                }
+            } catch (error) {
+                console.error("Erro ao favoritar o post:", error);
+            }
         }
     }
 
@@ -30,8 +49,11 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
         async function checkFavorito() {
             try {
                 const response = await api.get(`/favoritos/listar/`);
-                const postFavoritado = response.data.posts.some(post => post.postId === id);
-                setFavoritado(postFavoritado);
+                const postFavoritado = response.data.posts.find(post => post.postId === id);
+                if (postFavoritado) {
+                    setFavoritado(true); // Se o post já estiver favoritado
+                    setFavoritoId(postFavoritado.favoritoId); // Armazenar o id do favorito
+                }
             } catch (error) {
                 console.error("Erro ao verificar status de favorito:", error);
             }
@@ -123,7 +145,7 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                 </div>
             </Link>
 
-            {/* Estrela para favoritar - Impede redirecionamento ao ser clicada */}
+            {/* Estrela para favoritar/desfavoritar */}
             <div
                 className="absolute bottom-16 right-4 cursor-pointer"
                 onClick={handleFavoritar} // Chama a função ao clicar, mas não redireciona
