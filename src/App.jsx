@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./components/UserAuth.jsx";
 import DashProf from "./pages/DashProf.jsx";
 import TelaPost from "./pages/TelaPost.jsx";
+import TelaAtividade from "./pages/TelaAtividade.jsx";
 import ValidarToken from "./pages/ValidarToken.jsx";
 
 function App() {
@@ -25,26 +26,26 @@ function App() {
             <Route path='/redefinicao-token' element={<ValidarToken />} />
             <Route path='/geral/:turmaId' element={<Geral />} />
             <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
-            <Route path='/atividades/:turmaId' element={<AtividadePage />} />
+            <Route path='/atividades/:turmaId' element={<AtividadePage />} />  {/* Manter a rota de atividades da v1 */}
             <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
             <Route path='/professor' element={<DashProf />} />
             <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
+            <Route path='/atividades/:turmaId/:atividadeId' element={<TelaAtividade />} />
           </Routes>
         </Router>
       
-
-      <ToastContainer
-        toastClassName="neulis-sans"
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick rtl={false}
-        draggable
-        pauseOnHover={false}
-        theme="dark"
-      />
-    </AuthProvider>
+        <ToastContainer
+          toastClassName="neulis-sans"
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick rtl={false}
+          draggable
+          pauseOnHover={false}
+          theme="dark"
+        />
+      </AuthProvider>
   );
 }
 
