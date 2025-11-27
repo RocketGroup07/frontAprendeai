@@ -12,7 +12,7 @@ function Input({
   return (
     <div>
       <input
-        className={`w-full bg-[#4a4a4a] p-4 items-left text-white rounded-md placeholder:uppercase font-neuli outline-0 border ${error ? "border-red-500" : "border-white"
+        className={`w-full bg-[#4a4a4a] p-4 items-left text-white rounded-md font-neuli outline-0 border ${error ? "border-red-500" : "border-white"
           } ${className}`}
         placeholder={placeholder}
         type={type}

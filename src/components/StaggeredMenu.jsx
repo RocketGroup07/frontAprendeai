@@ -7,6 +7,8 @@ import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CiLogout } from "react-icons/ci";
+import { api } from '../lib/axios';
+import { toast } from 'react-toastify';
 
 export const StaggeredMenu = ({
     position = 'right',
@@ -30,11 +32,38 @@ export const StaggeredMenu = ({
         { label: 'Turmas', link: '/turmas' },
         { label: 'Atividades', link: `/atividades/${turmaId}` },
         { label: 'Chamada', link: `/professor/${turmaId}` },
-        { label: 'Posts', link: `/posts/` },
+        { label: 'Relatório', action: `relatorio` },
     ];
 
-    // definindo o que será realmente usado:
-    items = defaultItems;
+    items = items && items.length ? items : defaultItems;
+
+    const handleGenerateReportLocal = async (turmaId) => {
+        try {
+            const response = await api.get(`/api/chamada/relatorio/${turmaId}`, {
+                responseType: 'blob'
+            });
+            const disposition = response.headers?.['content-disposition'] || response.headers?.['Content-Disposition'];
+            let filename = 'relatorio.pdf';
+            if (disposition) {
+                const m = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/i);
+                if (m && m[1]) filename = decodeURIComponent(m[1].replace(/["']/g, ''));
+            }
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            toast.success("Download iniciado");
+        } catch (err) {
+            console.error("Erro ao gerar relatório:", err);
+            toast.error("Erro ao gerar relatório");
+        }
+    };
+
 
     const { isProfessor, isAluno, usuario, logout } = useAuth();
 
@@ -312,7 +341,7 @@ export const StaggeredMenu = ({
                 data-position={position}
                 data-open={open || undefined}
             >
-                {isProfessor && turmaId &&(<div
+                {isProfessor && turmaId && (<div
                     ref={preLayersRef}
                     className="sm-prelayers fixed top-0 right-0 h-screen pointer-events-none z-[5]"
                     aria-hidden="true"
@@ -394,7 +423,7 @@ export const StaggeredMenu = ({
                     </div>
                 </header>
 
-                {isProfessor && turmaId &&(
+                {isProfessor && turmaId && (
                     <aside
                         id="staggered-menu-panel"
                         ref={panelRef}
@@ -410,17 +439,30 @@ export const StaggeredMenu = ({
                             >
                                 {items && items.length ? (
                                     items.map((it, idx) => (
-                                        <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
-                                            <a
-                                                className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
-                                                href={it.link}
-                                                aria-label={it.ariaLabel}
-                                                data-index={idx + 1}
-                                            >
-                                                <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                                                    {it.label}
-                                                </span>
-                                            </a>
+                                        <li key={it.label + idx} className="sm-panel-itemWrap ...">
+                                            {it.action === 'relatorio' ? (
+                                                <button
+                                                    type="button"
+                                                    className="sm-panel-item ..."
+                                                    onClick={e => {
+                                                        e.preventDefault();
+                                                        // se o pai passou o handler, usa ele; senão usa o handler local
+                                                        if (typeof onGenerateReport === 'function') {
+                                                            onGenerateReport(turmaId);
+                                                        } else {
+                                                            handleGenerateReportLocal(turmaId);
+                                                        }
+                                                    }}
+                                                    aria-label={it.ariaLabel || it.label}
+                                                    data-index={idx + 1}
+                                                >
+                                                    <span className="sm-panel-itemLabel">{it.label}</span>
+                                                </button>
+                                            ) : (
+                                                <a className="sm-panel-item ..." href={it.link} aria-label={it.ariaLabel} data-index={idx + 1}>
+                                                    <span className="sm-panel-itemLabel">{it.label}</span>
+                                                </a>
+                                            )}
                                         </li>
                                     ))
                                 ) : (

@@ -115,8 +115,8 @@ async function chamada() {
   };
 
   return (
-    <div style={{ height: 500 }}>
-      <AgGridReact theme={myTheme} rowData={rowData} columnDefs={colDefs} />
+    <div style={{ height: 500, width: '82%' }}>
+      <AgGridReact theme={myTheme} rowData={rowData} columnDefs={colDefs}/>
     </div>
   );
 }
