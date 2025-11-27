@@ -107,7 +107,7 @@ function Login() {
             <div className='flex justify-end p-1 text-white'>
               <LinkRedirecionavel
                 nome={"Esqueci a senha"}
-                link={"/#"}
+                link={'/redefinicao-senha'}
                 className="cursor-pointer hover:text-[#d3d3d3] underline duration-200 bg-transparent"
               />
             </div>
