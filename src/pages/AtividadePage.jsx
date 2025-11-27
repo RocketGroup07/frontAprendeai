@@ -146,6 +146,11 @@ function AtividadePage() {
     }
   }
 
+
+  function removerAtividade(id) {
+  setAtividades(prev => prev.filter(a => a.id !== id));
+}
+
   return (
     <div>
       <div style={{ height: "10vh" }}>
@@ -208,6 +213,7 @@ function AtividadePage() {
                       descricao={atividade.descricao}
                       autor={atividade.autor}
                       ano={atividade.ano}
+                      onDelete={() => removerAtividade(atividade.id)}
                     />
                   ))}
                 </div>

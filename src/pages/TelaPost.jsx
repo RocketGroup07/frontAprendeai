@@ -79,8 +79,7 @@ function TelaPost() {
                                     <p className="text-justify whitespace-pre-wrap">{post.conteudo}</p>
                                 </div>
                             </div>
-                            <hr className="border-t border-gray-600 my-4" />
-                            <Comentarios turmaId={turmaId} postId={postId} />
+
                             {post.nomeArquivo > "0" && (
                                 <a
                                     href={`${baseURL}posts/${post.turmaId}/${post.postId}/download/anexo`}
@@ -94,6 +93,9 @@ function TelaPost() {
                                 </a>
                                 
                             )}
+                            <hr className="border-t border-gray-600 my-4" />
+                            <Comentarios turmaId={turmaId} postId={postId} />
+                            
 
                             
                         </div>
