@@ -22,7 +22,7 @@ function CardPosts({id, turmaId, titulo, descricao, autor, ano, onDelete }) {
         if (favoritado) {
             try {
                 const response = await api.delete(`/favoritos/remover/posts/${id}`);
-                if (response.status === 200) {
+                if (response.status === 200 || response.status === 204 ) {
                     setFavoritado(false); // Desmarcar como favoritado
                     setFavoritoId(null);  // Limpar o id do favorito
                     toast.success("Post removido dos favoritos!");
