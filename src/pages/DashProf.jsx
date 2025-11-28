@@ -12,25 +12,40 @@ import ChamadaForm from '../components/ChamadaForm';
 
 function DashProf() {
     const [codigoTurma, setCodigoTurma] = useState('');
-    const [data, setData] = useState('');
+    const [dataTurma, setData] = useState([]);
     const [turmaNome, setTurmaNome] = useState("");
     // Estado para armazenar o código da turma
 
     const turmaId = useParams().turmaId;
 
     useEffect(() => {
-        async function fetchTurma() {
-            try {
-                const response = await api.get(`/turmas/${turmaId}`);
-                setTurmaNome(response.data.nome);
-                console.log(response.data);
-            } catch (err) {
-                toast.error("Erro ao carregar a turma");
-            }
-        }
+    async function fetchTurma() {
+      try {
+        const response = await api.get(`/turmas/${turmaId}`);
+        setTurmaNome(response.data.nome);
 
-        if (turmaId) fetchTurma();
-    }, [turmaId]);
+        // normaliza a resposta para um array de linhas (ajuste chaves conforme seu backend)
+        let rows = [];
+        if (Array.isArray(response.data)) {
+          rows = response.data;
+        } else {
+          rows =
+            response.data.alunos ||
+            response.data.presencas ||
+            response.data.students ||
+            response.data.rows ||
+            response.data.lista ||
+            []; // fallback vazio
+        }
+        setData(rows);
+        console.log("rows para grid:", rows);
+      } catch (err) {
+        toast.error("Erro ao carregar a turma");
+      }
+    }
+
+    if (turmaId) fetchTurma();
+  }, [turmaId]);
 
     const {
         register,
@@ -48,32 +63,6 @@ function DashProf() {
         return `${day}/${month}/${year}`; // Retorna no formato dd/mm/aaaa
     };
 
-
-
-    const onSubmit = async (data) => {
-
-
-        try {
-            const response = await api.post("/api/dia-aula", {
-                turmaId: turmaId,
-                dataAula: data.dataAula,
-                conteudo: data.conteudo,
-                horasMaximas: data.horasMaximas,
-                horasTotais: data.horasTotais
-            });
-
-            toast.success("Turma adicionada com sucesso!");
-            setData(response.data);
-            console.log("resposta da api:", response.data);
-
-        } catch (error) {
-            toast.error(
-                error.response?.data?.mensagem || "Há algo de errado com o código!"
-            );
-            console.log("erro na api:", error)
-        }
-    };
-
     return (
         <div className='w-[100%] flex flex-col h-[100vh]'>
             <div style={{ height: "10vh" }}>
@@ -82,7 +71,7 @@ function DashProf() {
 
                 
 
-        <ChamadaForm turmaId = {turmaId} turmaNome = {turmaNome}/>
+        <ChamadaForm turmaId={turmaId} turmaNome={turmaNome} dataTurma={dataTurma} />
                   
         </div>
     );
