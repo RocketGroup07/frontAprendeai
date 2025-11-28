@@ -1,8 +1,8 @@
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { api } from '../lib/axios';
-import { toast } from 'react-toastify';
 import CardPosts from '../components/CardPosts';
+import CardTarefas from '../components/CardTarefas'; // Importar CardTarefas
 import StaggeredMenu from '../components/StaggeredMenu';
 import LinksContainer from '../components/LinksContainer';
 import semTarefas from '../assets/images/semTarefas.svg';
@@ -13,23 +13,64 @@ function FavoritosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchFavoritos() {
-      try {
-        // Requisição GET para listar os posts favoritos
-        const response = await api.get('/favoritos/listar/posts');
-        console.log(response.data); // Verifica a estrutura dos dados retornados
-        setFavoritos(response.data); // Armazena os favoritos no estado
-        setLoading(false);
-      } catch (err) {
-        setError('Erro ao carregar os posts favoritos.');
-        setLoading(false);
-      }
-    }
+  // Função para buscar e recarregar os favoritos
+  const refetchFavoritos = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [postsResponse, atividadesResponse] = await Promise.all([
+        // Usando a rota unificada que você testou
+        api.get('/favoritos/listar/'),
+      ]);
 
-    fetchFavoritos();
-  }, []); // Executa a requisição uma vez, quando o componente for montado
-  console.log(favoritos)
+      // --- ESSENCIAL: ACESSANDO CHAVES ANINHADAS CORRETAMENTE ---
+      // A API retornou: { posts: [...], atividades: [...] }
+      const postsData = postsResponse.data.posts || [];
+      const atividadesData = postsResponse.data.atividades || [];
+      // Nota: Se você usar a rota única '/favoritos/listar/', só precisa de uma Promise no Promise.all
+
+      // 1. Mapeia e tipa os Posts
+      const postsFormatados = postsData.map(post => ({
+        ...post,
+        type: 'post',
+        id: post.postId, // Usando 'postId' como o ID do componente
+        // Conteúdo é 'conteudo' e Data é 'data' no retorno da API
+        descricao: post.conteudo,
+        ano: new Date(post.data),
+      }));
+
+      // 2. Mapeia e tipa as Atividades/Tarefas
+      const atividadesFormatadas = atividadesData.map(atividade => ({
+        ...atividade,
+        type: 'atividade',
+        id: atividade.id,
+        descricao: atividade.conteudo,
+        ano: new Date(atividade.dataAtividade),
+        favoritado: true // porque veio da lista de favoritosyy
+      }));
+
+      // 3. Junta os dois arrays
+      const allFavoritos = [...postsFormatados, ...atividadesFormatadas];
+      setFavoritos(allFavoritos);
+
+    } catch (err) {
+      console.error("Erro ao carregar favoritos:", err);
+      // Mostrar erro detalhado para debug
+      setError(`Erro ao carregar favoritos: ${err.message || 'Verifique a conexão com a API.'}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    refetchFavoritos();
+  }, []);
+
+  const handleItemUpdate = () => {
+    // Recarrega a lista completa após uma alteração (favoritar/deletar)
+    refetchFavoritos();
+  }
+
   return (
     <div className="min-h-screen font-neuli">
       {/* Menu superior */}
@@ -47,7 +88,7 @@ function FavoritosPage() {
       {/* Links Container */}
       <LinksContainer turmaId={turmaId} />
 
-      {/* Exibe os posts favoritos */}
+      {/* Exibe os favoritos */}
       <div className="w-[90%] m-auto mt-5 text-[var(--text)]">
         {loading ? (
           <div className="text-center text-white mt-10">
@@ -59,22 +100,41 @@ function FavoritosPage() {
           </div>
         ) : favoritos.length === 0 ? (
           <div className="text-center flex flex-col-reverse items-center text-lg mt-10">
-            Nenhum post favorito.
+            Nenhum post ou atividade favorita.
             <img src={semTarefas} alt="Sem favoritos" className="w-64 h-64 mt-4" />
           </div>
         ) : (
-          <div className="flex flex-row flex-wrap gap-7">
-            {favoritos.map((post) => (
-              <CardPosts
-                key={post.postId}
-                id={post.postId}
-                turmaId={post.turmaId}
-                titulo={post.titulo}
-                descricao={post.conteudo}
-                autor={post.autor}
-                ano={new Date(post.data)} // Converte para objeto Date
-              />
-            ))}
+          <div className="flex flex-row flex-wrap gap-7 justify-left">
+            {favoritos.map((item) => {
+              if (item.type === 'post') {
+                return (
+                  <CardPosts
+                    key={`post-${item.id}`} // Usando 'id' (agora com postId)
+                    id={item.id}
+                    turmaId={item.turmaId}
+                    titulo={item.titulo}
+                    descricao={item.descricao}
+                    autor={item.autor}
+                    ano={item.ano}
+                    onDelete={handleItemUpdate}
+                  />
+                );
+              } else if (item.type === 'atividade') {
+                return (
+                  <CardTarefas
+                    key={`tarefa-${item.id}`}
+                    id={item.id}
+                    turmaId={turmaId}
+                    titulo={item.titulo}
+                    descricao={item.descricao}
+                    ano={item.ano}
+                    onDelete={handleItemUpdate}
+                    small={true}
+                  />
+                );
+              }
+              return null;
+            })}
           </div>
         )}
       </div>
