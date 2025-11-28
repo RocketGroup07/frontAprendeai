@@ -10,8 +10,9 @@ import star from '../assets/images/star.svg';
 import starFill from '../assets/images/star-fill.svg';
 import { useEffect, useState } from "react";
 
-function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
+function CardPosts({id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     const [favoritado, setFavoritado] = useState(false);
+    // Mantemos favoritoId, mas ele não será usado na requisição DELETE
     const [favoritoId, setFavoritoId] = useState(null);
 
     // Função que será chamada ao clicar na estrela para favoritar/desfavoritar
@@ -19,9 +20,8 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
         e.stopPropagation(); // Impede que o clique na estrela propague para o Link
 
         if (favoritado) {
-            // Se o post já estiver favoritado, fazer a requisição DELETE para remover o favorito
             try {
-                const response = await api.delete(`/favoritos/remover/${postId}`);
+                const response = await api.delete(`/favoritos/remover/posts/${id}`);
                 if (response.status === 200) {
                     setFavoritado(false); // Desmarcar como favoritado
                     setFavoritoId(null);  // Limpar o id do favorito
@@ -29,6 +29,8 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                 }
             } catch (error) {
                 console.error("Erro ao remover favorito:", error);
+                // Opcional: Adicionar um toast de erro mais específico
+                toast.error("Erro ao remover o post dos favoritos.");
             }
         } else {
             // Caso contrário, favoritar o post
@@ -36,11 +38,13 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                 const response = await api.post(`/favoritos/adicionar/post/${id}`);
                 if (response.status === 200) {
                     setFavoritado(true); // Marcar como favoritado
-                    setFavoritoId(response.data.favoritoId); // Armazenar o id do favorito retornado
+                    // O backend pode ter retornado o id do novo favorito
+                    setFavoritoId(response.data.favoritoId);
                     toast.success("Post adicionado aos favoritos!");
                 }
             } catch (error) {
                 console.error("Erro ao favoritar o post:", error);
+                toast.error("Erro ao adicionar o post aos favoritos.");
             }
         }
     }
@@ -48,11 +52,18 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     useEffect(() => {
         async function checkFavorito() {
             try {
+                // Verifica a lista de favoritos
                 const response = await api.get(`/favoritos/listar/`);
+                // Encontra se o post atual está na lista pelo postId (que é o 'id' do componente)
                 const postFavoritado = response.data.posts.find(post => post.postId === id);
                 if (postFavoritado) {
                     setFavoritado(true); // Se o post já estiver favoritado
-                    setFavoritoId(postFavoritado.favoritoId); // Armazenar o id do favorito
+                    // Armazena o id do favorito para o futuro, se necessário
+                    setFavoritoId(postFavoritado.favoritoId);
+                } else {
+                    // Garante que o estado está limpo se não for encontrado
+                    setFavoritado(false);
+                    setFavoritoId(null);
                 }
             } catch (error) {
                 console.error("Erro ao verificar status de favorito:", error);
@@ -71,6 +82,7 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
             <div className="flex gap-2">
                 <button
                     onClick={async () => {
+                        toast.dismiss(); // Fecha o toast antes de iniciar a deleção
                         try {
                             await api.delete(`/posts/${turmaId}/${id}`);
                             toast.success("Post deletado com sucesso!");
@@ -101,7 +113,7 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     }
 
     return (
-        <div className="relative w-80 cursor-pointer hover:scale-103 transition-transform font-neuli">
+        <div className="relative w-80 cursor-pointer hover:scale-103 transition-transform font-neuli group">
             {isProfessor && (
                 <button
                     onClick={handleDelete}

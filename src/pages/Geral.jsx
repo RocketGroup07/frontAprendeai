@@ -103,6 +103,8 @@ function Geral() {
     return dateB - dateA;
   });
 
+  console.log(grupos)
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
