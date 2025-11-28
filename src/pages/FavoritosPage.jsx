@@ -29,7 +29,7 @@ function FavoritosPage() {
 
     fetchFavoritos();
   }, []); // Executa a requisição uma vez, quando o componente for montado
-
+  console.log(favoritos)
   return (
     <div className="min-h-screen font-neuli">
       {/* Menu superior */}
