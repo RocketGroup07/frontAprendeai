@@ -5,41 +5,8 @@ import FormButton from './FormButton'
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { api } from '../lib/axios';
-import { set } from 'date-fns';
 
 function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
-
-    const onClick = async () => {
-        try {
-            const response = await api.get(`/api/chamada/relatorio/${turmaId}`, {
-                responseType: 'blob'
-            });
-
-            // tenta extrair filename do header Content-Disposition
-            const disposition = response.headers?.['content-disposition'] || response.headers?.['Content-Disposition'];
-            let filename = 'relatorio.pdf';
-            if (disposition) {
-                const fileNameMatch = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/i);
-                if (fileNameMatch && fileNameMatch[1]) {
-                    filename = decodeURIComponent(fileNameMatch[1].replace(/["']/g, ''));
-                }
-            }
-
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-            toast.success("Download iniciado");
-        } catch (err) {
-            console.error("Erro ao gerar relatório:", err);
-            toast.error("Erro ao gerar relatório");
-        }
-    }
 
     const [dataHoraTurma, setDataHoraTurma] = useState([]);
 
@@ -51,14 +18,8 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
         formState: { errors: errors }
     } = useForm();
 
-    const handleApplyHoras = (e) => {
-        e?.preventDefault();
-        const horas = getValues('horasMaximas');
-        // envia somente o número/valor para a grid
-        setDataHoraTurma(horas ?? 0);
-    };
-
     const onSubmit = async (data) => {
+        const horasTotais = data.horasTotais;
 
         try {
 
@@ -67,13 +28,13 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                 dataAula: data.dataAula,
                 horasMaximas: data.horasMaximas,
                 conteudo: data.conteudo,
-                horasTotais: data.horasTotais
+                horasTotais: horasTotais
             });
 
             const initializer = await api.post("/api/chamada/inicializar", {
                 turmaId: turmaId,
                 dataAula: data.dataAula,
-                horasMaximas: data.horasMaximas,
+                horasMaximas: horasTotais,
                 conteudo: data.conteudo,
             });
 
@@ -90,9 +51,12 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
             );
             console.log("erro na api:", error)
         }
-
-
     };
+
+
+    console.log("dataHoraTurma em ReactGrid:", dataHoraTurma);
+    const idsAlunos = dataHoraTurma.map(aluno => aluno.alunoId);
+    console.log(idsAlunos);
 
     return (
         <div className="flex flex-col w-[100%] items-center mt-20">

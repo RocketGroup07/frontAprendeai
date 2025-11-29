@@ -11,6 +11,10 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 function ReactGrid({ dataTurma, dataHoraTurma }) {
   const [rowData, setRowData] = useState([]);
 
+  console.log("dataHoraTurma em ReactGrid:", dataHoraTurma);
+  const idsAlunos = dataHoraTurma.map(aluno => aluno.alunoId);
+  console.log(idsAlunos);
+  
 
   const { turmaId: turmaIdParam } = useParams();
   const { turmaId: turmaIdContext } = useAuth();
@@ -32,61 +36,43 @@ function ReactGrid({ dataTurma, dataHoraTurma }) {
       headerTextColor: "#F1F1F1"
     });
 
+  // Mescla os dados de dataTurma com dataHoraTurma
   useEffect(() => {
-    if (Array.isArray(dataTurma)) {
-      setRowData(dataTurma);
-    } else if (dataTurma && dataTurma.length) {
-      setRowData(dataTurma);
+    if (dataTurma && Array.isArray(dataTurma) && dataTurma.length > 0) {
+      // Se temos dataHoraTurma, mescla com dataTurma
+      if (dataHoraTurma && Array.isArray(dataHoraTurma) && dataHoraTurma.length > 0) {
+        const mergedData = dataTurma.map(aluno => {
+          // Procura o aluno correspondente em dataHoraTurma
+          const horasData = dataHoraTurma.find(
+            item => item.alunoId === aluno.id || item.nomeAluno === aluno.nome
+          );
+          
+          return {
+            ...aluno, // Mantém todos os dados originais de dataTurma
+            horasPresente: horasData ? horasData.horasPresente : 0 // Adiciona horasPresente
+          };
+        });
+        setRowData(mergedData);
+      } else {
+        // Se não tem dataHoraTurma, usa apenas dataTurma
+        setRowData(dataTurma);
+      }
     } else {
       setRowData([]);
     }
-  }, [dataTurma]);
-
-  // 🔹 Botão de salvar por linha
-  const saveButtonRenderer = (params) => {
-    return (
-      <button
-        onClick={() => handleSave(params.dataTurma)}
-        style={{
-          padding: "5px 10px",
-          cursor: "pointer",
-          background: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "5px"
-        }}
-      >
-        Salvar
-      </button>
-    );
-  };
+  }, [dataTurma, dataHoraTurma]);
 
   const colDefs = [
-    { field: "nome", headerName: "Nome do Aluno", sortable: true, filter: true },
-    { field: "login", headerName: "Email", editable: true },
-    { field: "horasMaximas", headerName: "Horas", editable: true }
+    { field: "nome", headerName: "Nome do Aluno", sortable: true, filter: false },
+    { field: "login", headerName: "Email", editable: false },
+    { field: "horasPresente", headerName: "Horas Presente", editable: true }
   ];
-
-  useEffect(() => {
-    if (dataTurma && dataTurma.length > 0) {
-      setRowData(dataTurma);
-    }
-  }, [dataTurma]);
-
-  // 🔵 PATCH ao clicar no botão
-  const handleSave = async (row) => {
-    try {
-      await api.patch(`api/chamada/presenca/${row.id}`, {
-        horasPresentes: Number(row.horasPresente),
-      });
-      await chamada();
-
-      alert("Horas atualizadas!");
-    } catch (error) {
-      console.error("Erro ao atualizar:", error);
-      alert("Erro ao atualizar. Tente novamente.");
-    }
-  };
+  
+  
+  for (let i = 0; i < idsAlunos.length; i++) {
+    
+    api.patch(`/api/chamada/presenca/${idsAlunos[i]}`)
+  }  
 
   return (
     <div style={{ height: 500, width: '82%' }}>
