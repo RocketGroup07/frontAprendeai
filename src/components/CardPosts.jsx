@@ -24,8 +24,8 @@ function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                             toast.success("Post deletado com sucesso!");
                             if (onDelete) onDelete();
                         } catch (error) {
-                            console.error("Erro ao deletar post:", error);
-                            toast.error("Erro ao deletar o post");
+                            const errorMessage = error.response?.data?.message || "Falha ao deletar o post. Tente novamente.";
+                            toast.error(errorMessage);
                         }
                     }}
                     className="bg-[var(--primary)] hover:bg-[var(--secondary)] text-white hover:text-[var(--primary)] px-3 py-1 rounded text-sm hover:cursor-pointer"
