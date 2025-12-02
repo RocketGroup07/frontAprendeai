@@ -30,6 +30,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                 horasTotais: horasTotais
             });
 
+            // ...existing code...
             const initializer = await api.post("/api/chamada/inicializar", {
                 turmaId: turmaId,
                 dataAula: data.dataAula,
@@ -37,11 +38,20 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                 conteudo: data.conteudo,
             });
 
-            toast.success("Turma adicionada com sucesso!");
-            console.log("resposta da api initializer:", initializer.data);
-            console.log("resposta da api response:", response.data);
+            // normaliza os objetos para a shape esperada pela grid
+            const normalized = (initializer.data || []).map(item => ({
+                // garanta um id consistente
+                id: item.id ?? item.alunoId ?? item.presencaId ?? null,
+                alunoId: item.alunoId ?? item.id ?? item.presencaId ?? null,
+                nome: item.nome ?? item.nomeAluno ?? item.alunoNome ?? '',
+                login: item.login ?? item.email ?? '',
+                // force número (evita NaN)
+                horasPresentes: Number(item.horasPresentes ?? item.horasPresente ?? item.horas ?? 0)
+            }));
 
-            setDataHoraTurma(initializer.data);
+            console.log("initializer.data normalizado:", normalized);
+            setDataHoraTurma(normalized);
+// ...existing code...
 
             reset()
         } catch (error) {
@@ -59,7 +69,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
         setDataHoraTurma(prev => 
             prev.map(aluno => 
                 aluno.alunoId === alunoId 
-                    ? { ...aluno, horasPresente: Number(novasHoras) }
+                    ? { ...aluno, horasPresentes: Number(novasHoras) }
                     : aluno
             )
         );
@@ -78,13 +88,13 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
             for (let i = 0; i < dataHoraTurma.length; i++) {
                 const aluno = dataHoraTurma[i];
                 const id = aluno.alunoId;
-                const horasPresente = Number(aluno.horasPresente || 0);
+                const horasPresentes = Number(aluno.horasPresentes || 0);
 
-                console.log(`PATCH ID: ${id}, Horas: ${horasPresente}`);
+                console.log(`PATCH ID: ${id}, Horas: ${horasPresentes}`);
 
-                // ENVIA O BODY COM horasPresente
+                // ENVIA O BODY COM horasPresentes
                 await api.patch(`/api/chamada/presenca/${id}`, {
-                    horasPresentes: horasPresente
+                    horasPresentes: horasPresentes
                 });
             }
             

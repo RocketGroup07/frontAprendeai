@@ -67,7 +67,7 @@ function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
 
   // Quando uma célula é editada no AG Grid
   const onCellValueChanged = (event) => {
-    if (event.colDef.field === 'horasPresentess' && onUpdateHoras) {
+    if (event.colDef.field === 'horasPresentes' && onUpdateHoras) {
       const alunoId = event.data.id; // ID do aluno
       const novasHoras = Number(event.newValue);
       
