@@ -1,40 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { api } from '../lib/axios';
-import { useParams } from 'react-router';
-import { useAuth } from './UserAuth';
 import { themeQuartz } from 'ag-grid-community';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-function ReactGrid({ dataTurma, dataHoraTurma }) {
+function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
   const [rowData, setRowData] = useState([]);
-
-  console.log("dataHoraTurma em ReactGrid:", dataHoraTurma);
-  const idsAlunos = dataHoraTurma.map(aluno => aluno.alunoId);
-  console.log(idsAlunos);
   
-
-  const { turmaId: turmaIdParam } = useParams();
-  const { turmaId: turmaIdContext } = useAuth();
-  const turmaId = turmaIdParam || turmaIdContext;
-
-  const myTheme = themeQuartz
-    .withParams({
-      accentColor: "#D00909",
-      backgroundColor: "#212121",
-      browserColorScheme: "dark",
-      chromeBackgroundColor: {
-        ref: "foregroundColor",
-        mix: 0.07,
-        onto: "backgroundColor"
-      },
-      foregroundColor: "#FFF",
-      headerBackgroundColor: "#D00909",
-      headerFontSize: 14,
-      headerTextColor: "#F1F1F1"
-    });
+  console.log("dataHoraTurma em ReactGrid:", dataHoraTurma);
+  
+  const myTheme = themeQuartz.withParams({
+    accentColor: "#D00909",
+    backgroundColor: "#212121",
+    browserColorScheme: "dark",
+    chromeBackgroundColor: {
+      ref: "foregroundColor",
+      mix: 0.07,
+      onto: "backgroundColor"
+    },
+    foregroundColor: "#FFF",
+    headerBackgroundColor: "#D00909",
+    headerFontSize: 14,
+    headerTextColor: "#F1F1F1"
+  });
 
   // Mescla os dados de dataTurma com dataHoraTurma
   useEffect(() => {
@@ -48,15 +37,18 @@ function ReactGrid({ dataTurma, dataHoraTurma }) {
           );
           
           return {
-            ...aluno, // Mantém todos os dados originais de dataTurma
-            horasPresente: horasData ? horasData.horasPresente : 0 // Adiciona horasPresente
+            ...aluno,
+            horasPresentes: horasData ? Number(horasData.horasPresentes) : 0
           };
         });
         setRowData(mergedData);
       } else {
         // Se não tem dataHoraTurma, usa apenas dataTurma
-        setRowData(dataTurma);
+        setRowData(dataTurma.map(aluno => ({ ...aluno, horasPresentes: 0 })));
       }
+    } else if (dataHoraTurma && Array.isArray(dataHoraTurma) && dataHoraTurma.length > 0) {
+      // Se só tem dataHoraTurma
+      setRowData(dataHoraTurma);
     } else {
       setRowData([]);
     }
@@ -65,18 +57,35 @@ function ReactGrid({ dataTurma, dataHoraTurma }) {
   const colDefs = [
     { field: "nome", headerName: "Nome do Aluno", sortable: true, filter: false },
     { field: "login", headerName: "Email", editable: false },
-    { field: "horasPresente", headerName: "Horas Presente", editable: true }
+    { 
+      field: "horasPresentes", 
+      headerName: "Horas Presente", 
+      editable: true,
+      valueParser: params => Number(params.newValue) || 0
+    }
   ];
-  
-  
-  for (let i = 0; i < idsAlunos.length; i++) {
-    
-    api.patch(`/api/chamada/presenca/${idsAlunos[i]}`)
-  }  
+
+  // Quando uma célula é editada no AG Grid
+  const onCellValueChanged = (event) => {
+    if (event.colDef.field === 'horasPresentess' && onUpdateHoras) {
+      const alunoId = event.data.id; // ID do aluno
+      const novasHoras = Number(event.newValue);
+      
+      console.log(`Célula editada - Aluno ID: ${alunoId}, Novas horas: ${novasHoras}`);
+      
+      // Atualiza o estado no componente pai
+      onUpdateHoras(alunoId, novasHoras);
+    }
+  };
 
   return (
     <div style={{ height: 500, width: '82%' }}>
-      <AgGridReact theme={myTheme} rowData={rowData} columnDefs={colDefs} />
+      <AgGridReact 
+        theme={myTheme} 
+        rowData={rowData} 
+        columnDefs={colDefs}
+        onCellValueChanged={onCellValueChanged}
+      />
     </div>
   );
 }

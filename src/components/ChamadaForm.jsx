@@ -22,7 +22,6 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
         const horasTotais = data.horasTotais;
 
         try {
-
             const response = await api.post("/api/dia-aula", {
                 turmaId: turmaId,
                 dataAula: data.dataAula,
@@ -53,30 +52,69 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
         }
     };
 
+    console.log("dataHoraTurma:", dataHoraTurma);
 
-    console.log("dataHoraTurma em ReactGrid:", dataHoraTurma);
-    const idsAlunos = dataHoraTurma.map(aluno => aluno.alunoId);
-    console.log(idsAlunos);
+    // Função para atualizar horas de um aluno no estado
+    const atualizarHorasAluno = (alunoId, novasHoras) => {
+        setDataHoraTurma(prev => 
+            prev.map(aluno => 
+                aluno.alunoId === alunoId 
+                    ? { ...aluno, horasPresente: Number(novasHoras) }
+                    : aluno
+            )
+        );
+    };
+
+    const marcarPresencas = async () => {
+        try {
+            if (!dataHoraTurma || dataHoraTurma.length === 0) {
+                toast.warn("Nenhuma chamada inicializada!");
+                return;
+            }
+
+            console.log("Enviando presenças:", dataHoraTurma);
+
+            // Itera sobre dataHoraTurma (que tem tanto ID quanto horas)
+            for (let i = 0; i < dataHoraTurma.length; i++) {
+                const aluno = dataHoraTurma[i];
+                const id = aluno.alunoId;
+                const horasPresente = Number(aluno.horasPresente || 0);
+
+                console.log(`PATCH ID: ${id}, Horas: ${horasPresente}`);
+
+                // ENVIA O BODY COM horasPresente
+                await api.patch(`/api/chamada/presenca/${id}`, {
+                    horasPresentes: horasPresente
+                });
+            }
+            
+            toast.success("Presenças marcadas!");
+            console.log("Presenças enviadas com sucesso!");
+            
+        } catch (error) {
+            toast.error(error.response?.data?.mensagem || "Erro ao marcar presenças!");
+            console.error("Erro completo:", error);
+            console.error("Resposta do servidor:", error.response?.data);
+        }
+    };
 
     return (
         <div className="flex flex-col w-[100%] items-center mt-20">
-            {/* Container menor */}
             <div className="flex flex-col w-[89%] gap-4">
                 <div className="flex justify-between w-[100%] mb-6">
                     <h1 className='text-5xl text-white'>{turmaNome}</h1>
                     <div className="w-[15%] mb-6">
-                        <FormButton>Fetch de Tudo</FormButton>
+                        <FormButton onClick={marcarPresencas}>Marcar Presenças</FormButton>
                     </div>
                 </div>
                 <form action="" onSubmit={handleSubmit(onSubmit)}>
-
                     <div className="flex gap-14">
                         <div className="flex flex-col gap-6 ">
                             <Input
-                                type="date" // Alterado para texto
+                                type="date"
                                 name="dataAula"
                                 id="dataAula"
-                                register={register}                // Define o valor inicial como dd/mm/aaaa
+                                register={register}
                             />
                             <Input
                                 placeholder="8h nesse dia"
@@ -101,19 +139,17 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                             />
 
                             <div className="w-[100%] mb-6">
-                                <FormButton reset>Inicializar chamada</FormButton>
-
+                                <FormButton type="submit">Inicializar chamada</FormButton>
                             </div>
                         </div>
-                        {/*  Lógica de aparecer a tabela quando gerar o relatorio */}
-                        <ReactGrid dataTurma={dataTurma} dataHoraTurma={dataHoraTurma} />
-                        {/* {data && data.length > 0 && (
-                                                        
-                                                    )} */}
+                        
+                        <ReactGrid 
+                            dataTurma={dataTurma} 
+                            dataHoraTurma={dataHoraTurma}
+                            onUpdateHoras={atualizarHorasAluno}
+                        />
                     </div>
                 </form>
-
-
             </div>
         </div>
     )
