@@ -4,44 +4,118 @@ import TextType from "../components/TextType";
 import { FaCircle, FaLongArrowAltLeft } from "react-icons/fa";
 import { MdOutlineAddTask } from "react-icons/md";
 import React, { useState, useEffect } from "react";
-import { api } from "../lib/axios";
+import { api, baseURL } from "../lib/axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import IAMessages from "../components/IAMessages";
 import { FaRobot } from "react-icons/fa";
-
-
+import { AiOutlineDownload } from "react-icons/ai";
+import EntregaAtividade from "../components/EntregaAtividade";
+import QuadroEntrega from "../components/QuadroEntrega";
+import { useAuth } from "../components/UserAuth";
 
 function TelaAtividade() {
     const { turmaId, atividadeId } = useParams();
     const [atividade, setAtividade] = useState(null);
     const [showChat, setShowChat] = useState(false);
-    const [arquivo, setArquivo] = useState(null);
-    const fileInputRef = React.useRef();
+    const [entregue, setEntregue] = useState(false);
+    const [alunosTurma, setAlunosTurma] = useState([]);
 
-    useEffect(() => {
-        async function fetchAtividade() {
-            try {
-                const response = await api.get(`/atividades/${atividadeId}`);
-                setAtividade(response.data);
-                console.log("Atividade carregada:", response.data);
-            } catch (error) {
-                console.error("Erro ao buscar a atividade:", error);
-                setAtividade(null);
-            }
+    const { isProfessor } = useAuth();
+
+    const [entregasGerais, setEntregasGerais] = useState([]);
+
+    // -------------------------------
+    // FUNÇÕES QUE PODEMOS REUTILIZAR
+    // -------------------------------
+
+    async function fetchAlunosTurma() {
+        try {
+            const response = await api.get(`/turmas/${turmaId}`);
+            setAlunosTurma(response.data.alunos || []);
+        } catch (error) {
+            console.error("Erro ao buscar alunos da turma:", error);
         }
-        fetchAtividade();
-    }, [atividadeId, turmaId]);
+    }
 
+
+    async function fetchAtividade() {
+        try {
+            const response = await api.get(`/atividades/${atividadeId}`);
+            setAtividade(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar a atividade:", error);
+        }
+    }
+
+    async function checkEntrega() {
+        try {
+            const response = await api.get(`/entregas/${atividadeId}`);
+            setEntregue(response.data.entregue || false);
+        } catch (error) {
+            console.error("Erro ao verificar entrega:", error);
+        }
+    }
+
+    async function fetchEntregasGerais() {
+        try {
+            const response = await api.get(`/entregas/${atividadeId}/geral`);
+            setEntregasGerais(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar entregas gerais:", error);
+        }
+    }
+
+    // RODA QUANDO ABRE A TELA
+    useEffect(() => {
+        fetchAtividade();
+        checkEntrega();
+        fetchEntregasGerais();
+        fetchAlunosTurma();
+    }, [atividadeId]);
+
+    // ---------------------------------
+    // ENVIO DA ENTREGA + ATUALIZAÇÃO
+    // ---------------------------------
+    async function enviarEntrega({ texto, arquivo }) {
+        if (!texto && !arquivo) {
+            alert("Você precisa enviar um texto, um arquivo ou ambos.");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            if (texto) formData.append("resposta", texto);
+            if (arquivo) formData.append("arquivo", arquivo);
+
+            const response = await api.post(
+                `/entregas/${atividadeId}/entregar/`,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+
+            alert("Entrega enviada com sucesso!");
+
+            // Atualiza imediatamente sem precisar dar F5
+            setEntregue(true);
+            fetchAtividade(); // recarrega os dados da entrega
+            fetchEntregasGerais(); // caso professor esteja vendo
+
+            console.log("Resposta da API:", response.data);
+
+        } catch (error) {
+            console.error("Erro ao enviar entrega:", error);
+            alert("Erro ao enviar entrega!");
+        }
+    }
 
     return (
         <div>
-
             <div style={{ height: "10vh" }}>
                 <StaggeredMenu />
             </div>
 
-            <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
+            <div className="w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10">
                 <TextType
                     text={["Atividades"]}
                     typingSpeed={75}
@@ -51,21 +125,28 @@ function TelaAtividade() {
                 />
             </div>
 
-            <div className="w-[90%] m-auto mt-3" >
+            <div className="w-[90%] m-auto mt-3">
                 <div>
-                    <Link to={"/atividades/" + turmaId} >
-
-                        <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 "><FaLongArrowAltLeft />Voltar</button>
+                    <Link to={"/atividades/" + turmaId}>
+                        <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700">
+                            <FaLongArrowAltLeft />
+                            Voltar
+                        </button>
                     </Link>
                 </div>
+
                 {atividade ? (
-                    <div className="flex text-white gap-6 m-auto mt-5 ">
-                        <div className="text-6xl" ><MdOutlineAddTask /></div>
+                    <div className="flex text-white gap-6 m-auto mt-5">
+                        <div className="text-6xl">
+                            <MdOutlineAddTask />
+                        </div>
+
                         <div className="w-full">
                             <div className="text-3xl font-bold">
                                 <h1>{atividade.titulo}</h1>
                             </div>
-                            <div className="flex gap-4 items-center text-[0.7rem] font-light " >
+
+                            <div className="flex gap-4 items-center text-[0.7rem] font-light">
                                 <div>
                                     <h6>{atividade.nome}</h6>
                                 </div>
@@ -73,106 +154,136 @@ function TelaAtividade() {
                                     <FaCircle />
                                 </div>
                                 <div>
-                                    <h6>{format(new Date(atividade.dataAtividade), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</h6>
+                                    <h6>
+                                        {format(new Date(atividade.dataAtividade), "dd 'de' MMMM 'de' yyyy", {
+                                            locale: ptBR,
+                                        })}
+                                    </h6>
                                 </div>
-
                             </div>
-                            <hr className="border-t border-gray-600 my-4" />
-                            <div>
-                                <div>
-                                    <p className="text-justify whitespace-pre-wrap">{atividade.conteudo}</p>
-                                </div>
-                                <div className="mt-4 font-extralight">
-                                    <p>atividade</p> {/* MEXER AQUI */}
-                                </div>
 
-
-                            </div>
                             <hr className="border-t border-gray-600 my-4" />
 
-                            <div className="flex gap-4">
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    style={{ display: "none" }}
-                                    onChange={e => {
-                                        if (e.target.files && e.target.files[0]) {
-                                            setArquivo(e.target.files[0]);
-                                        }
-                                    }}
-                                />
-                                <button
-                                    className="flex bg-gray-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-gray-700 "
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        fileInputRef.current.click();
-                                    }}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 flex-shrink-0">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21.44 11.05l-9.19 9.19a5 5 0 01-7.07-7.07l9.19-9.19a3 3 0 014.24 4.24L9.9 17.01a1 1 0 01-1.41-1.41L17.25 7.24" />
-                                    </svg>
-                                    {arquivo ? arquivo.name : "Anexar"}
-                                </button>
-                                <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 ">Entregar Atividade</button>
-                            </div>
-
                             <div>
-                                {/* Botão flutuante para abrir o chat IA */}
-                                <button
-                                    onClick={() => setShowChat((v) => !v)}
-                                    style={{
-                                        position: "fixed",
-                                        bottom: 40,
-                                        right: 40,
-                                        zIndex: 1000,
-                                        background: "#b30404",
-                                        color: "#fff",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        width: 60,
-                                        height: 60,
-                                        boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: 32,
-                                        cursor: "pointer",
-                                        transition: "transform 0.2s",
-                                        transform: showChat ? "scale(1.1) rotate(15deg)" : "scale(1)"
-                                    }}
-                                    title={showChat ? "Fechar chat IA" : "Abrir chat IA"}
-                                >
-                                    <FaRobot />
-                                </button>
-                                {/* Chat IA com animação de fade/slide */}
-                                <div
-                                    style={{
-                                        position: "fixed",
-                                        bottom: showChat ? 120 : 60,
-                                        right: 40,
-                                        zIndex: 1001,
-                                        opacity: showChat ? 1 : 0,
-                                        pointerEvents: showChat ? "auto" : "none",
-                                        transform: showChat ? "translateY(0)" : "translateY(40px)",
-                                        transition: "all 0.4s cubic-bezier(.4,2,.6,1)",
-                                    }}
-                                >
-                                    {showChat && (
-                                        <IAMessages contexto={atividade.conteudo} />
+                                <p className="text-justify whitespace-pre-wrap">
+                                    {atividade.conteudo}
+                                </p>
+
+                                {atividade.nomesArquivosAnexo > "0" && (
+                                    <div>
+                                        <p className="font-bold mt-4">Material Extra:</p>
+
+                                        <a
+                                            href={`${baseURL}atividades/${atividade.id}/download/anexo`}
+                                            target="_blank"
+                                            download
+                                        >
+                                            <div className="mt-4 bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all">
+                                                <div>{atividade.nomesArquivosAnexo}</div>
+                                                <div>
+                                                    <AiOutlineDownload />
+                                                </div>
+                                            </div>
+                                        </a>
+
+                                        <hr className="border-t border-gray-600 my-4" />
+                                    </div>
+                                )}
+
+                                <div className="w-full mt-4">
+
+                                    {/* PROFESSOR */}
+                                    {isProfessor && (
+                                        <QuadroEntrega
+                                            entregas={entregasGerais}
+                                            alunosTurma={alunosTurma}
+                                        />
                                     )}
+
+                                    {/* ALUNO */}
+                                    {!isProfessor && (
+                                        <>
+                                            {entregue ? (
+                                                <div className="bg-gray-700 text-white font-bold p-3 rounded text-left">
+                                                    <div>ATIVIDADE ENTREGUE</div>
+
+                                                    {atividade?.entrega?.[0]?.respostaTexto && (
+                                                        <div
+                                                            className="mt-2 font-normal text-white/90 text-left"
+                                                            style={{ whiteSpace: "pre-wrap" }}
+                                                        >
+                                                            {atividade.entrega[0].respostaTexto}
+                                                        </div>
+                                                    )}
+
+                                                    {atividade?.entrega?.[0]?.nomesArquivoEntrega?.length > 0 && (
+                                                        <div className="mt-2 font-normal text-white/90 text-left">
+                                                            {atividade.entrega[0].nomesArquivoEntrega.map((nome, index) => (
+                                                                <div key={index}>{nome}</div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <EntregaAtividade onEntregar={enviarEntrega} />
+                                            )}
+                                        </>
+                                    )}
+
                                 </div>
+                            </div>
+
+                            <hr className="border-t border-gray-600 my-4" />
+
+                            {/* Botão flutuante IA */}
+                            <button
+                                onClick={() => setShowChat((v) => !v)}
+                                style={{
+                                    position: "fixed",
+                                    bottom: 40,
+                                    right: 40,
+                                    zIndex: 1000,
+                                    background: "#b30404",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "50%",
+                                    width: 60,
+                                    height: 60,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: 32,
+                                    cursor: "pointer",
+                                    transition: "transform 0.2s",
+                                    transform: showChat ? "scale(1.1) rotate(15deg)" : "scale(1)",
+                                }}
+                                title={showChat ? "Fechar chat IA" : "Abrir chat IA"}
+                            >
+                                <FaRobot />
+                            </button>
+
+                            <div
+                                style={{
+                                    position: "fixed",
+                                    bottom: showChat ? 120 : 60,
+                                    right: 40,
+                                    zIndex: 1001,
+                                    opacity: showChat ? 1 : 0,
+                                    pointerEvents: showChat ? "auto" : "none",
+                                    transform: showChat ? "translateY(0)" : "translateY(40px)",
+                                    transition: "all 0.4s cubic-bezier(.4,2,.6,1)",
+                                }}
+                            >
+                                {showChat && <IAMessages contexto={atividade.conteudo} />}
                             </div>
                         </div>
                     </div>
                 ) : (
                     <div className="text-white text-center mt-10">Carregando atividade...</div>
                 )}
-
             </div>
-
-
         </div>
-    )
+    );
 }
 
 export default TelaAtividade;

@@ -5,13 +5,14 @@ function Input({
   placeholder,
   type = "text",
   className = "",
-  error = false,
+  error = false,  disable = false,
   defaultValue, // Adiciona suporte para defaultValue
   onChange, // Adiciona suporte para onChange
 }) {
   return (
     <div>
       <input
+        disabled={disable}
         className={`w-full bg-[#4a4a4a] p-4 items-left text-white rounded-md font-neuli outline-0 border ${error ? "border-red-500" : "border-white"
           } ${className}`}
         placeholder={placeholder}
