@@ -55,12 +55,13 @@ function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
   }, [dataTurma, dataHoraTurma]);
 
   const colDefs = [
-    { field: "nome", headerName: "Nome do Aluno", sortable: true, filter: false },
-    { field: "login", headerName: "Email", editable: false },
+    { field: "nome", headerName: "Nome do Aluno", sortable: true, filter: false, flex: 2 },
+    { field: "login", headerName: "Email", editable: false, flex: 2 },
     { 
       field: "horasPresentes", 
       headerName: "Horas Presente", 
       editable: true,
+      flex: 1,
       valueParser: params => Number(params.newValue) || 0
     }
   ];
@@ -79,7 +80,7 @@ function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
   };
 
   return (
-    <div style={{ height: 500, width: '82%' }}>
+    <div style={{  width: '82%' }}>
       <AgGridReact 
         theme={myTheme} 
         rowData={rowData} 

@@ -100,6 +100,13 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
             
             toast.success("Presenças marcadas!");
             console.log("Presenças enviadas com sucesso!");
+
+            setDataHoraTurma(prev =>
+            prev.map(aluno => ({
+                ...aluno,
+                horasPresentes: 0
+            }))
+        );
             
         } catch (error) {
             toast.error(error.response?.data?.mensagem || "Erro ao marcar presenças!");
@@ -113,9 +120,11 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
             <div className="flex flex-col w-[89%] gap-4">
                 <div className="flex justify-between w-[100%] mb-6">
                     <h1 className='text-5xl text-white'>{turmaNome}</h1>
-                    <div className="w-[15%] mb-6">
-                        <FormButton onClick={marcarPresencas}>Marcar Presenças</FormButton>
-                    </div>
+                    {dataHoraTurma && dataHoraTurma.length > 0 && (
+                        <div className="w-[15%]">
+                            <FormButton onClick={marcarPresencas}>Marcar Presenças</FormButton>
+                        </div>
+                    )}
                 </div>
                 <form action="" onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex gap-14">
@@ -127,7 +136,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                                 register={register}
                             />
                             <Input
-                                placeholder="8h nesse dia"
+                                placeholder="Digite a quantidade máxima de horas"
                                 type="number"
                                 name="horasMaximas"
                                 id="horasMaximas"
@@ -141,14 +150,14 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                                 register={register}
                             />
                             <Input
-                                placeholder="Digite a quantidade máxima de horas"
+                               placeholder="Digite a quantida de horas dadas"
                                 type="number"
                                 name="horasTotais"
                                 id="horasTotais"
                                 register={register}
                             />
 
-                            <div className="w-[100%] mb-6">
+                            <div className="w-[100%] ">
                                 <FormButton type="submit">Inicializar chamada</FormButton>
                             </div>
                         </div>
