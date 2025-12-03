@@ -150,6 +150,19 @@ function Geral() {
   }
 }
 
+async function handleDeletePost(postId) {
+  try {
+    await api.delete(`/posts/${postId}`);
+    toast.success("Post deletado com sucesso!");
+    // Atualiza a lista de posts removendo o que foi deletado
+    setPosts(prevPosts => prevPosts.filter(p => p.postId !== postId));
+  } catch (error) {
+    console.error("Erro ao deletar o post: aifhqbi0t", error);
+    const errorMessage = error.response?.data?.mensagem || "Falha ao deletar o post. Tente novamente.";
+    toast.error(errorMessage);
+  }
+}
+
 
   return (
     <div className='min-h-screen font-neuli'>
@@ -230,7 +243,7 @@ function Geral() {
                     descricao={post.conteudo}
                     autor={post.autor}
                     ano={post.data}
-                    onDelete={fetchPosts}
+                    onDelete={() => handleDeletePost(post.postId)}
                   />
                 ))}
               </div>
