@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./components/UserAuth.jsx";
 import DashProf from "./pages/DashProf.jsx";
 import TelaPost from "./pages/TelaPost.jsx";
+import TelaAtividade from "./pages/TelaAtividade.jsx";
 import ValidarToken from "./pages/ValidarToken.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import NaoPermitido from "./pages/NaoPermitido.jsx";
@@ -70,19 +71,18 @@ function App() {
           </Routes>
         </Router>
       
-
-      <ToastContainer
-        toastClassName="neulis-sans"
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick rtl={false}
-        draggable
-        pauseOnHover={false}
-        theme="dark"
-      />
-    </AuthProvider>
+        <ToastContainer
+          toastClassName="neulis-sans"
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick rtl={false}
+          draggable
+          pauseOnHover={false}
+          theme="dark"
+        />
+      </AuthProvider>
   );
 }
 
