@@ -57,7 +57,7 @@ function App() {
                 <TelaAtividade />
               </PrivateRoute>
             } />
-            <Route path='/professor' element={
+            <Route path='/professor/:turmaId' element={
               <PrivateRoute>
                 <DashProf />
               </PrivateRoute>
