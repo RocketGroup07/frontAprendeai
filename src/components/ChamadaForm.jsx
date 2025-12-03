@@ -101,12 +101,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
             toast.success("Presenças marcadas!");
             console.log("Presenças enviadas com sucesso!");
 
-            setDataHoraTurma(prev =>
-            prev.map(aluno => ({
-                ...aluno,
-                horasPresentes: 0
-            }))
-        );
+            setDataHoraTurma([]);
             
         } catch (error) {
             toast.error(error.response?.data?.mensagem || "Erro ao marcar presenças!");
