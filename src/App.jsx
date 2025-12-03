@@ -15,7 +15,6 @@ import TelaAtividade from "./pages/TelaAtividade.jsx";
 import ValidarToken from "./pages/ValidarToken.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import NaoPermitido from "./pages/NaoPermitido.jsx";
-import TelaAtividade from "./pages/TelaAtividade.jsx";
 
 function App() {
 
@@ -58,7 +57,7 @@ function App() {
                 <TelaAtividade />
               </PrivateRoute>
             } />
-            <Route path='/professor' element={
+            <Route path='/professor/:turmaId' element={
               <PrivateRoute>
                 <DashProf />
               </PrivateRoute>

@@ -5,22 +5,17 @@ import { TbLogout2 } from "react-icons/tb";
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../components/UserAuth.jsx';
 import logo from '../../public/images/logoAp.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CiLogout } from "react-icons/ci";
-
-const menuItems = [
-    { label: 'Turmas', link: '/turmas' },
-    { label: 'Atividades', link: '' },
-    { label: 'Favoritos', link: '' },
-    { label: 'Posts', link: '' },
-];
+import { api } from '../lib/axios';
+import { toast } from 'react-toastify';
 
 export const StaggeredMenu = ({
     position = 'right',
     colors = ['var(--secondary)', 'var(--main)'],
     displayItemNumbering = false,
     className,
-    items = menuItems,
+    items,
     logoUrl = logo,
     menuButtonColor = '#fff',
     openMenuButtonColor = '#fff',
@@ -29,6 +24,46 @@ export const StaggeredMenu = ({
     onMenuOpen,
     onMenuClose
 }) => {
+
+    const { turmaId } = useParams();
+
+    // se items NÃO for passado via props → usa este default abaixo:
+    const defaultItems = [
+        { label: 'Turmas', link: '/turmas' },
+        { label: 'Atividades', link: `/atividades/${turmaId}` },
+        { label: 'Chamada', link: `/professor/${turmaId}` },
+        { label: 'Relatório', action: `relatorio` },
+    ];
+
+    items = items && items.length ? items : defaultItems;
+
+    const handleGenerateReportLocal = async (turmaId) => {
+        try {
+            const response = await api.get(`/api/chamada/relatorio/${turmaId}`, {
+                responseType: 'blob'
+            });
+            const disposition = response.headers?.['content-disposition'] || response.headers?.['Content-Disposition'];
+            let filename = 'relatorio.pdf';
+            if (disposition) {
+                const m = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/i);
+                if (m && m[1]) filename = decodeURIComponent(m[1].replace(/["']/g, ''));
+            }
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            toast.success("Download iniciado");
+        } catch (err) {
+            console.error("Erro ao gerar relatório:", err);
+            toast.error("Erro ao gerar relatório");
+        }
+    };
+
 
     const { isProfessor, isAluno, usuario, logout } = useAuth();
 
@@ -306,7 +341,7 @@ export const StaggeredMenu = ({
                 data-position={position}
                 data-open={open || undefined}
             >
-                {isProfessor && (<div
+                {isProfessor && turmaId && (<div
                     ref={preLayersRef}
                     className="sm-prelayers fixed top-0 right-0 h-screen pointer-events-none z-[5]"
                     aria-hidden="true"
@@ -357,19 +392,38 @@ export const StaggeredMenu = ({
                                 onClick={toggleMenu}
                                 type="button"
                             >
-                                {isAluno && (<span
-                                    className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
-                                    onClick={handleLogout}>
-                                    <TbLogout2  size={32} />
-                                </span>)}
-                                {isProfessor && (<GiHamburgerMenu className='' size={32} />)}
+                                {/* Logout do aluno */}
+                                {isAluno && (
+                                    <span
+                                        className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
+                                        onClick={handleLogout}
+                                    >
+                                        <TbLogout2 size={32} />
+                                    </span>
+                                )}
+
+                                {/* Professor: se NÃO tiver turmaId → mostra logout */}
+                                {isProfessor && !turmaId && (
+                                    <span
+                                        className='cursor-pointer hover:text-[var(--main)] duration-200 ease-in'
+                                        onClick={handleLogout}
+                                    >
+                                        <TbLogout2 size={32} />
+                                    </span>
+                                )}
+
+                                {/* Professor: se tiver turmaId → mostra o menu */}
+                                {isProfessor && turmaId && (
+                                    <GiHamburgerMenu className='' size={32} />
+                                )}
+
 
                             </button>
                         </div>
                     </div>
                 </header>
 
-                {isProfessor && (
+                {isProfessor && turmaId && (
                     <aside
                         id="staggered-menu-panel"
                         ref={panelRef}
@@ -385,17 +439,30 @@ export const StaggeredMenu = ({
                             >
                                 {items && items.length ? (
                                     items.map((it, idx) => (
-                                        <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
-                                            <a
-                                                className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
-                                                href={it.link}
-                                                aria-label={it.ariaLabel}
-                                                data-index={idx + 1}
-                                            >
-                                                <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                                                    {it.label}
-                                                </span>
-                                            </a>
+                                        <li key={it.label + idx} className="sm-panel-itemWrap ...">
+                                            {it.action === 'relatorio' ? (
+                                                <button
+                                                    type="button"
+                                                    className="sm-panel-item ..."
+                                                    onClick={e => {
+                                                        e.preventDefault();
+                                                        // se o pai passou o handler, usa ele; senão usa o handler local
+                                                        if (typeof onGenerateReport === 'function') {
+                                                            onGenerateReport(turmaId);
+                                                        } else {
+                                                            handleGenerateReportLocal(turmaId);
+                                                        }
+                                                    }}
+                                                    aria-label={it.ariaLabel || it.label}
+                                                    data-index={idx + 1}
+                                                >
+                                                    <span className="sm-panel-itemLabel">{it.label}</span>
+                                                </button>
+                                            ) : (
+                                                <a className="sm-panel-item ..." href={it.link} aria-label={it.ariaLabel} data-index={idx + 1}>
+                                                    <span className="sm-panel-itemLabel">{it.label}</span>
+                                                </a>
+                                            )}
                                         </li>
                                     ))
                                 ) : (
