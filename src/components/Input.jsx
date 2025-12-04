@@ -1,12 +1,22 @@
-function Input({ 
+function Input({
+  
   name, 
+ 
   register, 
+ 
   rules = {}, 
+ 
   placeholder, 
+ 
   type = "text", 
+ 
   className = "", 
+ 
   error = false, 
-  disable = false 
+  disable = false,
+  defaultValue, // Adiciona suporte para defaultValue
+  onChange, // Adiciona suporte para onChange
+
 }) {
 
   // ===== Regras automáticas baseado no tipo =====
@@ -57,9 +67,12 @@ function Input({
         `}
         placeholder={placeholder}
         type={type}
-        {...register(name, rules)}
+        defaultValue={defaultValue} // Passa o defaultValue para o input interno      
+        onChange={onChange} // Passa o onChange para o input interno
+        {...register(name, rules)} // Integração com react-hook-form
       />
     </div>
+  );
   );
 }
 

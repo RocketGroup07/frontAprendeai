@@ -11,7 +11,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./components/UserAuth.jsx";
 import DashProf from "./pages/DashProf.jsx";
 import TelaPost from "./pages/TelaPost.jsx";
+import TelaAtividade from "./pages/TelaAtividade.jsx";
 import ValidarToken from "./pages/ValidarToken.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import NaoPermitido from "./pages/NaoPermitido.jsx";
 
 function App() {
 
@@ -19,32 +22,66 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
+            {/* --- ROTAS PÚBLICAS --- */}
+            {/* Rotas que não exigem autenticação */}
             <Route path="/" element={<Login />} />
-            <Route path='/turmas' element={<Turmas />} />
             <Route path='/redefinicao-senha' element={<RedefinicaoSenha />} />
             <Route path='/redefinicao-token' element={<ValidarToken />} />
-            <Route path='/geral/:turmaId' element={<Geral />} />
+            <Route path='/nao-permitido' element={<NaoPermitido />} />
             <Route path='/cadastro/:codigoTurma' element={<Cadastro />} />
-            <Route path='/atividades/:turmaId' element={<AtividadePage />} />
-            <Route path='/favoritos/:turmaId' element={<FavoritosPage />} />
-            <Route path='/professor' element={<DashProf />} />
-            <Route path='/post/:turmaId/:postId' element={<TelaPost />} />
+
+            {/* --- ROTAS PRIVADAS --- */}
+            {/* Rotas que exigem que o usuário esteja logado */}
+            <Route path='/turmas' element={
+              <PrivateRoute>
+                <Turmas />
+              </PrivateRoute>
+            } />
+            <Route path='/geral/:turmaId' element={
+              <PrivateRoute>
+                <Geral />
+              </PrivateRoute>
+            } />
+            <Route path='/atividades/:turmaId' element={
+              <PrivateRoute>
+                <AtividadePage />
+              </PrivateRoute>
+            } />
+            <Route path='/favoritos/:turmaId' element={
+              <PrivateRoute>
+                <FavoritosPage />
+              </PrivateRoute>
+            } />
+            <Route path='/atividades/:turmaId/:atividadeId' element={
+              <PrivateRoute>
+                <TelaAtividade />
+              </PrivateRoute>
+            } />
+            <Route path='/professor/:turmaId' element={
+              <PrivateRoute>
+                <DashProf />
+              </PrivateRoute>
+            } />
+            <Route path='/post/:turmaId/:postId' element={
+              <PrivateRoute>
+                <TelaPost />
+              </PrivateRoute>
+            } />
           </Routes>
         </Router>
       
-
-      <ToastContainer
-        toastClassName="neulis-sans"
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick rtl={false}
-        draggable
-        pauseOnHover={false}
-        theme="dark"
-      />
-    </AuthProvider>
+        <ToastContainer
+          toastClassName="neulis-sans"
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick rtl={false}
+          draggable
+          pauseOnHover={false}
+          theme="dark"
+        />
+      </AuthProvider>
   );
 }
 

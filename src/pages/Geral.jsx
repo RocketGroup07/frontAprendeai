@@ -103,6 +103,8 @@ function Geral() {
     return dateB - dateA;
   });
 
+  console.log(grupos)
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -145,6 +147,19 @@ function Geral() {
   } catch (error) {
     console.error(error);
     alert("Falha ao criar o post.");
+  }
+}
+
+async function handleDeletePost(postId) {
+  try {
+    await api.delete(`/posts/${postId}`);
+    toast.success("Post deletado com sucesso!");
+    // Atualiza a lista de posts removendo o que foi deletado
+    setPosts(prevPosts => prevPosts.filter(p => p.postId !== postId));
+  } catch (error) {
+    console.error("Erro ao deletar o post: aifhqbi0t", error);
+    const errorMessage = error.response?.data?.mensagem || "Falha ao deletar o post. Tente novamente.";
+    toast.error(errorMessage);
   }
 }
 
@@ -228,7 +243,7 @@ function Geral() {
                     descricao={post.conteudo}
                     autor={post.autor}
                     ano={post.data}
-                    onDelete={fetchPosts}
+                    onDelete={() => handleDeletePost(post.postId)}
                   />
                 ))}
               </div>
