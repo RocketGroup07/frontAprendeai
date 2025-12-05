@@ -114,7 +114,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
         <div className="flex flex-col w-[100%] items-center mt-20">
             <div className="flex flex-col w-[89%] gap-4">
                 <div className="flex justify-between w-[100%] mb-6">
-                    <h1 className='text-5xl text-white'>{turmaNome}</h1>
+                    <h1 className='text-5xl text-[var(--text)]'>{turmaNome}</h1>
                     {dataHoraTurma && dataHoraTurma.length > 0 && (
                         <div className="w-[15%]">
                             <FormButton onClick={marcarPresencas}>Marcar Presenças</FormButton>
@@ -135,6 +135,8 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                                 type="number"
                                 name="horasMaximas"
                                 id="horasMaximas"
+                                min={0}
+                                max={8}
                                 register={register}
                             />
                             <Input
@@ -149,6 +151,8 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                                 type="number"
                                 name="horasTotais"
                                 id="horasTotais"
+                                min={0}
+                                max={8}
                                 register={register}
                             />
 

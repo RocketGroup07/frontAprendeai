@@ -31,6 +31,7 @@ export default function EntregaAtividade({ onEntregar }) {
             <textarea
                 className="w-full p-3 rounded-sm bg-gray-700 focus:outline-none"
                 rows={4}
+                maxLength={500}
                 placeholder="Escreva sua resposta aqui..."
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}

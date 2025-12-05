@@ -80,6 +80,7 @@ function RedefinicaoSenha() {
                 type='email'
                 name='email'
                 register={register}
+                maxLength={100}
                 rules={{ required: 'O e-mail é obrigatório', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Digite um e-mail válido' } }}
                 error={!!errors.email}
               />

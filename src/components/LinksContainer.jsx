@@ -1,8 +1,14 @@
+import { FaLongArrowAltLeft } from "react-icons/fa";
 import LinkRedirecionavel from "./LinkRedirecionavel";
 
 function LinksContainer({ turmaId, children }) {
   return (
     <div className="w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-[var(--text)]">
+      <LinkRedirecionavel
+        nome={<><FaLongArrowAltLeft className="inline mr-2" />Voltar</>}
+        link={`/turmas`}
+        className="p-2 rounded cursor-pointer bg-[var(--primary)] text-[#f1f1f1]"
+      />
       <LinkRedirecionavel
         nome="Geral"
         link={`/geral/${turmaId}`}

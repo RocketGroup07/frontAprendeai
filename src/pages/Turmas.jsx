@@ -8,6 +8,7 @@ import { api } from "../lib/axios";
 import StaggeredMenu from "../components/StaggeredMenu";
 import { useAuth } from "../components/UserAuth";
 import Modal from "../components/Modal";
+import { max } from "date-fns";
 
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
@@ -105,7 +106,7 @@ function Turmas() {
         <h1 className="text-[28px] font-bold">Suas Turmas</h1>
       </div>
 
-      <div className="w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-[var(--text)] ">
+      <div className="w-[90%] mr-auto ml-auto mt-4 flex flex-row gap-[48px] p-1 text-[#f1f1f1] ">
         <div className="bg-[var(--primary)] items-center p-2 rounded">
           <h2>Geral</h2>
         </div>
@@ -128,9 +129,9 @@ function Turmas() {
           nomeModal="Nova Turma"
           onSubmit={handleCreateTurma}
           fields={[
-            { name: "novoNome", label: "Nome da Turma", type: "text", required: true },
-            { name: "novoLimite", label: "Limite de Alunos", type: "number", required: true },
-            { name: "novaCargaHoraria", label: "Carga Horária Total", type: "number", required: true }
+            { name: "novoNome", label: "Nome da Turma", type: "text", required: true, maxLength: { value: 100, message: "Máximo de 100 caracteres" }},
+            { name: "novoLimite", label: "Limite de Alunos", type: "number", required: true, maxLength: { value: 2, message: "Máximo de 2 caracteres" }, max: 40, min: 0 },
+            { name: "novaCargaHoraria", label: "Carga Horária Total", type: "number", required: true, maxLength: { value: 3, message: "Máximo de 3 caracteres" }, max: 240, min: 0 }
           ]}
         />
       </div>

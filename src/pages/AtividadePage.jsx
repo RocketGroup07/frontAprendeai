@@ -186,9 +186,9 @@ function AtividadePage() {
           nomeModal="Nova Atividade"
           onSubmit={handleSubmit}
           fields={[
-            { name: "titulo", label: "Título", type: "text", required: true },
-            { name: "dataEntrega", label: "Data de Entrega", type: "date", required: true },
-            { name: "descricao", label: "Descrição", type: "textarea", required: true },
+            { name: "titulo", label: "Título", type: "text", required: true, maxLength: { value: 100, message: "Máximo de 50 caracteres" } },
+            { name: "dataEntrega", label: "Data de Entrega", type: "date", required: true, },
+            { name: "descricao", label: "Descrição", type: "textarea", required: true, maxLength: { value: 300, message: "Máximo de 50 caracteres" } },
             { name: "arquivo", label: "Anexo", type: "file" }
           ]}
         />

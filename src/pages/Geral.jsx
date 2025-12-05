@@ -211,8 +211,8 @@ async function handleDeletePost(postId) {
         nomeModal="Novo Post"
         onSubmit={handleSubmit}
         fields={[
-          { name: "titulo", label: "Título", type: "text", required: true },
-          { name: "descricao", label: "Descrição", type: "textarea", required: true },
+          { name: "titulo", label: "Título", type: "text", required: true, maxLength: { value: 100, message: "Máximo de 50 caracteres" } },
+          { name: "descricao", label: "Descrição", type: "textarea", required: true, maxLength: 300 },
           { name: "arquivo", label: "Anexo", type: "file" }
         ]}
       />
@@ -243,7 +243,7 @@ async function handleDeletePost(postId) {
                     descricao={post.conteudo}
                     autor={post.autor}
                     ano={post.data}
-                    onDelete={() => handleDeletePost(post.postId)}
+                    onDelete={(deletedId) => setPosts(prev => prev.filter(p => p.postId !== deletedId))} // <-- só atualiza estado
                   />
                 ))}
               </div>

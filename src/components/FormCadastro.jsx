@@ -72,6 +72,7 @@ function FormCadastro() {
           type="text"
           name="nome"
           id="nome"
+          maxLength={100}
           register={register}
           rules={{
             required: "O nome é obrigatório"
@@ -84,6 +85,7 @@ function FormCadastro() {
           type="email"
           name="login"
           id="login"
+          maxLength={100}
           register={register}
           rules={{
             required: "O email é obrigatório",
@@ -100,6 +102,7 @@ function FormCadastro() {
           type="password"
           name="senha"
           id="senha"
+          maxLength={10}
           register={register}
           rules={{
             required: "A senha é obrigatória",
