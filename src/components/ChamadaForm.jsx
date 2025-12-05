@@ -40,11 +40,13 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
 
             // normaliza os objetos para a shape esperada pela grid
             const normalized = (initializer.data || []).map(item => ({
-                // garanta um id consistente
-                id: item.id ?? item.alunoId ?? item.presencaId ?? null,
-                alunoId: item.alunoId ?? item.id ?? item.presencaId ?? null,
+                // id do aluno (mantém)
+                id: item.id ?? item.alunoId ?? null,
+                alunoId: item.alunoId ?? item.id ?? null,
                 nome: item.nome ?? item.nomeAluno ?? item.alunoNome ?? '',
                 login: item.login ?? item.email ?? '',
+                // id da presença/chamada (o que a API provavelmente espera no PATCH)
+                presencaId: item.presencaId ?? item.presenca?.id ?? item.presenca_id ?? item.idPresenca ?? null,
                 // force número (evita NaN)
                 horasPresentes: Number(item.horasPresentes ?? item.horasPresente ?? item.horas ?? 0)
             }));
@@ -84,16 +86,21 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
 
             console.log("Enviando presenças:", dataHoraTurma);
 
-            // Itera sobre dataHoraTurma (que tem tanto ID quanto horas)
             for (let i = 0; i < dataHoraTurma.length; i++) {
                 const aluno = dataHoraTurma[i];
-                const id = aluno.alunoId;
+                // prioriza presencaId (id da presença); fallback para alunoId/id se não existir
+                const idParaPatch = aluno.presencaId ?? aluno.id ?? aluno.alunoId;
                 const horasPresentes = Number(aluno.horasPresentes || 0);
 
-                console.log(`PATCH ID: ${id}, Horas: ${horasPresentes}`);
+                console.log(`PATCH usando presencaId?: ${aluno.presencaId} | alunoId: ${aluno.alunoId} | id: ${aluno.id} -> Enviando ID: ${idParaPatch}, Horas: ${horasPresentes}`);
+
+                if (!idParaPatch) {
+                  console.warn("Nenhum id válido para patch encontrado para item:", aluno);
+                  continue;
+                }
 
                 // ENVIA O BODY COM horasPresentes
-                await api.patch(`/api/chamada/presenca/${id}`, {
+                await api.patch(`/api/chamada/presenca/${idParaPatch}`, {
                     horasPresentes: horasPresentes
                 });
             }
