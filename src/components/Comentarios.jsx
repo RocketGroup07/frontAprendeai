@@ -56,9 +56,10 @@ function Comentarios({ postId, turmaId }) {
 
             <div className="bg-[var(--main)] p-4 rounded-lg flex flex-col gap-3 text-white">
                 <textarea
-                    className="w-full p-3 rounded bg-gray-700 outline-none"
+                    className="w-full p-3 rounded bg-gray-700 outline-none h-30"
                     placeholder="Escreva seu comentário..."
                     value={novoComentario}
+                    maxLength={400}
                     onChange={(e) => setNovoComentario(e.target.value)}
                 ></textarea>
 

@@ -1,78 +1,71 @@
 function Input({
-  
-  name, 
- 
-  register, 
- 
-  rules = {}, 
- 
-  placeholder, 
- 
-  type = "text", 
- 
-  className = "", 
- 
-  error = false, 
+  name,
+  register,
+  rules = {},
+  placeholder,
+  type = "text",
+  className = "",
+  error = false,
   disable = false,
-  defaultValue, // Adiciona suporte para defaultValue
-  onChange, // Adiciona suporte para onChange
-
+  defaultValue,
+  onChange,
+  maxLength,
+  min, // novo
+  max  // novo
 }) {
+  // ===== Regras automáticas =====
+  const inputRules = { ...rules };
 
-  // ===== Regras automáticas baseado no tipo =====
-
+  // Limita números negativos e aplica max/min se for number
   if (type === "number") {
-    rules.min ??= 0; // Não permitir negativo
+    inputRules.min ??= min ?? 0;
+    inputRules.max ??= max ?? undefined;
   }
 
+  // Limite de caracteres para texto
+  if ((type === "text" || type === "textarea") && maxLength) {
+    inputRules.maxLength ??= maxLength;
+  }
+
+  // Data: default hoje e limites ±7 dias
+  let defaultDate = defaultValue;
   if (type === "date") {
-    // Corrige timezone (sem UTC)
-    if (!rules.min) {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      rules.min = `${yyyy}-${mm}-${dd}`;
-    }
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    defaultDate ??= `${yyyy}-${mm}-${dd}`;
 
-    // Impede qualquer maxLength vindo do Modal
-    if (rules.maxLength) {
-      delete rules.maxLength;
-    }
+    const formatDate = (d) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() - 7);
+
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 7);
+
+    inputRules.min ??= formatDate(minDate);
+    inputRules.max ??= formatDate(maxDate);
   }
-
-  if (type === "text") {
-    rules.validate ??= (value =>
-      value.trim() !== "" || "Texto inválido"
-    );
-  }
-
-  // ===== Controle seguro para o atributo maxLength =====
-  const safeMaxLength =
-    type === "text" || type === "number"
-      ? rules?.maxLength
-      : undefined;
 
   return (
     <div>
       <input
         disabled={disable}
-        maxLength={safeMaxLength}
-        min={rules?.min}
-        className={`
-          w-full bg-[#4a4a4a] p-4 items-left text-white rounded-md 
-          placeholder:uppercase font-neuli outline-0 border 
-          ${error ? "border-red-500" : "border-white"} 
-          ${className}
-        `}
+        className={`w-full bg-[#4a4a4a] p-4 items-left text-white rounded-md font-neuli outline-0 border ${
+          error ? "border-red-500" : "border-white"
+        } ${className}`}
         placeholder={placeholder}
         type={type}
-        defaultValue={defaultValue} // Passa o defaultValue para o input interno      
-        onChange={onChange} // Passa o onChange para o input interno
-        {...register(name, rules)} // Integração com react-hook-form
+        defaultValue={defaultDate}
+        onChange={onChange}
+        maxLength={maxLength}
+        min={type === "number" ? inputRules.min : undefined}
+        max={type === "number" ? inputRules.max : undefined}
+        {...register(name, inputRules)}
       />
     </div>
-  );
   );
 }
 

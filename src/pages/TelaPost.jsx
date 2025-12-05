@@ -48,14 +48,13 @@ function TelaPost() {
             </div>
 
             <div className="w-[90%] m-auto mt-3" >
-                <div>
+                <div className="w-[5%]">
                     <Link to={"/geral/" + turmaId} >
-
                         <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700 "><FaLongArrowAltLeft />Voltar</button>
                     </Link>
                 </div>
                 {post ? (
-                    <div className="flex text-white gap-6 m-auto mt-5 ">
+                    <div className="flex text-[var(--text)] gap-6 m-auto mt-5 ">
                         <div className="text-6xl" ><SiGoogleclassroom /></div>
                         <div className="w-full" >
                             <div className="text-3xl font-bold">
