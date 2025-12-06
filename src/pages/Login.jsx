@@ -84,6 +84,7 @@ function Login() {
               type="email"
               name="login"
               register={registerLogin}
+              maxLength={100}
               rules={{
                 required: "O e-mail é obrigatório",
                 pattern: {
@@ -97,6 +98,7 @@ function Login() {
               placeholder="Senha"
               type="password"
               name="senha"
+              maxLength={10}
               register={registerLogin}
               rules={{
                 required: "A senha é obrigatória",
@@ -127,6 +129,7 @@ function Login() {
               placeholder="Digite o código da turma"
               name="codigoTurma"
               register={registerCodigo}
+              maxLength={8}
               rules={{
                 required: "O código da turma é obrigatório",
               }}

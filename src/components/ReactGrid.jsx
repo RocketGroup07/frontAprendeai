@@ -7,9 +7,9 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
   const [rowData, setRowData] = useState([]);
-  
+
   console.log("dataHoraTurma em ReactGrid:", dataHoraTurma);
-  
+
   const myTheme = themeQuartz.withParams({
     accentColor: "#D00909",
     backgroundColor: "#212121",
@@ -35,7 +35,7 @@ function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
           const horasData = dataHoraTurma.find(
             item => item.alunoId === aluno.id || item.nomeAluno === aluno.nome
           );
-          
+
           return {
             ...aluno,
             horasPresentes: horasData ? Number(horasData.horasPresentes) : 0
@@ -57,9 +57,9 @@ function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
   const colDefs = [
     { field: "nome", headerName: "Nome do Aluno", sortable: true, filter: false, flex: 2 },
     { field: "login", headerName: "Email", editable: false, flex: 2 },
-    { 
-      field: "horasPresentes", 
-      headerName: "Horas Presente", 
+    {
+      field: "horasPresentes",
+      headerName: "Horas Presente",
       editable: true,
       flex: 1,
       valueParser: params => Number(params.newValue) || 0
@@ -71,21 +71,24 @@ function ReactGrid({ dataTurma, dataHoraTurma, onUpdateHoras }) {
     if (event.colDef.field === 'horasPresentes' && onUpdateHoras) {
       const alunoId = event.data.id; // ID do aluno
       const novasHoras = Number(event.newValue);
-      
+
       console.log(`Célula editada - Aluno ID: ${alunoId}, Novas horas: ${novasHoras}`);
-      
+
       // Atualiza o estado no componente pai
       onUpdateHoras(alunoId, novasHoras);
     }
   };
 
+  const noRowsTemplate = `<div class="p-3 text-gray-400">Nenhum aluno encontrado</div>`;
+
   return (
-    <div style={{  width: '82%' }}>
-      <AgGridReact 
-        theme={myTheme} 
-        rowData={rowData} 
+    <div style={{ width: '82%' }}>
+      <AgGridReact
+        theme={myTheme}
+        rowData={rowData}
         columnDefs={colDefs}
         onCellValueChanged={onCellValueChanged}
+        overlayNoRowsTemplate={noRowsTemplate}
       />
     </div>
   );

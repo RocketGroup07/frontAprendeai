@@ -10,7 +10,7 @@ import star from '../assets/images/star.svg';
 import starFill from '../assets/images/star-fill.svg';
 import { useEffect, useState } from "react";
 
-function CardPosts({id, turmaId, titulo, descricao, autor, ano, onDelete }) {
+function CardPosts({ id, turmaId, titulo, descricao, autor, ano, onDelete }) {
     const [favoritado, setFavoritado] = useState(false);
     // Mantemos favoritoId, mas ele não será usado na requisição DELETE
     const [favoritoId, setFavoritoId] = useState(null);
@@ -22,7 +22,7 @@ function CardPosts({id, turmaId, titulo, descricao, autor, ano, onDelete }) {
         if (favoritado) {
             try {
                 const response = await api.delete(`/favoritos/remover/posts/${id}`);
-                if (response.status === 200 || response.status === 204 ) {
+                if (response.status === 200 || response.status === 204) {
                     setFavoritado(false); // Desmarcar como favoritado
                     setFavoritoId(null);  // Limpar o id do favorito
                     toast.success("Post removido dos favoritos!");
@@ -83,13 +83,27 @@ function CardPosts({id, turmaId, titulo, descricao, autor, ano, onDelete }) {
                 <button
                     onClick={async () => {
                         toast.dismiss(); // Fecha o toast antes de iniciar a deleção
+
+                        // Prevenção no cliente: se está favoritado, não tenta deletar (evita 500)
+                        if (favoritado || favoritoId) {
+                            toast.error("Não é possível deletar um post favoritado. Remova dos favoritos antes de deletar.");
+                            return;
+                        }
+
                         try {
                             await api.delete(`/posts/${turmaId}/${id}`);
                             toast.success("Post deletado com sucesso!");
-                            if (onDelete) onDelete();
+                            if (onDelete) onDelete(id); // atualiza o pai somente localmente
                         } catch (error) {
-                            const errorMessage = error.response?.data?.message || "Falha ao deletar o post. Tente novamente.";
-                            toast.error(errorMessage);
+                            console.error("Erro ao deletar post:", error);
+                            // Mensagem específica para 500 (caso backend retorne 500 quando estiver favoritado)
+                            if (error.response?.status === 500) {
+                                const serverMsg = error.response?.data?.mensagem || error.response?.data?.message;
+                                toast.error(serverMsg || "Não é possível deletar um post favoritado. Remova dos favoritos antes de deletar.");
+                            } else {
+                                const errorMessage = error.response?.data?.message || "Falha ao deletar o post. Tente novamente.";
+                                toast.error(errorMessage);
+                            }
                         }
                     }}
                     className="bg-[var(--primary)] hover:bg-[var(--secondary)] text-white hover:text-[var(--primary)] px-3 py-1 rounded text-sm hover:cursor-pointer"

@@ -126,9 +126,9 @@ function TelaAtividade() {
             </div>
 
             <div className="w-[90%] m-auto mt-3">
-                <div>
+                <div className="w-[5%]">
                     <Link to={"/atividades/" + turmaId}>
-                        <button className="flex bg-red-600 center p-2 text-white rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700">
+                        <button className="flex bg-red-600 center p-2 text-[#f1f1f1] rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700">
                             <FaLongArrowAltLeft />
                             Voltar
                         </button>
@@ -136,7 +136,7 @@ function TelaAtividade() {
                 </div>
 
                 {atividade ? (
-                    <div className="flex text-white gap-6 m-auto mt-5">
+                    <div className="flex text-[var(--text)] gap-6 m-auto mt-5">
                         <div className="text-6xl">
                             <MdOutlineAddTask />
                         </div>
