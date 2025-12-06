@@ -10,10 +10,9 @@ function Input({
   defaultValue,
   onChange,
   maxLength,
-  min, // novo
-  max  // novo
+  min,
+  max
 }) {
-  // ===== Regras automáticas =====
   const inputRules = { ...rules };
 
   // Limita números negativos e aplica max/min se for number
@@ -45,8 +44,26 @@ function Input({
     const maxDate = new Date(today);
     maxDate.setDate(today.getDate() + 7);
 
-    inputRules.min ??= formatDate(minDate);
-    inputRules.max ??= formatDate(maxDate);
+    const minFormatted = formatDate(minDate);
+    const maxFormatted = formatDate(maxDate);
+
+    inputRules.min = minFormatted;
+    inputRules.max = maxFormatted;
+
+    // Adiciona validação personalizada
+    inputRules.validate = {
+      withinRange: (value) => {
+        if (!value) return true;
+        const selectedDate = new Date(value + 'T00:00:00');
+        const min = new Date(minFormatted + 'T00:00:00');
+        const max = new Date(maxFormatted + 'T00:00:00');
+        
+        if (selectedDate < min || selectedDate > max) {
+          return "Selecione uma data entre 7 dias atrás e 7 dias à frente";
+        }
+        return true;
+      }
+    };
   }
 
   return (
@@ -61,8 +78,8 @@ function Input({
         defaultValue={defaultDate}
         onChange={onChange}
         maxLength={maxLength}
-        min={type === "number" ? inputRules.min : undefined}
-        max={type === "number" ? inputRules.max : undefined}
+        min={inputRules.min}
+        max={inputRules.max}
         {...register(name, inputRules)}
       />
     </div>

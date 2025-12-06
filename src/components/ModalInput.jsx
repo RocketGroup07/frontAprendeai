@@ -53,8 +53,27 @@ function ModalInput({
     const maxDate = new Date();
     maxDate.setDate(today.getDate() + 7);
 
-    rules.min ??= format(minDate);
-    rules.max ??= format(maxDate);
+    const minFormatted = format(minDate);
+    const maxFormatted = format(maxDate);
+
+    rules.min = minFormatted;
+    rules.max = maxFormatted;
+
+    // Adiciona validação personalizada
+    rules.validate = {
+      ...rules.validate,
+      withinRange: (value) => {
+        if (!value) return true;
+        const selectedDate = new Date(value + 'T00:00:00');
+        const min = new Date(minFormatted + 'T00:00:00');
+        const max = new Date(maxFormatted + 'T00:00:00');
+        
+        if (selectedDate < min || selectedDate > max) {
+          return "Selecione uma data entre 7 dias atrás e 7 dias à frente";
+        }
+        return true;
+      }
+    };
   }
 
   // ===== Input type number com limite de dígitos + min/max =====
@@ -95,9 +114,11 @@ function ModalInput({
           placeholder={placeholder}
           disabled={disable}
           maxLength={safeMaxLength}
+          defaultValue={defaultValue}
+          min={type === "date" ? rules.min : undefined}
+          max={type === "date" ? rules.max : undefined}
           className={`w-full bg-[#4a4a4a] p-4 text-white rounded-md outline-0 border
             ${error ? "border-red-500" : "border-white"} ${className}`}
-          defaultValue={defaultValue}
           onChange={type === "number" ? handleNumberChange : onChange}
           {...register(name, rules)}
         />

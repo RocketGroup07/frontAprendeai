@@ -8,12 +8,11 @@ import { api } from "../lib/axios";
 import StaggeredMenu from "../components/StaggeredMenu";
 import { useAuth } from "../components/UserAuth";
 import Modal from "../components/Modal";
-import { max } from "date-fns";
 
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
   const [turmas, setTurmas] = useState([]);
-  const { isProfessor, isAluno } = useAuth();
+  const { isProfessor, isAluno, selecionarTurma } = useAuth();
 
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
@@ -87,6 +86,8 @@ function Turmas() {
       const response = await api.post("/turmas/", novaTurma);
 
       setTurmas([response.data, ...turmas]);
+
+      selecionarTurma( response.data.id, novoNome, novaCargaHoraria);
 
       setShowModal(false);
 
