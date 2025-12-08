@@ -75,7 +75,7 @@ function FavoritosPage() {
     <div className="min-h-screen font-neuli">
       {/* Menu superior */}
       <div style={{ height: '10vh' }}>
-        <StaggeredMenu />
+        <StaggeredMenu turmaId={turmaId} />
       </div>
 
       <div className="flex flex-col items-center justify-center gap-10 pt-10">

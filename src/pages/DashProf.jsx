@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import StaggeredMenu from '../components/StaggeredMenu';
 import { useParams } from 'react-router';
 import { api } from '../lib/axios';
 import { toast } from 'react-toastify';
 import ChamadaForm from '../components/ChamadaForm';
+import { useAuth } from '../components/UserAuth';
 
 function DashProf() {
   const [dataTurma, setData] = useState([]);
-  const [turmaNome, setTurmaNome] = useState("");
+  const { turmaNome, setTurmaNome } = useAuth();
 
   const turmaId = useParams().turmaId;
 
@@ -44,7 +45,7 @@ function DashProf() {
     <div className='w-[100%] flex flex-col h-[100vh]'>
 
       <div style={{ height: "10vh" }}>
-        <StaggeredMenu />
+        <StaggeredMenu turmaId={turmaId} />
       </div>
 
       <ChamadaForm turmaId={turmaId} turmaNome={turmaNome} dataTurma={dataTurma} />

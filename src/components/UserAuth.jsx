@@ -6,7 +6,6 @@ export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [turmaId, setTurmaId] = useState(null);
   const [turmaNome, setTurmaNome] = useState(null);
-  const [cargaHorariaTurma, setCargaHorariaTurma] = useState(null); // CORRIGIDO: era "carhaHoraria"
   const userData = JSON.parse(sessionStorage.getItem('userData'));
 
   useEffect(() => {
@@ -30,13 +29,11 @@ export function AuthProvider({ children }) {
     setUsuario(null);
     setTurmaId(null);
     setTurmaNome(null);
-    setCargaHorariaTurma(null); // CORRIGIDO
   };
 
-  const selecionarTurma = (id, nome = null, cargaHoraria = null) => {
+  const selecionarTurma = (id, nome = null) => {
     setTurmaId(id);
     if (nome) setTurmaNome(nome);
-    if (cargaHoraria) setCargaHorariaTurma(cargaHoraria); // CORRIGIDO
     return;
   };
 
@@ -50,8 +47,6 @@ export function AuthProvider({ children }) {
       setTurmaId,
       turmaNome,
       setTurmaNome,
-      cargaHorariaTurma,
-      setCargaHorariaTurma,
       selecionarTurma,
       isProfessor: userData && userData.papel === 'ADMIN',
       isAluno: userData && userData.papel === 'USER',

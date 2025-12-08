@@ -12,7 +12,7 @@ import Modal from "../components/Modal";
 function Turmas() {
   const [showInputCard, setShowInputCard] = useState(false);
   const [turmas, setTurmas] = useState([]);
-  const { isProfessor, isAluno, selecionarTurma } = useAuth();
+  const { isProfessor, isAluno } = useAuth();
 
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
@@ -87,8 +87,6 @@ function Turmas() {
 
       setTurmas([response.data, ...turmas]);
 
-      selecionarTurma( response.data.id, novoNome, novaCargaHoraria);
-
       setShowModal(false);
 
       toast.success("Turma criada com sucesso!");
@@ -130,7 +128,7 @@ function Turmas() {
           nomeModal="Nova Turma"
           onSubmit={handleCreateTurma}
           fields={[
-            { name: "novoNome", label: "Nome da Turma", type: "text", required: true, maxLength: { value: 100, message: "Máximo de 100 caracteres" }},
+            { name: "novoNome", label: "Nome da Turma", type: "text", required: true, maxLength: { value: 100, message: "Máximo de 100 caracteres" } },
             { name: "novoLimite", label: "Limite de Alunos", type: "number", required: true, maxLength: { value: 2, message: "Máximo de 2 caracteres" }, max: 40, min: 0 },
             { name: "novaCargaHoraria", label: "Carga Horária Total", type: "number", required: true, maxLength: { value: 3, message: "Máximo de 3 caracteres" }, max: 240, min: 0 }
           ]}
@@ -138,10 +136,10 @@ function Turmas() {
       </div>
 
       <div className="flex m-auto mt-5 w-[90%]">
-        <CardTurmas turmas={turmas} 
-        onDelete={(id) => setTurmas((prev) => prev.filter((t) => t.id !== id))}
-  />
-        
+        <CardTurmas turmas={turmas}
+          onDelete={(id) => setTurmas((prev) => prev.filter((t) => t.id !== id))}
+        />
+
 
         {isAluno && (
           <div

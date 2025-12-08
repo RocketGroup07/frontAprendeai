@@ -34,7 +34,7 @@ function TelaPost() {
         <div>
 
             <div style={{ height: "10vh" }}>
-                <StaggeredMenu />
+                <StaggeredMenu turmaId={turmaId} />
             </div>
 
             <div className='w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10 '>
@@ -90,13 +90,13 @@ function TelaPost() {
                                         <hr className="border-t border-gray-600 my-4" />
                                     </div>
                                 </a>
-                                
+
                             )}
                             <hr className="border-t border-gray-600 my-4" />
                             <Comentarios turmaId={turmaId} postId={postId} />
-                            
 
-                            
+
+
                         </div>
                     </div>
                 ) : (

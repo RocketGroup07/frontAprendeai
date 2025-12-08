@@ -47,7 +47,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
 
             console.log("initializer.data normalizado:", normalized);
             setDataHoraTurma(normalized);
-
+            toast.success("Chamada inicializada com sucesso!")
             reset()
         } catch (error) {
             toast.error(
@@ -80,7 +80,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
 
             for (let i = 0; i < dataHoraTurma.length; i++) {
                 const aluno = dataHoraTurma[i];
-                const id = aluno.alunoId;
+                const id = aluno.id;
                 const horasPresentes = Number(aluno.horasPresentes || 0);
 
                 console.log(`PATCH ID: ${id}, Horas: ${horasPresentes}`);

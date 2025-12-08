@@ -16,6 +16,7 @@ import ValidarToken from "./pages/ValidarToken.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import NaoPermitido from "./pages/NaoPermitido.jsx";
 import HistoricoChamada from "./pages/HistoricoChamada.jsx";
+import DiaHistorico from "./pages/DiaHistorico.jsx";
 
 function App() {
 
@@ -71,6 +72,11 @@ function App() {
             ,<Route path='/historico/:turmaId' element={
               <PrivateRoute>
                 <HistoricoChamada />
+              </PrivateRoute>
+            } />
+            ,<Route path='/dia-aula/:diaAulaId' element={
+              <PrivateRoute>
+                <DiaHistorico />
               </PrivateRoute>
             } />
           </Routes>

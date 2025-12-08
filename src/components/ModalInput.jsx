@@ -1,5 +1,3 @@
-import React from "react";
-
 // ======= Input específico para Modal =======
 function ModalInput({
   name,
@@ -67,7 +65,7 @@ function ModalInput({
         const selectedDate = new Date(value + 'T00:00:00');
         const min = new Date(minFormatted + 'T00:00:00');
         const max = new Date(maxFormatted + 'T00:00:00');
-        
+
         if (selectedDate < min || selectedDate > max) {
           return "Selecione uma data entre 7 dias atrás e 7 dias à frente";
         }

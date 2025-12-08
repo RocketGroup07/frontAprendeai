@@ -1,32 +1,31 @@
-import React, { useEffect, useState } from 'react';
 import { IoMdShareAlt } from 'react-icons/io';
 import { MdDelete } from 'react-icons/md';
 import { LuCalendarClock } from 'react-icons/lu';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // Componente CardHistorico
 function CardHistorico({ item, onDelete }) {
   if (!item) return null;
-  
+
   const dataAula = item.dataAula || item.data || item.createdAt || '';
   const conteudo = item.conteudo || item.descricao || '';
   const horas = item.horasTotais ?? item.horasMaximas ?? item.horasPresentes ?? '';
-  const turmaId = item.turmaId || item.turma_id || '';
+  const diaAulaId = item.id || item.turma_id || '';
   const formattedDate = dataAula ? new Date(dataAula).toLocaleDateString() : '—';
-  
+
   return (
     <div className="flex flex-wrap gap-4 font-neuli">
       <Link
         className='cursor-pointer hover:scale-103 transition-transform relative group'
-        to={turmaId ? `/geral/${turmaId}` : `/geral/`}
+        to={diaAulaId ? `/dia-aula/${diaAulaId}` : `/geral/`}
       >
         <div className="w-80 h-40 bg-[var(--main)] text-white rounded-t-lg p-10 flex flex-col justify-between items-center text-center relative">
           {onDelete && (
             <button
-              onClick={(e) => { 
-                e.preventDefault(); 
-                e.stopPropagation(); 
-                onDelete(item.id || item._id); 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(item.id || item._id);
               }}
               className='cursor-pointer absolute top-2 left-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10'
               title="Deletar histórico"

@@ -22,10 +22,9 @@ export const StaggeredMenu = ({
     changeMenuColorOnOpen = true,
     accentColor = '#2A2A2A',
     onMenuOpen,
-    onMenuClose
+    onMenuClose,
+    turmaId
 }) => {
-
-    const { turmaId } = useParams();
 
     // se items NÃO for passado via props → usa este default abaixo:
     const defaultItems = [
@@ -118,6 +117,26 @@ export const StaggeredMenu = ({
         });
         return () => ctx.revert();
     }, [menuButtonColor, position]);
+
+    // Novo useLayoutEffect para resetar posição quando turmaId muda
+    useLayoutEffect(() => {
+        if (turmaId && !openRef.current) {
+            const panel = panelRef.current;
+            const preContainer = preLayersRef.current;
+            
+            if (panel) {
+                const offscreen = position === 'left' ? -100 : 100;
+                
+                let preLayers = [];
+                if (preContainer) {
+                    preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
+                }
+                
+                // Força o reset da posição quando turmaId é carregado
+                gsap.set([panel, ...preLayers], { xPercent: offscreen });
+            }
+        }
+    }, [turmaId, position]);
 
     const buildOpenTimeline = useCallback(() => {
         const panel = panelRef.current;

@@ -1,6 +1,5 @@
-import LinkRedirecionavel from "../components/LinkRedirecionavel";
 import CardTarefas from "../components/CardTarefas";
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import '../index.css';
 import { useParams } from "react-router";
 import semTarefas from '../assets/images/semTarefas.svg';
@@ -148,13 +147,13 @@ function AtividadePage() {
 
 
   function removerAtividade(id) {
-  setAtividades(prev => prev.filter(a => a.id !== id));
-}
+    setAtividades(prev => prev.filter(a => a.id !== id));
+  }
 
   return (
     <div>
       <div style={{ height: "10vh" }}>
-        <StaggeredMenu />
+        <StaggeredMenu turmaId={turmaId} />
       </div>
 
       <div className='min-h-screen font-neuli'>
