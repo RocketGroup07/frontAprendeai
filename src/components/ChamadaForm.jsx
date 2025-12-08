@@ -15,7 +15,7 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
         handleSubmit,
         reset,
         getValues,
-        formState: { errors: errors }
+        formState: { errors }
     } = useForm();
 
     const onSubmit = async (data) => {
@@ -30,7 +30,6 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                 horasTotais: horasTotais
             });
 
-            // ...existing code...
             const initializer = await api.post("/api/chamada/inicializar", {
                 turmaId: turmaId,
                 dataAula: data.dataAula,
@@ -38,21 +37,17 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                 conteudo: data.conteudo,
             });
 
-            // normaliza os objetos para a shape esperada pela grid
             const normalized = (initializer.data || []).map(item => ({
-                // garanta um id consistente
                 id: item.id ?? item.alunoId ?? item.presencaId ?? null,
                 alunoId: item.alunoId ?? item.id ?? item.presencaId ?? null,
                 nome: item.nome ?? item.nomeAluno ?? item.alunoNome ?? '',
                 login: item.login ?? item.email ?? '',
-                // force número (evita NaN)
                 horasPresentes: Number(item.horasPresentes ?? item.horasPresente ?? item.horas ?? 0)
             }));
 
             console.log("initializer.data normalizado:", normalized);
             setDataHoraTurma(normalized);
-// ...existing code...
-
+            toast.success("Chamada inicializada com sucesso!")
             reset()
         } catch (error) {
             toast.error(
@@ -64,7 +59,6 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
 
     console.log("dataHoraTurma:", dataHoraTurma);
 
-    // Função para atualizar horas de um aluno no estado
     const atualizarHorasAluno = (alunoId, novasHoras) => {
         setDataHoraTurma(prev => 
             prev.map(aluno => 
@@ -84,15 +78,13 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
 
             console.log("Enviando presenças:", dataHoraTurma);
 
-            // Itera sobre dataHoraTurma (que tem tanto ID quanto horas)
             for (let i = 0; i < dataHoraTurma.length; i++) {
                 const aluno = dataHoraTurma[i];
-                const id = aluno.alunoId;
+                const id = aluno.id;
                 const horasPresentes = Number(aluno.horasPresentes || 0);
 
                 console.log(`PATCH ID: ${id}, Horas: ${horasPresentes}`);
 
-                // ENVIA O BODY COM horasPresentes
                 await api.patch(`/api/chamada/presenca/${id}`, {
                     horasPresentes: horasPresentes
                 });
@@ -124,37 +116,69 @@ function ChamadaForm({ turmaId, turmaNome, dataTurma }) {
                 <form action="" onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex gap-14">
                         <div className="flex flex-col gap-6 ">
-                            <Input
-                                type="date"
-                                name="dataAula"
-                                id="dataAula"
-                                register={register}
-                            />
-                            <Input
-                                placeholder="Digite a quantidade máxima de horas"
-                                type="number"
-                                name="horasMaximas"
-                                id="horasMaximas"
-                                min={0}
-                                max={8}
-                                register={register}
-                            />
-                            <Input
-                                placeholder="Digite o conteúdo da aula"
-                                type="text"
-                                name="conteudo"
-                                id="conteudo"
-                                register={register}
-                            />
-                            <Input
-                               placeholder="Digite a quantida de horas dadas"
-                                type="number"
-                                name="horasTotais"
-                                id="horasTotais"
-                                min={0}
-                                max={8}
-                                register={register}
-                            />
+                            <div>
+                                <Input
+                                    type="date"
+                                    name="dataAula"
+                                    id="dataAula"
+                                    register={register}
+                                    error={!!errors.dataAula}
+                                />
+                                {errors.dataAula && (
+                                    <span className="text-red-500 text-sm mt-1 block">
+                                        {errors.dataAula.message}
+                                    </span>
+                                )}
+                            </div>
+                            <div>
+                                <Input
+                                    placeholder="Digite a quantidade máxima de horas"
+                                    type="number"
+                                    name="horasMaximas"
+                                    id="horasMaximas"
+                                    min={0}
+                                    max={8}
+                                    register={register}
+                                    error={!!errors.horasMaximas}
+                                />
+                                {errors.horasMaximas && (
+                                    <span className="text-red-500 text-sm mt-1 block">
+                                        {errors.horasMaximas.message}
+                                    </span>
+                                )}
+                            </div>
+                            <div>
+                                <Input
+                                    placeholder="Digite o conteúdo da aula"
+                                    type="text"
+                                    name="conteudo"
+                                    id="conteudo"
+                                    register={register}
+                                    error={!!errors.conteudo}
+                                />
+                                {errors.conteudo && (
+                                    <span className="text-red-500 text-sm mt-1 block">
+                                        {errors.conteudo.message}
+                                    </span>
+                                )}
+                            </div>
+                            <div>
+                                <Input
+                                    placeholder="Digite a quantidade de horas dadas"
+                                    type="number"
+                                    name="horasTotais"
+                                    id="horasTotais"
+                                    min={0}
+                                    max={8}
+                                    register={register}
+                                    error={!!errors.horasTotais}
+                                />
+                                {errors.horasTotais && (
+                                    <span className="text-red-500 text-sm mt-1 block">
+                                        {errors.horasTotais.message}
+                                    </span>
+                                )}
+                            </div>
 
                             <div className="w-[100%] ">
                                 <FormButton type="submit">Inicializar chamada</FormButton>

@@ -19,10 +19,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (token, userData) => {
-  sessionStorage.setItem('token', token);
-  sessionStorage.setItem('userData', JSON.stringify(userData));
-  setUsuario(userData);
-};
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('userData', JSON.stringify(userData));
+    setUsuario(userData);
+  };
 
   const logout = () => {
     sessionStorage.clear();
@@ -31,7 +31,6 @@ export function AuthProvider({ children }) {
     setTurmaNome(null);
   };
 
-  // aceitar nome opcional
   const selecionarTurma = (id, nome = null) => {
     setTurmaId(id);
     if (nome) setTurmaNome(nome);

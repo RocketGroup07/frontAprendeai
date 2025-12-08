@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Form from '../components/Form'
 import Input from '../components/Input'
 import Button from '../components/FormButton'
@@ -32,11 +32,11 @@ function RedefinicaoSenha() {
   const solicitar = async (data) => {
     try {
       await api.post('/redefinicao/solicitar', { email: data.email });
-  toast.success('Se o e-mail existir, você receberá um token por e-mail (até 8 dígitos).');
-  setPrefillEmail(data.email);
-  setValue('email', data.email);
-  // Redireciona para a mesma página com o e-mail nos query params para preencher o formulário de aplicação
-  setTimeout(() => navigate(`/redefinicao-senha?email=${encodeURIComponent(data.email)}`), 800);
+      toast.success('Se o e-mail existir, você receberá um token por e-mail (até 8 dígitos).');
+      setPrefillEmail(data.email);
+      setValue('email', data.email);
+      // Redireciona para a mesma página com o e-mail nos query params para preencher o formulário de aplicação
+      setTimeout(() => navigate(`/redefinicao-senha?email=${encodeURIComponent(data.email)}`), 800);
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data?.mensagem || 'Erro ao solicitar redefinição de senha.');
@@ -99,16 +99,16 @@ function RedefinicaoSenha() {
                 rules={{ required: 'O e-mail é obrigatório' }}
                 error={!!errors.email}
               />
-                <Input
-                  placeholder='Código (até 8 dígitos)'
-                  type='text'
-                  name='token'
-                  register={register}
-                  rules={{ required: 'O código é obrigatório', maxLength: { value: 8, message: 'Até 8 dígitos' } }}
-                  error={!!errors.token}
-                />
-                <p className='text-sm text-[#d3d3d3]'>Insira seu e-mail e o código (token) recebido por e-mail para validar a redefinição.</p>
-                <Button>Validar código</Button>
+              <Input
+                placeholder='Código (até 8 dígitos)'
+                type='text'
+                name='token'
+                register={register}
+                rules={{ required: 'O código é obrigatório', maxLength: { value: 8, message: 'Até 8 dígitos' } }}
+                error={!!errors.token}
+              />
+              <p className='text-sm text-[#d3d3d3]'>Insira seu e-mail e o código (token) recebido por e-mail para validar a redefinição.</p>
+              <Button>Validar código</Button>
             </Form>
           )}
         </div>

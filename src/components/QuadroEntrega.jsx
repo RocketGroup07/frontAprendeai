@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function QuadroEntrega({ entregas, alunosTurma }) {
 
@@ -99,9 +99,8 @@ export default function QuadroEntrega({ entregas, alunosTurma }) {
                 </div>
 
                 <div
-                    className={`p-2 rounded-sm mt-4 mb-10 w-28 text-center text-white font-semibold ${
-                        alunoSelecionado.entregue ? "bg-green-600" : "bg-red-600"
-                    }`}
+                    className={`p-2 rounded-sm mt-4 mb-10 w-28 text-center text-white font-semibold ${alunoSelecionado.entregue ? "bg-green-600" : "bg-red-600"
+                        }`}
                 >
                     {alunoSelecionado.entregue ? "Entregue" : "Pendente"}
                 </div>

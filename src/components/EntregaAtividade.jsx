@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FaPaperclip } from "react-icons/fa";
 
 export default function EntregaAtividade({ onEntregar }) {
@@ -18,11 +18,6 @@ export default function EntregaAtividade({ onEntregar }) {
 
         console.log("Entrega enviada:", entrega);
     };
-
-
-    
-
-
 
     return (
         <div className="flex flex-col gap-4 mt-6">

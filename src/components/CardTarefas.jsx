@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { api } from "../lib/axios";
 import { useState, useEffect } from "react";
 
-function CardTarefas({ id, titulo, descricao, ano, favoritado: initialFavoritado, turmaId, small, onDelete }) {
+function CardTarefas({ id, titulo, descricao, favoritado: initialFavoritado, turmaId, small, onDelete }) {
     const [favoritado, setFavoritado] = useState(initialFavoritado || false);
     const { isProfessor } = useAuth();
     const [favoritoId, setFavoritoId] = useState(null);

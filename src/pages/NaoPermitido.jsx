@@ -1,15 +1,14 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const NaoPermitido = () => {
   return (
-    <div className='text-white' style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh', 
-      textAlign: 'center' 
+    <div className='text-white' style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      textAlign: 'center'
     }}>
       <h1>Acesso Não Permitido</h1>
       <p>Você precisa estar logado para acessar esta página.</p>

@@ -13,6 +13,7 @@ import { AiOutlineDownload } from "react-icons/ai";
 import EntregaAtividade from "../components/EntregaAtividade";
 import QuadroEntrega from "../components/QuadroEntrega";
 import { useAuth } from "../components/UserAuth";
+import { toast } from "react-toastify";
 
 function TelaAtividade() {
     const { turmaId, atividadeId } = useParams();
@@ -22,12 +23,7 @@ function TelaAtividade() {
     const [alunosTurma, setAlunosTurma] = useState([]);
 
     const { isProfessor } = useAuth();
-
     const [entregasGerais, setEntregasGerais] = useState([]);
-
-    // -------------------------------
-    // FUNÇÕES QUE PODEMOS REUTILIZAR
-    // -------------------------------
 
     async function fetchAlunosTurma() {
         try {
@@ -37,7 +33,6 @@ function TelaAtividade() {
             console.error("Erro ao buscar alunos da turma:", error);
         }
     }
-
 
     async function fetchAtividade() {
         try {
@@ -66,7 +61,6 @@ function TelaAtividade() {
         }
     }
 
-    // RODA QUANDO ABRE A TELA
     useEffect(() => {
         fetchAtividade();
         checkEntrega();
@@ -74,12 +68,14 @@ function TelaAtividade() {
         fetchAlunosTurma();
     }, [atividadeId]);
 
-    // ---------------------------------
-    // ENVIO DA ENTREGA + ATUALIZAÇÃO
-    // ---------------------------------
+    // ----------------------------
+    // ENVIO DA ENTREGA (AJUSTADO)
+    // ----------------------------
     async function enviarEntrega({ texto, arquivo }) {
         if (!texto && !arquivo) {
-            alert("Você precisa enviar um texto, um arquivo ou ambos.");
+            toast.error("Você precisa enviar um texto, um arquivo ou ambos.", {
+                toastId: "erroEnvioVazio"
+            });
             return;
         }
 
@@ -94,25 +90,29 @@ function TelaAtividade() {
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
 
-            alert("Entrega enviada com sucesso!");
+            toast.success("Entrega enviada com sucesso!", {
+                toastId: "sucessoEntrega"
+            });
 
-            // Atualiza imediatamente sem precisar dar F5
             setEntregue(true);
-            fetchAtividade(); // recarrega os dados da entrega
-            fetchEntregasGerais(); // caso professor esteja vendo
+            fetchAtividade();
+            fetchEntregasGerais();
 
             console.log("Resposta da API:", response.data);
 
         } catch (error) {
             console.error("Erro ao enviar entrega:", error);
-            alert("Erro ao enviar entrega!");
+
+            toast.error("Erro ao enviar entrega!", {
+                toastId: "erroAoEnviarEntrega"
+            });
         }
     }
 
     return (
         <div>
             <div style={{ height: "10vh" }}>
-                <StaggeredMenu />
+                <StaggeredMenu turmaId={turmaId} />
             </div>
 
             <div className="w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex justify-center items-center font-bold text-[39px] m-auto mt-10">
@@ -128,7 +128,7 @@ function TelaAtividade() {
             <div className="w-[90%] m-auto mt-3">
                 <div className="w-[5%]">
                     <Link to={"/atividades/" + turmaId}>
-                        <button className="flex bg-red-600 center p-2 text-[#f1f1f1] rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700">
+                        <button className="flex bg-[var(--primary)] center p-2 text-[#f1f1f1] rounded-sm items-center gap-3 cursor-pointer hover:bg-red-700">
                             <FaLongArrowAltLeft />
                             Voltar
                         </button>
@@ -192,7 +192,6 @@ function TelaAtividade() {
 
                                 <div className="w-full mt-4">
 
-                                    {/* PROFESSOR */}
                                     {isProfessor && (
                                         <QuadroEntrega
                                             entregas={entregasGerais}
@@ -200,7 +199,6 @@ function TelaAtividade() {
                                         />
                                     )}
 
-                                    {/* ALUNO */}
                                     {!isProfessor && (
                                         <>
                                             {entregue ? (
@@ -235,7 +233,7 @@ function TelaAtividade() {
 
                             <hr className="border-t border-gray-600 my-4" />
 
-                            {/* Botão flutuante IA */}
+                            {/* BOTÃO IA */}
                             <button
                                 onClick={() => setShowChat((v) => !v)}
                                 style={{

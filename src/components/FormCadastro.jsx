@@ -9,7 +9,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './UserAuth';
 
 function FormCadastro() {
-    const location = useLocation();
+  const location = useLocation();
   const {
     register,
     handleSubmit,
@@ -20,10 +20,10 @@ function FormCadastro() {
 
   const { login } = useAuth();
 
-   function getCodigoTurma() {
+  function getCodigoTurma() {
     const params = new URLSearchParams(location.search);
-     return params.get('codigoTurma') || sessionStorage.getItem("codigoTurma");
-     return params.get('codigoTurma') || sessionStorage.getItem("codigoTurma");
+    return params.get('codigoTurma') || sessionStorage.getItem("codigoTurma");
+    return params.get('codigoTurma') || sessionStorage.getItem("codigoTurma");
   }
 
   const onSubmit = async (data) => {
@@ -41,7 +41,7 @@ function FormCadastro() {
       });
 
       const token = response.data.token;
-      const userData = response.data.usuario;   
+      const userData = response.data.usuario;
 
       login(token, userData);
       toast.success('Cadastro realizado com sucesso!');

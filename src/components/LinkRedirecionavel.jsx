@@ -5,8 +5,7 @@ function LinkRedirecionavel({ nome, link, className }) {
     <NavLink
       to={link}
       className={({ isActive }) =>
-        `${className} ${
-          isActive ? "bg-[var(--primary)] text-white" : ""
+        `${className} ${isActive ? "bg-[var(--primary)] text-white" : ""
         }`
       }
     >

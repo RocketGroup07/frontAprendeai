@@ -102,38 +102,38 @@ function ValidarToken() {
             </p>
 
             {/* CAMPOS DE SENHA APARECEM ASSIM QUE O USUÁRIO DIGITA O TOKEN */}
-          
-                <Input
-                  placeholder='Nova senha'
-                  type='password'
-                  name='novaSenha'
-                  register={register}
-                  rules={{
-                    required: 'A nova senha é obrigatória',
-                    minLength: { value: 6, message: 'A senha deve ter no mínimo 6 caracteres.' }
-                  }}
-                  error={!!errors.novaSenha}
-                />
 
-                <Input
-                  placeholder='Confirme a nova senha'
-                  type='password'
-                  name='confirmarSenha'
-                  register={register}
-                  rules={{
-                    validate: (value) => {
-                      const nova = watch('novaSenha');
-                      if (value !== nova) return 'As senhas não coincidem';
-                      return true;
-                    }
-                  }}
-                  error={!!errors.confirmarSenha}
-                />
+            <Input
+              placeholder='Nova senha'
+              type='password'
+              name='novaSenha'
+              register={register}
+              rules={{
+                required: 'A nova senha é obrigatória',
+                minLength: { value: 6, message: 'A senha deve ter no mínimo 6 caracteres.' }
+              }}
+              error={!!errors.novaSenha}
+            />
 
-                <p className='text-sm text-[#d3d3d3] mb-2'>
-                  Agora redefina sua senha.
-                </p>
-        
+            <Input
+              placeholder='Confirme a nova senha'
+              type='password'
+              name='confirmarSenha'
+              register={register}
+              rules={{
+                validate: (value) => {
+                  const nova = watch('novaSenha');
+                  if (value !== nova) return 'As senhas não coincidem';
+                  return true;
+                }
+              }}
+              error={!!errors.confirmarSenha}
+            />
+
+            <p className='text-sm text-[#d3d3d3] mb-2'>
+              Agora redefina sua senha.
+            </p>
+
 
 
             <Button>Enviar</Button>

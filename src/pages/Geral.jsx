@@ -118,56 +118,56 @@ function Geral() {
   }, [modalRef]);
 
   async function handleSubmit(data) {
-  console.log("Dados recebidos do Modal:", data);
+    console.log("Dados recebidos do Modal:", data);
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  const post = {
-    titulo: data.titulo,
-    conteudo: data.descricao,
-  };
-  
-  formData.append("post", JSON.stringify(post));
+    const post = {
+      titulo: data.titulo,
+      conteudo: data.descricao,
+    };
 
-  if (data.arquivo) {
-    formData.append("arquivo", data.arquivo);
+    formData.append("post", JSON.stringify(post));
+
+    if (data.arquivo) {
+      formData.append("arquivo", data.arquivo);
+    }
+
+    try {
+      const response = await api.post(
+        `/posts/criar/${usuarioId}/turma/${turmaId}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      console.log("Resposta da API:", response.data);
+
+      await fetchPosts();
+      setShowModal(false);
+    } catch (error) {
+      console.error(error);
+      alert("Falha ao criar o post.");
+    }
   }
 
-  try {
-    const response = await api.post(
-      `/posts/criar/${usuarioId}/turma/${turmaId}`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    console.log("Resposta da API:", response.data);
-
-    await fetchPosts();
-    setShowModal(false);
-  } catch (error) {
-    console.error(error);
-    alert("Falha ao criar o post.");
+  async function handleDeletePost(postId) {
+    try {
+      await api.delete(`/posts/${postId}`);
+      toast.success("Post deletado com sucesso!");
+      // Atualiza a lista de posts removendo o que foi deletado
+      setPosts(prevPosts => prevPosts.filter(p => p.postId !== postId));
+    } catch (error) {
+      console.error("Erro ao deletar o post: aifhqbi0t", error);
+      const errorMessage = error.response?.data?.mensagem || "Falha ao deletar o post. Tente novamente.";
+      toast.error(errorMessage);
+    }
   }
-}
-
-async function handleDeletePost(postId) {
-  try {
-    await api.delete(`/posts/${postId}`);
-    toast.success("Post deletado com sucesso!");
-    // Atualiza a lista de posts removendo o que foi deletado
-    setPosts(prevPosts => prevPosts.filter(p => p.postId !== postId));
-  } catch (error) {
-    console.error("Erro ao deletar o post: aifhqbi0t", error);
-    const errorMessage = error.response?.data?.mensagem || "Falha ao deletar o post. Tente novamente.";
-    toast.error(errorMessage);
-  }
-}
 
 
   return (
     <div className='min-h-screen font-neuli'>
       <div style={{ height: "10vh" }}>
-        <StaggeredMenu />
+        <StaggeredMenu turmaId={turmaId} />
       </div>
 
       <div className='flex flex-col items-center justify-center gap-10 pt-10'>

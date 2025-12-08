@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdShareAlt } from "react-icons/io";
 import { MdContentCopy, MdDelete } from "react-icons/md";
@@ -19,7 +18,6 @@ function CardTurmas({ turmas, onDelete }) {
             toast.error("Erro ao copiar código");
         });
     };
-
 
     /* TENTANDO FAZER O DELETE DE TURMAS */
     /* API para deletar: api.delete(`/turmas/${id}`); */
@@ -51,7 +49,7 @@ function CardTurmas({ turmas, onDelete }) {
             </div>
         );
 
-        toast.warning(<ConfirmDelete/>, {
+        toast.warning(<ConfirmDelete />, {
             position: "bottom-right",
             autoClose: false,
             closeButton: false,
