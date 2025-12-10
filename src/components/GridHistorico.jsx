@@ -31,11 +31,19 @@ function GridHistorico({ diaHistorico, alunoHistorico }) {
                 alunoId: d.alunoId ?? d.id
             }));
 
-            const mergedData = normalized.map(dia => {
-                const totalData = alunoHistorico.find(
-                    item => item.alunoId === dia.alunoId
-                );
+            // cria um mapa por alunoId, escolhendo a entrada com maior horasPresenteTotal
+            const totalsMap = (alunoHistorico || []).reduce((acc, item) => {
+                const id = item.alunoId ?? item.id;
+                const key = String(id);
+                const existing = acc[key];
+                if (!existing || (Number(item.horasPresenteTotal || 0) > Number(existing.horasPresenteTotal || 0))) {
+                    acc[key] = item;
+                }
+                return acc;
+            }, {});
 
+            const mergedData = normalized.map(dia => {
+                const totalData = totalsMap[String(dia.alunoId)];
                 return {
                     ...dia,
                     horasPresente: dia.horasPresente ?? 0,
@@ -50,12 +58,12 @@ function GridHistorico({ diaHistorico, alunoHistorico }) {
     }, [diaHistorico, alunoHistorico]);
 
 
+
     const colDefs = [
         { field: "nomeAluno", headerName: "Nome do Aluno", sortable: true, filter: false, flex: 2 },
         { field: "horasPresente", headerName: "Horas Presente no Dia", editable: false, flex: 2 },
         { field: "horasPresenteTotal", headerName: "Horas Presente Total", editable: false, flex: 2 },
         { field: "percentualPresenca", headerName: "Percentual de Presença", editable: false, flex: 2, valueFormatter: params => Number(params.value).toFixed(2) + '%' },
-        { field: "percentualFalta", headerName: "Percentual de Falta", editable: false, flex: 2, valueFormatter: params => Number(params.value).toFixed(2) + '%' }
     ];
 
     const noRowsTemplate = `<div class="p-3 text-gray-400">Nenhum aluno encontrado</div>`;

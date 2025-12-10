@@ -42,9 +42,7 @@ function DiaHistorico() {
     const fetchAlunoHistorico = async (nomes) => {
         try {
             const requests = nomes.map(nome =>
-                api.get('/api/chamada/frequencia/aluno', {
-                    params: { nome }
-                })
+                api.get(`/api/chamada/frequencia/${turmaId}`)
             );
 
             const responses = await Promise.all(requests);
@@ -88,8 +86,6 @@ function DiaHistorico() {
             fetchAlunoHistorico(alunoNomes);
         }
     }, [alunoNomes]);
-
-    console.log(usuario)
 
     return (
         <div className='w-[100%] flex flex-col h-[100vh]'>

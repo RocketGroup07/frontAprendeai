@@ -1,62 +1,82 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import StaggeredMenu from "../components/StaggeredMenu.jsx";
 import CardHistorico from '../components/CardHistorico.jsx';
 import { api } from '../lib/axios';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
+import { useAuth } from '../components/UserAuth.jsx';
 
 function HistoricoChamada() {
   const [historicos, setHistoricos] = useState([]);
-  const [horasTotais, setHorasTotais] = useState(0);
-  const [somaHoras, setSomaHoras] = useState(0);
+  const [horasTotais, setHorasTotais] = useState(0); // carga horária total da turma
+  const [somaHoras, setSomaHoras] = useState(0); // soma das horas das chamadas
   const { turmaId: turmaIdParam } = useParams();
+  const { turmaId: turmaIdContext } = useAuth();
   const turmaId = turmaIdParam || turmaIdContext || null;
 
-  const fetchHistorico = async () => {
-    try {
-      // Corrigido: adicionado parênteses e aspas corretas
-      const response = await api.get(`/api/dia-aula/turma/${turmaId}`);
-      const res = response;
-      const dados = Array.isArray(res.data) ? res.data : (res.data?.items || []);
-      setHistoricos(dados);
+  // busca tanto o histórico quanto as informações da turma em uma única função
+  const fetchDados = async () => {
+    if (!turmaId) return;
 
-      // Calcular soma total das horas em uma variável separada
-      const total = dados.reduce((acc, item) => {
-        const horas = item.horasTotais ?? item.horasMaximas ?? item.horasPresentes ?? 0;
-        return acc + Number(horas);
+    try {
+      // paraleliza as requisições
+      const [histResp, turmaResp] = await Promise.allSettled([
+        api.get(`/api/dia-aula/turma/${turmaId}`),
+        api.get(`/turmas/${turmaId}`)
+      ]);
+
+      // histórico
+      let dadosHistorico = [];
+      if (histResp.status === 'fulfilled') {
+        const raw = histResp.value.data;
+        dadosHistorico = Array.isArray(raw) ? raw : (raw?.items || []);
+        setHistoricos(dadosHistorico);
+      } else {
+        console.error('Erro ao buscar histórico:', histResp.reason);
+        toast.error('Erro ao carregar histórico de chamadas');
+      }
+
+      // soma das horas (garante number)
+      const totalHoras = dadosHistorico.reduce((acc, item) => {
+        const horas = Number(item.horasTotais ?? item.horasMaximas ?? item.horasPresentes ?? 0);
+        return acc + (Number.isFinite(horas) ? horas : 0);
       }, 0);
-      setSomaHoras(total);
-    } catch (error) {
-      console.error('Erro ao buscar histórico:', error);
-      toast.error('Erro ao carregar histórico de chamadas');
+      setSomaHoras(totalHoras);
+
+      // turma / carga horária total
+      if (turmaResp.status === 'fulfilled') {
+        const turmaData = turmaResp.value.data;
+        // tenta vários nomes que a API possa usar
+        const carga =
+          Number(turmaData.cargaHorariaTotal ?? turmaData.cargaHoraria ?? turmaData.horasTotais ?? turmaData.horas ?? 0);
+        setHorasTotais(Number.isFinite(carga) ? carga : 0);
+      } else {
+        console.error('Erro ao buscar turma:', turmaResp.reason);
+        toast.error('Erro ao carregar informações da turma');
+      }
+    } catch (err) {
+      console.error('Erro inesperado ao buscar dados:', err);
+      toast.error('Erro ao carregar dados');
     }
   };
 
-
-  console.log("SomasHoras", somaHoras);
-
-
   useEffect(() => {
-    if (turmaId) {
-      fetchHistorico();
-    }
-  }, [turmaId]); // Adicionado turmaId como dependência
+    fetchDados();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turmaId]);
 
   const handleDelete = async (id) => {
     try {
-      // Corrigido: adicionado parênteses e aspas corretas
       await api.delete(`/api/chamada/historico/${id}`);
       setHistoricos(prev => {
-        const novosHistoricos = prev.filter(h => (h.id || h._id) !== id);
-
-        // Recalcular soma de horas após deletar
-        const total = novosHistoricos.reduce((acc, item) => {
-          const horas = item.horasTotais ?? item.horasMaximas ?? item.horasPresentes ?? 0;
-          return acc + Number(horas);
+        const novos = prev.filter(h => (h.id || h._id) !== id);
+        // recalcula somaHoras localmente
+        const total = novos.reduce((acc, item) => {
+          const horas = Number(item.horasTotais ?? item.horasMaximas ?? item.horasPresentes ?? 0);
+          return acc + (Number.isFinite(horas) ? horas : 0);
         }, 0);
         setSomaHoras(total);
-
-        return novosHistoricos;
+        return novos;
       });
       toast.success('Histórico removido');
     } catch (error) {
@@ -65,42 +85,19 @@ function HistoricoChamada() {
     }
   };
 
-  const fetchTurmaInfo = async () => {
-    try {
-      const response = await api.get(`/api/turma/${turmaId}`);
-      // ⚠️ AJUSTE o nome do campo conforme sua API:
-      // Pode ser: cargaHoraria, horasTotais, duracao, etc
-      const cargaHoraria = response.data?.cargaHoraria || response.data?.horasTotais || 0;
-      setHorasTotais(cargaHoraria);
-    } catch (error) {
-      console.error('Erro ao buscar informações da turma:', error);
-    }
-  };
-
-  // Função para calcular o progresso
-  const calcularProgresso = () => {
-    if (horasTotais === 0) return 0;
-    const progresso = (somaHoras / horasTotais) * 100;
-    return Math.min(progresso, 100).toFixed(1); // Limita a 100%
-  };
-
-  // No useEffect, adicione a chamada:
-  useEffect(() => {
-    if (turmaId) {
-      fetchTurmaInfo(); // ← ADICIONE ESTA LINHA
-      fetchHistorico();
-    }
-  }, [turmaId]);
-
-  const progressoPercentual = calcularProgresso();
+  // progresso calculado a partir de somaHoras e horasTotais
+  const progressoPercentual = useMemo(() => {
+    if (!horasTotais || horasTotais === 0) return '0.0';
+    const pct = (somaHoras / horasTotais) * 100;
+    const clamped = Math.max(0, Math.min(pct, 100));
+    return clamped.toFixed(1);
+  }, [somaHoras, horasTotais]);
 
   return (
     <div className="">
       <div style={{ height: "10vh" }}>
         <StaggeredMenu turmaId={turmaId} />
       </div>
-
-
 
       <div className="w-[90%] h-[137px] p-7 bg-[var(--main)] rounded-[9px] text-white flex flex-col justify-center items-center font-bold m-auto mt-10">
         <h1 className="text-[28px] font-bold">
@@ -109,10 +106,9 @@ function HistoricoChamada() {
         <p className="text-[16px] mt-2 opacity-90">
           {somaHoras}h de {horasTotais}h concluídas
         </p>
-        {/* Barra de progresso visual */}
         <div className="w-full bg-white/20 rounded-full h-2 mt-3">
           <div
-            className="bg-white h-2 rounded-full transition-all duration-300"
+            className="bg-[var(--primary)] h-2 rounded-full transition-all duration-300"
             style={{ width: `${progressoPercentual}%` }}
           />
         </div>
