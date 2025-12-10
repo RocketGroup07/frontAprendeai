@@ -65,26 +65,6 @@ function HistoricoChamada() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [turmaId]);
 
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/api/chamada/historico/${id}`);
-      setHistoricos(prev => {
-        const novos = prev.filter(h => (h.id || h._id) !== id);
-        // recalcula somaHoras localmente
-        const total = novos.reduce((acc, item) => {
-          const horas = Number(item.horasTotais ?? item.horasMaximas ?? item.horasPresentes ?? 0);
-          return acc + (Number.isFinite(horas) ? horas : 0);
-        }, 0);
-        setSomaHoras(total);
-        return novos;
-      });
-      toast.success('Histórico removido');
-    } catch (error) {
-      console.error('Erro ao deletar histórico:', error);
-      toast.error('Falha ao deletar histórico');
-    }
-  };
-
   // progresso calculado a partir de somaHoras e horasTotais
   const progressoPercentual = useMemo(() => {
     if (!horasTotais || horasTotais === 0) return '0.0';
@@ -125,7 +105,6 @@ function HistoricoChamada() {
             <CardHistorico
               key={item.id || item._id}
               item={item}
-              onDelete={handleDelete}
             />
           ))
         ) : (

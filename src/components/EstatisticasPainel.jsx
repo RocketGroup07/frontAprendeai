@@ -17,7 +17,7 @@ function EstatisticasDia({ diaHistorico, userName }) {
   return (
     <div className='flex flex-col items-center justify-center gap-6 my-3'>
 
-      <div className='w-[90%] p-6 bg-[var(--main)] rounded-[12px] text-white flex flex-col items-start text-[18px] shadow-lg' style={{ minHeight: "180px" }}>
+      <div className='w-[90%] p-7 bg-[var(--main)] rounded-[12px] text-white flex flex-col items-start text-[18px] shadow-lg'>
 
         <TextType
           text={[

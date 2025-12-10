@@ -33,6 +33,16 @@ function formatarAtividadeParaComponente(post) {
   };
 }
 
+const getTomorrowISO = () => {
+  const t = new Date();
+  t.setDate(t.getDate() + 1);
+  const yyyy = t.getFullYear();
+  const mm = String(t.getMonth() + 1).padStart(2, '0');
+  const dd = String(t.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+const tomorrowISO = getTomorrowISO();
+
 function AtividadePage() {
   const { turmaId: turmaIdParam } = useParams();
   const { turmaId: turmaIdContext, isProfessor } = useAuth();
@@ -186,7 +196,7 @@ function AtividadePage() {
           onSubmit={handleSubmit}
           fields={[
             { name: "titulo", label: "Título", type: "text", required: true, maxLength: { value: 100, message: "Máximo de 50 caracteres" } },
-            { name: "dataEntrega", label: "Data de Entrega", type: "date", required: true, },
+             { name: "dataEntrega", label: "Data de Entrega", type: "date", required: true, defaultValue: tomorrowISO, min: tomorrowISO },
             { name: "descricao", label: "Descrição", type: "textarea", required: true, maxLength: { value: 300, message: "Máximo de 50 caracteres" } },
             { name: "arquivo", label: "Anexo", type: "file" }
           ]}

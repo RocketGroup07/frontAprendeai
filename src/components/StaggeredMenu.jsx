@@ -28,9 +28,10 @@ export const StaggeredMenu = ({
 
     // se items NÃO for passado via props → usa este default abaixo:
     const defaultItems = [
+        { label: 'Geral', link: `/geral/${turmaId}` },
         { label: 'Turmas', link: '/turmas' },
-        { label: 'Histórico', link: `/historico/${turmaId}` },
         { label: 'Chamada', link: `/professor/${turmaId}` },
+        { label: 'Histórico', link: `/historico/${turmaId}` },
         { label: 'Relatório', action: `relatorio` },
     ];
 
@@ -123,15 +124,15 @@ export const StaggeredMenu = ({
         if (turmaId && !openRef.current) {
             const panel = panelRef.current;
             const preContainer = preLayersRef.current;
-            
+
             if (panel) {
                 const offscreen = position === 'left' ? -100 : 100;
-                
+
                 let preLayers = [];
                 if (preContainer) {
                     preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
                 }
-                
+
                 // Força o reset da posição quando turmaId é carregado
                 gsap.set([panel, ...preLayers], { xPercent: offscreen });
             }

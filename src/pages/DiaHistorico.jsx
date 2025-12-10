@@ -16,6 +16,7 @@ function DiaHistorico() {
     const [alunoNomes, setAlunoNomes] = useState([]);
     const [alunoHistoricos, setAlunoHistoricos] = useState([]);
     const [turmaId, setTurmaId] = useState(null);
+    console.log(turmaId)
 
     // 1) Buscar lista de alunos do dia
     const fetchDiaHistorico = async () => {
@@ -37,26 +38,43 @@ function DiaHistorico() {
         }
     };
 
+    useEffect(() => {
+        async function fetchDiaTurma() {
+            try {
+                if (!turmaId) return;
+                const response = await api.get(`/api/chamada/frequencia/${turmaId}`);
+                const dados = Array.isArray(response.data) ? response.data : [];
 
-    // 2) Buscar frequencia de cada aluno
-    const fetchAlunoHistorico = async (nomes) => {
-        try {
-            const requests = nomes.map(nome =>
-                api.get(`/api/chamada/frequencia/${turmaId}`)
-            );
+                // Normaliza/garante campos esperados pelo Grid e Estatísticas
+                const normalized = dados.map(d => {
+                    const horasPresenteTotal = Number(d.horasPresenteTotal ?? d.horasTotais ?? d.horas ?? 0);
+                    const cargaHorariaTotal = Number(d.cargaHorariaTotal ?? d.cargaHoraria ?? d.carga ?? 0);
+                    const percentualPresenca = Number(d.percentualPresenca ?? (cargaHorariaTotal ? (horasPresenteTotal / cargaHorariaTotal) * 100 : 0));
+                    const percentualFalta = Number(isFinite(100 - percentualPresenca) ? 100 - percentualPresenca : 0);
 
-            const responses = await Promise.all(requests);
+                    return {
+                        alunoId: d.alunoId ?? d.id ?? d.aluno_id,
+                        nomeAluno: d.nomeAluno ?? d.nome ?? '',
+                        horasPresenteTotal,
+                        cargaHorariaTotal,
+                        percentualPresenca,
+                        percentualFalta
+                    };
+                });
 
-            // Junta todas as respostas em um array só
-            const dados = responses.map(r => r.data).flat();
-            console.log("Segundo fetch: ", dados)
-            setAlunoHistoricos(dados);
+                console.log('Frequência por turma (normalizado):', normalized);
+                setAlunoHistoricos(normalized);
 
-        } catch (error) {
-            console.error('Erro ao buscar histórico aluno:', error);
-            toast.error('Erro ao carregar frequência dos alunos');
+            } catch (error) {
+                console.error('Erro ao buscar histórico da turma:', error);
+                toast.error('Erro ao carregar histórico de chamadas');
+            }
         }
-    };
+
+        if (turmaId) {
+            fetchDiaTurma();
+        }
+    }, [turmaId]);
 
     const fetchDiaAulaInfo = async () => {
         try {
@@ -79,13 +97,6 @@ function DiaHistorico() {
             fetchDiaAulaInfo();
         }
     }, [diaAulaId]);
-
-
-    useEffect(() => {
-        if (alunoNomes.length > 0) {
-            fetchAlunoHistorico(alunoNomes);
-        }
-    }, [alunoNomes]);
 
     return (
         <div className='w-[100%] flex flex-col h-[100vh]'>

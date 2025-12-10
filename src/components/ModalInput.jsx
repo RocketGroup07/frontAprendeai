@@ -1,4 +1,3 @@
-// ======= Input específico para Modal =======
 function ModalInput({
   name,
   register,
@@ -13,8 +12,8 @@ function ModalInput({
   onChange,
   showCount = true,
   maxDigits, // limite de dígitos para number
-  min,
-  max
+  min, // pode ser string "YYYY-MM-DD" ou undefined
+  max  // pode ser string "YYYY-MM-DD" ou undefined
 }) {
   // ===== maxLength seguro =====
   let safeMaxLength;
@@ -32,12 +31,14 @@ function ModalInput({
   // ===== valor atual para contador =====
   const value = watch ? watch(name) ?? "" : "";
 
-  // ===== Data: default hoje e limites ±7 dias =====
+  // ===== Data: default hoje e limites ±7 dias (respeita min/max passados) =====
+  let minAttr, maxAttr;
   if (type === "date") {
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
+    // só define default se não foi passado pelo chamador
     defaultValue ??= `${yyyy}-${mm}-${dd}`;
 
     const format = (d) =>
@@ -54,20 +55,24 @@ function ModalInput({
     const minFormatted = format(minDate);
     const maxFormatted = format(maxDate);
 
-    rules.min = minFormatted;
-    rules.max = maxFormatted;
+    // use min/max passados (props) se existirem, senão use os calculados
+    minAttr = typeof min !== "undefined" ? min : minFormatted;
+    maxAttr = typeof max !== "undefined" ? max : maxFormatted;
 
-    // Adiciona validação personalizada
+    // garante que sejam strings no formato YYYY-MM-DD
+    // regras de validação: usa comparação em tempo de validação para bloquear datas anteriores
     rules.validate = {
       ...rules.validate,
-      withinRange: (value) => {
-        if (!value) return true;
-        const selectedDate = new Date(value + 'T00:00:00');
-        const min = new Date(minFormatted + 'T00:00:00');
-        const max = new Date(maxFormatted + 'T00:00:00');
-
-        if (selectedDate < min || selectedDate > max) {
-          return "Selecione uma data entre 7 dias atrás e 7 dias à frente";
+      withinRange: (val) => {
+        if (!val) return true;
+        const selectedDate = new Date(val + "T00:00:00");
+        const minD = new Date(minAttr + "T00:00:00");
+        const maxD = new Date(maxAttr + "T00:00:00");
+        if (selectedDate < minD) {
+          return `Data menor que a mínima permitida (${minAttr})`;
+        }
+        if (selectedDate > maxD) {
+          return `Data maior que a máxima permitida (${maxAttr})`;
         }
         return true;
       }
@@ -77,21 +82,13 @@ function ModalInput({
   // ===== Input type number com limite de dígitos + min/max =====
   const handleNumberChange = (e) => {
     let val = e.target.value;
-
-    // Remove caracteres não numéricos
     val = val.replace(/\D/g, "");
-
-    // Limita quantidade de dígitos
     if (maxDigits) val = val.slice(0, maxDigits);
-
-    // Aplica limites min e max (se existirem)
     if (val !== "") {
       const numericVal = Number(val);
-
       if (min !== undefined && numericVal < min) val = String(min);
       if (max !== undefined && numericVal > max) val = String(max);
     }
-
     onChange && onChange({ ...e, target: { ...e.target, value: val } });
   };
 
@@ -105,16 +102,17 @@ function ModalInput({
           className={`w-full bg-[#4a4a4a] p-3 text-white rounded-md resize-none outline-0 border
             ${error ? "border-red-500" : "border-white"} ${className}`}
           {...register(name, rules)}
+          defaultValue={defaultValue}
         />
       ) : (
         <input
-          type={type === "number" ? "text" : type} // permanece text para suportar maxLength
+          type={type === "number" ? "text" : type}
           placeholder={placeholder}
           disabled={disable}
           maxLength={safeMaxLength}
           defaultValue={defaultValue}
-          min={type === "date" ? rules.min : undefined}
-          max={type === "date" ? rules.max : undefined}
+          min={type === "date" ? minAttr : undefined}
+          max={type === "date" ? maxAttr : undefined}
           className={`w-full bg-[#4a4a4a] p-4 text-white rounded-md outline-0 border
             ${error ? "border-red-500" : "border-white"} ${className}`}
           onChange={type === "number" ? handleNumberChange : onChange}
@@ -127,7 +125,7 @@ function ModalInput({
         safeMaxLength &&
         (type === "text" || type === "textarea" || type === "number") && (
           <span className="text-gray-400 text-xs mt-1 self-end">
-            {value.length} / {safeMaxLength}
+            {String(value).length} / {safeMaxLength}
           </span>
         )}
     </div>
