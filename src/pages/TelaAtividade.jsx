@@ -43,6 +43,28 @@ function TelaAtividade() {
         }
     }
 
+    async function baixarAnexo() {
+    try {
+        const response = await api.get(
+            `/atividades/${atividade.id}/download/anexo`,
+            { responseType: "blob" } // Importante!
+        );
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", atividade.nomesArquivosAnexo);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+    } catch (error) {
+        console.error("Erro ao baixar:", error);
+        toast.error("Não foi possível baixar o arquivo!");
+    }
+}
+
+
     async function checkEntrega() {
         try {
             const response = await api.get(`/entregas/${atividadeId}`);
@@ -173,18 +195,14 @@ function TelaAtividade() {
                                     <div>
                                         <p className="font-bold mt-4">Material Extra:</p>
 
-                                        <a
-                                            href={`${baseURL}atividades/${atividade.id}/download/anexo`}
-                                            target="_blank"
-                                            download
+                                        <div
+                                            onClick={baixarAnexo}
+                                            className="mt-4 bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all"
                                         >
-                                            <div className="mt-4 bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all">
-                                                <div>{atividade.nomesArquivosAnexo}</div>
-                                                <div>
-                                                    <AiOutlineDownload />
-                                                </div>
-                                            </div>
-                                        </a>
+                                            <div>{atividade.nomesArquivosAnexo}</div>
+                                            <div><AiOutlineDownload /></div>
+                                        </div>
+
 
                                         <hr className="border-t border-gray-600 my-4" />
                                     </div>
