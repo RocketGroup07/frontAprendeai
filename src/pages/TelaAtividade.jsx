@@ -44,25 +44,25 @@ function TelaAtividade() {
     }
 
     async function baixarAnexo() {
-    try {
-        const response = await api.get(
-            `/atividades/${atividade.id}/download/anexo`,
-            { responseType: "blob" } // Importante!
-        );
+        try {
+            const response = await api.get(
+                `/atividades/${atividade.id}/download/anexo`,
+                { responseType: "blob" } // Importante!
+            );
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", atividade.nomesArquivosAnexo);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", atividade.nomesArquivosAnexo);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
 
-    } catch (error) {
-        console.error("Erro ao baixar:", error);
-        toast.error("Não foi possível baixar o arquivo!");
+        } catch (error) {
+            console.error("Erro ao baixar:", error);
+            toast.error("Não foi possível baixar o arquivo!");
+        }
     }
-}
 
 
     async function checkEntrega() {
@@ -214,6 +214,7 @@ function TelaAtividade() {
                                         <QuadroEntrega
                                             entregas={entregasGerais}
                                             alunosTurma={alunosTurma}
+                                            atividadeId={atividadeId}
                                         />
                                     )}
 

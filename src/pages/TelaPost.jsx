@@ -30,6 +30,31 @@ function TelaPost() {
         fetchPost();
     }, [postId]);
 
+    async function handleDownloadAnexo() {
+        try {
+            const response = await api.get(
+                `/posts/${post.turmaId}/${post.postId}/download/anexo`,
+                { responseType: "blob" }
+            );
+
+            const blob = new Blob([response.data]);
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = post.nomeArquivo;
+            document.body.appendChild(link);
+            link.click();
+
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erro ao baixar anexo:", error);
+            toast.error("Erro ao baixar o anexo");
+        }
+    }
+
+
     return (
         <div>
 
@@ -79,19 +104,16 @@ function TelaPost() {
                                 </div>
                             </div>
 
-                            {post.nomeArquivo > "0" && (
-                                <a
-                                    href={`${baseURL}posts/${post.turmaId}/${post.postId}/download/anexo`}
-                                    download={post.nomeArquivo}
+                            {post.nomeArquivo && (
+                                <div
+                                    onClick={handleDownloadAnexo}
+                                    className="mt-4 bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all"
                                 >
-                                    <div className="mt-4 bg-[var(--primary)] font-bold p-4 rounded w-90 flex justify-between items-center cursor-pointer hover:bg-red-800 transition-all">
-                                        <div>{post.nomeArquivo}</div>
-                                        <div><AiOutlineDownload /></div>
-                                        <hr className="border-t border-gray-600 my-4" />
-                                    </div>
-                                </a>
-
+                                    <div>{post.nomeArquivo}</div>
+                                    <div><AiOutlineDownload /></div>
+                                </div>
                             )}
+
                             <hr className="border-t border-gray-600 my-4" />
                             <Comentarios turmaId={turmaId} postId={postId} />
 

@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
+import { api } from "../lib/axios";
+import { toast } from "react-toastify";
+import { AiOutlineDownload } from "react-icons/ai";
 
-export default function QuadroEntrega({ entregas, alunosTurma }) {
+export default function QuadroEntrega({ entregas, alunosTurma, atividadeId }) {
 
     // Converter formato vindo da API para o usado no componente
     const alunos = alunosTurma.map((aluno) => {
@@ -48,6 +51,32 @@ export default function QuadroEntrega({ entregas, alunosTurma }) {
             </div>
         );
     }
+
+    async function baixarEntregaAluno(alunoId, nomeArquivo) {
+        try {
+            const response = await api.get(
+                `/entregas/${atividadeId}/entrega/${alunoId}`,
+                { responseType: "blob" }
+            );
+
+            const blob = new Blob([response.data]);
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = nomeArquivo;
+            document.body.appendChild(link);
+            link.click();
+
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Erro ao baixar entrega:", error);
+            toast.error("Não foi possível baixar o arquivo da entrega.");
+        }
+    }
+
 
     return (
         <div className="w-full bg-gray-800 p-4 rounded-sm mt-6 text-white">
@@ -118,9 +147,16 @@ export default function QuadroEntrega({ entregas, alunosTurma }) {
                     <div className="mb-4">
                         <p className="text-sm">Anexos:</p>
                         {alunoSelecionado.anexos.map((arq, i) => (
-                            <div key={i} className="bg-gray-600 p-2 rounded-sm mt-1 text-sm">
-                                {arq}
+                            <div
+                                onClick={() =>
+                                    baixarEntregaAluno(alunoSelecionado.id, arq)
+                                }
+                                className="bg-gray-600 p-2 rounded-sm mt-1 text-sm flex justify-between items-center cursor-pointer hover:bg-gray-700 transition"
+                            >
+                                <span>{arq}</span>
+                                <AiOutlineDownload />
                             </div>
+
                         ))}
                     </div>
                 )}

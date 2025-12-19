@@ -16,6 +16,10 @@ function Turmas() {
 
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
+  const handleClonarTurma = (novaTurma) => {
+    setTurmas(prev => [novaTurma, ...prev]);
+  };
+
 
   async function fetchTurmas() {
     try {
@@ -136,9 +140,15 @@ function Turmas() {
       </div>
 
       <div className="flex m-auto mt-5 w-[90%]">
-        <CardTurmas turmas={turmas}
-          onDelete={(id) => setTurmas((prev) => prev.filter((t) => t.id !== id))}
+        <CardTurmas
+          turmas={turmas}
+          isProfessor={isProfessor}
+          onDelete={(id) =>
+            setTurmas(prev => prev.filter(t => t.id !== id))
+          }
+          onClonar={handleClonarTurma}
         />
+
 
 
         {isAluno && (
